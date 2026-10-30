@@ -17,6 +17,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 
 - [Guia para agentes](AGENTS.md) e [workflow Notion](docs/workflows/notion-task.md).
 - [Estado observado](docs/context/current-state.md) e [arquitetura alvo](docs/context/architecture.md).
+- [Índice de ADRs](docs/decisions/README.md): processos, transações, Saga, mensageria, idempotência e limites acadêmicos documentados na PDV-003.
 - [15 diagramas propostos](docs/diagrams/README.md): arquitetura, casos de uso, classes, DER, sequências e estados, com fontes Mermaid editáveis e SVGs.
 - [Reconciliação das fontes](docs/reports/reconciliacao.md), [ordem proposta](docs/planning/implementation-order.md) e [rastreabilidade de 19 RF e 20 RNF](docs/planning/requirements-coverage.md).
 - [Fontes originais e hashes](docs/sources/README.md); o registry local guarda links, não status vivo.

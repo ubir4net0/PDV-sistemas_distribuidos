@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## Arquitetura detalhada na PDV-003
+
+Cinco ADRs novas (ADR-002 a ADR-006), índice de decisões e spec registram API/worker independentes, PostgreSQL/Flyway, transações locais, Saga, RabbitMQ/outbox/inbox, idempotência e limites acadêmicos. A visão de arquitetura inclui as fronteiras de consistência; os registros descrevem alternativas, consequências e cenários futuros de falha.
+
+Este é um avanço documental das escolhas explícitas do pacote enquanto PDV-001 aguarda validação. SRC-01 e DEC-01 a DEC-06 não foram encerradas. Estados finais, schema e contratos não foram aprovados; nenhum serviço, migration ou regra de domínio foi implementado. Consulte o índice docs/decisions/README.md e a tarefa viva para evidências e status.
+
 ## Novos diagramas derivados da baseline textual
 
 O proprietário solicitou novos diagramas para a PDV-001. Foram gerados 15 arquivos Mermaid e 15 SVGs em docs/diagrams/, com índice, requisitos, notas de decisão e comando reproduzível. Todos renderizados por Mermaid CLI 12.0.0 e inspecionados visualmente por prévias PNG locais. XML/viewBox dos SVGs verificados; fontes originais e os 60 IDs/aceites/dependências preservados. A página Diagramas propostos do PDV v1 no Notion é a cópia para revisão.
