@@ -10,9 +10,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $workerRoot = Join-Path $repoRoot 'backend/worker'
+$qualityRoot = Join-Path $repoRoot 'config'
 $image = (Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'infra/java-toolchain.json') | ConvertFrom-Json).image
 $dockerArgs = @('run', '--rm', '--init',
     '--mount', "type=bind,source=$workerRoot,target=/workspace",
+    '--mount', "type=bind,source=$qualityRoot,target=/config,readonly",
     '--mount', 'type=volume,source=pdv-worker-maven-cache,target=/root/.m2',
     '--workdir', '/workspace', '--env', 'TZ=UTC')
 $previousEnv = @{}

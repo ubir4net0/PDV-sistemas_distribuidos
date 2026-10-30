@@ -22,7 +22,9 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 - [Reconciliação das fontes](docs/reports/reconciliacao.md), [ordem proposta](docs/planning/implementation-order.md) e [rastreabilidade de 19 RF e 20 RNF](docs/planning/requirements-coverage.md).
 - [Fontes originais e hashes](docs/sources/README.md); o registry local guarda links, não status vivo.
 
-Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. Não executa testes de produto. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual; ele não substitui a CI de API/worker/frontend prevista em PDV-008.
+Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual.
+
+O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/AMQP real com RabbitMQ temporário. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend e persistência ainda não têm código/gates.
 
 ## Ambiente local
 

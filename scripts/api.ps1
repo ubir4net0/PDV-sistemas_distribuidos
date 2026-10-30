@@ -9,10 +9,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $apiRoot = Join-Path $repoRoot 'backend/api'
+$qualityRoot = Join-Path $repoRoot 'config'
 $toolchain = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'infra/java-toolchain.json') | ConvertFrom-Json
 $image = $toolchain.image
 $dockerArgs = @('run', '--rm', '--init',
     '--mount', "type=bind,source=$apiRoot,target=/workspace",
+    '--mount', "type=bind,source=$qualityRoot,target=/config,readonly",
     '--mount', 'type=volume,source=pdv-api-maven-cache,target=/root/.m2',
     '--workdir', '/workspace', '--env', 'TZ=UTC')
 

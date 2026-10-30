@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## CI e qualidade na PDV-008
+
+Backend quality executa API e worker em Java 21 com Checkstyle compartilhado, compilação, Surefire para seis unitários do publisher, empacotamento e Failsafe para dez testes HTTP e onze AMQP reais. O job worker cria RabbitMQ temporário com senha aleatória e health obrigatório, removendo seu container ao final. Planning integrity continua separado. Comandos, limites e fontes estão em docs/workflows/ci.md; resultados desta sessão na spec sdd/features/PDV-008-ci-qualidade.md.
+
+Não há frontend nem integração de persistência nas aplicações; esses gates não estão implementados. CI dos scaffolds não comprova regras de negócio, disponibilidade RNF19, migrations ou aceite das tarefas anteriores.
+
 ## Scaffold do worker na PDV-006
 
 backend/worker fornece processo Java 21/Spring Boot 4.1.2 independente da API, sem HTTP. O diagnóstico técnico consome JSON tipado por AMQP, publica resposta com correlação, confirma publicação/roteamento e rejeita entradas inválidas para DLQ, sem logging do corpo. O namespace pdv.scaffold.probe não contém filas ou contratos de negócio. Scripts e instruções estão em backend/worker/README.md; testes usam RabbitMQ real e namespace próprio com limpeza restrita.

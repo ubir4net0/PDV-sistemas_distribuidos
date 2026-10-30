@@ -8,4 +8,6 @@ A PDV-005 fornece a API em Java 21/Spring Boot 4.1.2 com Maven Wrapper 3.3.4/Mav
 
 Persistência: após PDV-004, iniciar PostgreSQL/RabbitMQ conforme serviços reais do Compose e validar health. Flyway via comando Maven verificado. Aplicar migrations no banco local descartável, ensaiar restore/rebuild seguro e replay; registrar ambiente e resultados. Não há undo automático presumido. Concorrência, atomicidade, inbox/outbox e compensações exigem testes reais.
 
+A PDV-008 adiciona Checkstyle a fontes/testes e separa Surefire (unitários) de Failsafe (integração). Executar clean verify, pois test sozinho não cobre HTTP/AMQP. O workflow Backend quality executa ambos os módulos e inicia RabbitMQ próprio para o worker; falha de infraestrutura não ignora testes. Ver docs/workflows/ci.md para gates e limites. Adicionar integração PostgreSQL e frontend junto ao respectivo código.
+
 Faça autorevisão do diff, segredos, contratos e documentação. Use commits convencionais com ID diretamente em main. Push normal apenas para remoto configurado/autorizado quando incluído no escopo. Não criar PR nem exigir aprovação externa por padrão; registrar hash/link do commit, spec, testes, evidências e limitações na própria tarefa. Não fazer deploy nem apagar branches sem autorização específica. Commit/push não equivalem a tarefa concluída. Aplicar o workflow Notion após releitura.

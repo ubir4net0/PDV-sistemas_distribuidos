@@ -56,6 +56,6 @@ Não há API produtora integrada, pagamento, Saga, banco, migration, health HTTP
 
 ## Evidências e fontes
 
-Os testes reais cobrem contrato/correlação, headers externos, JSON/versionamento/UUID/limites/content-type inválidos, DLQ, sanitização de logs e resposta sem rota. A spec registra resultados executados e smoke do JAR. CI de produto será implementada na PDV-008; o workflow atual verifica planejamento.
+Os onze testes `WorkerAmqpIT` cobrem contrato/correlação, headers externos, JSON/versionamento/UUID/limites/content-type inválidos, DLQ, sanitização de logs e resposta sem rota contra broker real. Seis unitários `ProbePublisherTest` cobrem confirmação positiva/negativa, retorno, falha, timeout e interrupção; mocks nesses unitários não substituem integração. Checkstyle inclui fontes e testes. Surefire executa unitários em `test`; Failsafe executa integração em `verify`. A spec da PDV-006 preserva evidências daquele build e smoke do JAR. A [CI da PDV-008](../../docs/workflows/ci.md) executa o build completo com RabbitMQ temporário próprio.
 
 Referências: [Spring AMQP — confirms e returns](https://docs.spring.io/spring-amqp/reference/amqp/template.html), [exceções e rejeição](https://docs.spring.io/spring-amqp/reference/amqp/exception-handling.html) e [AMQP no Spring Boot](https://docs.spring.io/spring-boot/reference/messaging/amqp.html). A arquitetura e pendências de domínio continuam no [contexto](../../docs/context/architecture.md).

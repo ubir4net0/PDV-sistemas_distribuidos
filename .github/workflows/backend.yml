@@ -1,0 +1,65 @@
+name: Backend quality
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Java 21 / ${{ matrix.module }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [api, worker]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/${{ matrix.module }}/pom.xml
+      - name: Start isolated RabbitMQ
+        if: matrix.module == 'worker'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ci_rabbit_password="$(openssl rand -hex 32)"
+          echo "::add-mask::$ci_rabbit_password"
+          export RABBITMQ_DEFAULT_USER=pdv_ci
+          export RABBITMQ_DEFAULT_PASS="$ci_rabbit_password"
+          export RABBITMQ_DEFAULT_VHOST=pdv_ci
+          docker run --detach --name pdv-ci-rabbit \
+            --env RABBITMQ_DEFAULT_USER --env RABBITMQ_DEFAULT_PASS --env RABBITMQ_DEFAULT_VHOST \
+            --publish 127.0.0.1:5672:5672 \
+            --health-cmd 'rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms' \
+            --health-interval 5s --health-timeout 10s --health-retries 18 \
+            rabbitmq:4.3.7-management-alpine@sha256:1528a88eebf2bc4d0ab7e9d5d9bc542e9bdf5e1b105e65848fcf8de5c2186528
+          for attempt in {1..36}; do
+            health="$(docker inspect --format '{{.State.Health.Status}}' pdv-ci-rabbit)"
+            if [ "$health" = healthy ]; then break; fi
+            if [ "$health" = unhealthy ]; then exit 1; fi
+            sleep 5
+          done
+          test "$health" = healthy
+          {
+            echo "PDV_RABBITMQ_HOST=127.0.0.1"
+            echo "PDV_RABBITMQ_PORT=5672"
+            echo "PDV_RABBITMQ_USER=$RABBITMQ_DEFAULT_USER"
+            echo "PDV_RABBITMQ_PASSWORD=$ci_rabbit_password"
+            echo "PDV_RABBITMQ_VHOST=$RABBITMQ_DEFAULT_VHOST"
+          } >> "$GITHUB_ENV"
+      - name: Lint, compile, unit tests, package and integration tests
+        working-directory: backend/${{ matrix.module }}
+        run: ./mvnw -B -ntp clean verify
+      - name: Remove CI RabbitMQ
+        if: always() && matrix.module == 'worker'
+        run: docker rm --force pdv-ci-rabbit

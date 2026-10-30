@@ -56,6 +56,6 @@ Cada módulo reserva três camadas por `package-info.java`: `domain` para regras
 
 ## Verificações e fontes
 
-Os testes `ScaffoldHttpTests` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueio de caminhos/métodos e ausência de contas padrão. O smoke do JAR empacotado é registrado na spec. Não são testes de estoque, banco, filas ou Saga. CI de produto pertence à PDV-008; o workflow atual valida planejamento.
+Os dez testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueio de caminhos/métodos e ausência de contas padrão. Failsafe os executa em `verify`; Checkstyle valida fontes e testes antes da compilação. Não há unitários isolados nesta API ainda sem casos de uso. O smoke do JAR empacotado da PDV-005 é registrado naquela spec. Não são testes de estoque, banco, filas ou Saga. [CI e gates da PDV-008](../../docs/workflows/ci.md) executam o build completo no GitHub.
 
 Bootstrap obtido do [Spring Initializr](https://start.spring.io), compatibilidade conferida nos [requisitos Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html). Ver também [Maven Wrapper](https://maven.apache.org/tools/wrapper/), [Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) e [auto-configuração de contas em memória](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/security/autoconfigure/UserDetailsServiceAutoConfiguration.html). Versões selecionadas estão fixadas no POM/Wrapper/toolchain; não atualizar silenciosamente.

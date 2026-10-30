@@ -38,7 +38,7 @@ import static org.awaitility.Awaitility.await;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ExtendWith(OutputCaptureExtension.class)
-class WorkerAmqpTests {
+class WorkerAmqpIT {
     private static final String PREFIX = "pdv.test." + UUID.randomUUID();
 
     @DynamicPropertySource
@@ -106,8 +106,12 @@ class WorkerAmqpTests {
             default -> mapper.writeValueAsBytes(payload);
         };
         var message = request(body);
-        if (scenario.equals("wrongMime")) message.getMessageProperties().setContentType("text/plain");
-        if (scenario.equals("serializedMime")) message.getMessageProperties().setContentType("application/x-java-serialized-object");
+        if (scenario.equals("wrongMime")) {
+            message.getMessageProperties().setContentType("text/plain");
+        }
+        if (scenario.equals("serializedMime")) {
+            message.getMessageProperties().setContentType("application/x-java-serialized-object");
+        }
         template.send(names.exchange(), "request", message);
         var rejected = receive(names.dead());
         assertThat(rejected.getBody()).isEqualTo(body);
