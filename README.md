@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Planejamento, bootstrap e infraestrutura local PostgreSQL/RabbitMQ disponíveis. A aplicação ainda não foi implementada.
+Projeto acadêmico para portfólio. Infraestrutura local PostgreSQL/RabbitMQ e scaffold técnico da API Java 21 disponíveis. Funcionalidades de negócio, worker e frontend ainda não foram implementados.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -36,4 +36,15 @@ docker compose up -d --wait --wait-timeout 180
 
 PostgreSQL em `127.0.0.1:55432`; RabbitMQ AMQP em `127.0.0.1:5673` e management em `http://127.0.0.1:15673`. Credenciais são geradas no `.env` ignorado pelo Git. Consulte [infra/README.md](infra/README.md) para configuração, reinício e limites dos testes. Rede e volumes pertencem ao projeto `pdv-local`.
 
-Não existe comando para subir a aplicação nesta baseline; os comandos acima iniciam suas dependências. O Java padrão observado é 17; configurar Java 21 e os scaffolds nas tarefas elegíveis. Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
+## Scaffold da API
+
+Com Docker ativo, na raiz:
+
+```powershell
+./scripts/api.ps1 -Action Verify
+./scripts/api.ps1 -Action Run
+```
+
+API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health representa somente o processo; este scaffold ainda não conecta banco/filas e bloqueia os demais caminhos até a implementação dos contratos e autenticação.
+
+Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.

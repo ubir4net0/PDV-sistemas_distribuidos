@@ -1,10 +1,16 @@
 # Estado observado em 30 de outubro de 2026
 
+## Scaffold técnico da API na PDV-005
+
+backend/api contém aplicação Spring Boot 4.1.2/Java 21, Maven Wrapper oficial 3.3.4 (bin), Maven 3.10.0 com checksum e pacotes por domínio/camada. Web MVC, Validation, Security e Actuator compõem o bootstrap. Health e probes são públicos sem detalhes; outros caminhos permanecem bloqueados. Não existe conta padrão em memória.
+
+scripts/api.ps1 usa imagem oficial com JDK 21 fixada por digest; Java 17 global permanece intacto. Comandos e limites em backend/api/README.md. O scaffold não inclui datasource, migrations, JPA, AMQP, login/RBAC ou casos de uso. As decisões de domínio anteriores continuam abertas. Resultados dos testes desta entrega constam em sdd/features/PDV-005-api-scaffold.md.
+
 ## Infraestrutura local da PDV-004
 
 O Compose da raiz fornece PostgreSQL 16.15 e RabbitMQ 4.3.7-management, fixados por digest, com health checks, timezone UTC e volumes/rede do projeto pdv-local. Portas loopback 55432/5673/15673, sem colisão com Amor e Vida. Credenciais são geradas em .env ignorado pelo Git. O script scripts/verify-infra.ps1 valida autenticação, SQL e publish/consume por HTTP management; -Restart exercita persistência após reinício. Evidências e limitações desta entrega estão em sdd/features/PDV-004-infra-local.md.
 
-Apenas infraestrutura local foi adicionada; não há aplicação, schema de domínio ou migration. Aceites e decisões anteriores permanecem no Notion, sem aprovação implícita por iniciar serviços.
+Na PDV-004 somente infraestrutura local foi adicionada, sem aplicação, schema de domínio ou migration. Aceites e decisões anteriores permanecem no Notion, sem aprovação implícita por iniciar serviços.
 
 ## Arquitetura detalhada na PDV-003
 
@@ -38,6 +44,6 @@ Fontes acadêmicas/diagramas, conciliação de estados e cardinalidade, polític
 
 ## Implementação
 
-Há Compose funcional para as dependências locais PostgreSQL/RabbitMQ. Não há API, worker, frontend, migrations ou regras de domínio implementadas. Diretórios de aplicação reservados por README não são scaffolds funcionais. Os testes de infraestrutura não comprovam RF/RNF completos nem substituem uma suíte de produto. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
+Há Compose funcional para PostgreSQL/RabbitMQ e scaffold executável da API com health. Worker, frontend, migrations e regras de domínio não estão implementados. Testes do scaffold e infraestrutura não comprovam RF/RNF completos. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
 
 Consulte relatório de reconciliação e Notion para próximos gates. Histórico local e arquivos de planejamento não substituem status vivo.

@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. Infraestrutura local PostgreSQL/RabbitMQ disponível pela PDV-004; aplicação ainda não implementada.
+Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. Infraestrutura local disponível pela PDV-004 e scaffold técnico da API pela PDV-005. Domínio e integrações ainda não implementados.
 
 ## Registros de decisão
 
@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ, com credenciais locais, volumes próprios e health checks; consultar [operação local](../../infra/README.md). Versão estável compatível do Spring Boot deve ser pesquisada em fonte oficial na hora de PDV-005; nenhuma versão foi presumida neste ciclo.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). O scaffold da API usa Spring Boot 4.1.2 estável, confirmado no Initializr oficial, e Java 21 isolado. [API](../../backend/api/README.md) documenta módulos/camadas e limites: health mede o processo; datasource/JPA/Flyway/AMQP serão adicionados nas integrações correspondentes. Nenhum contrato ou schema foi aprovado pelo bootstrap.
 
 ## Fronteiras de consistência
 
