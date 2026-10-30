@@ -1,0 +1,23 @@
+{
+    "source":  "PDV_Codex.zip supplied by requester",
+    "reviewed":  "2026-10-30",
+    "classification":  "source evidence, not additional authority",
+    "files":  [
+                  {
+                      "file":  "PDV_Codex.zip",
+                      "sha256":  "7373a291bcb330baeeeee0cdf272ff7ba4f179ede2278dc84ec315dc18d7cafe"
+                  },
+                  {
+                      "file":  "PDV_ESPECIFICACAO_E_BACKLOG.md",
+                      "sha256":  "937b132e8b541aad07efb701bcf0537347312875919d0d4ddb310d0f4694c287"
+                  },
+                  {
+                      "file":  "PROMPT_CODEX_NOTION_PDV.md",
+                      "sha256":  "41e689c1001645ddf0149ee2a9c13fa9a0e5239c62519e13a98d2711118e39be"
+                  },
+                  {
+                      "file":  "PDV_Plano_Tecnico_e_Backlog.docx",
+                      "sha256":  "542891fe34e1967f9eea9b4e646d6578f728a0c6f43d95db5a495f36b2e4884f"
+                  }
+              ]
+}

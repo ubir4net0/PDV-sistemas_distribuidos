@@ -1,0 +1,331 @@
+{
+  "master": "https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2",
+  "database": "https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad",
+  "dataSource": "collection://ef83a20b-e088-459b-84b6-15c977828abc",
+  "purpose": "Identidade e links; consultar Notion para status, responsáveis e dependências vigentes.",
+  "pages": [
+    {
+      "id": "4092c9a9-9917-81dd-bb8e-c662094f8ff3",
+      "url": "https://app.notion.com/p/4092c9a9991781ddbb8ec662094f8ff3?pvs=204",
+      "properties": {
+        "title": "Decisões e inconsistências"
+      }
+    },
+    {
+      "id": "4092c9a9-9917-816c-afec-c6ab7f25df80",
+      "url": "https://app.notion.com/p/4092c9a99917816cafecc6ab7f25df80?pvs=204",
+      "properties": {
+        "title": "Plano de implementação e gates"
+      }
+    },
+    {
+      "id": "4092c9a9-9917-81dd-b8dd-fd6b2381d6fd",
+      "url": "https://app.notion.com/p/4092c9a9991781ddb8ddfd6b2381d6fd?pvs=204",
+      "properties": {
+        "title": "Baseline textual PDV v1.0"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "PDV-001",
+      "pageId": "4092c9a9-9917-81b8-9668-e2fb5d0da613",
+      "url": "https://app.notion.com/p/4092c9a9991781b89668e2fb5d0da613?pvs=204"
+    },
+    {
+      "id": "PDV-002",
+      "pageId": "4092c9a9-9917-8135-9c70-ed9efb999125",
+      "url": "https://app.notion.com/p/4092c9a9991781359c70ed9efb999125?pvs=204"
+    },
+    {
+      "id": "PDV-003",
+      "pageId": "4092c9a9-9917-814d-ac59-ea052c2c0706",
+      "url": "https://app.notion.com/p/4092c9a99917814dac59ea052c2c0706?pvs=204"
+    },
+    {
+      "id": "PDV-004",
+      "pageId": "4092c9a9-9917-81d9-a047-d00b35386b9e",
+      "url": "https://app.notion.com/p/4092c9a9991781d9a047d00b35386b9e?pvs=204"
+    },
+    {
+      "id": "PDV-005",
+      "pageId": "4092c9a9-9917-8178-8a8b-f31980f507db",
+      "url": "https://app.notion.com/p/4092c9a9991781788a8bf31980f507db?pvs=204"
+    },
+    {
+      "id": "PDV-006",
+      "pageId": "4092c9a9-9917-8140-8cc3-ca25408403fb",
+      "url": "https://app.notion.com/p/4092c9a9991781408cc3ca25408403fb?pvs=204"
+    },
+    {
+      "id": "PDV-007",
+      "pageId": "4092c9a9-9917-8159-9d94-cbac5955bf23",
+      "url": "https://app.notion.com/p/4092c9a9991781599d94cbac5955bf23?pvs=204"
+    },
+    {
+      "id": "PDV-008",
+      "pageId": "4092c9a9-9917-81bb-9249-d14f71a1c1b5",
+      "url": "https://app.notion.com/p/4092c9a9991781bb9249d14f71a1c1b5?pvs=204"
+    },
+    {
+      "id": "PDV-009",
+      "pageId": "4092c9a9-9917-81c2-b27d-f2e15e66b32e",
+      "url": "https://app.notion.com/p/4092c9a9991781c2b27df2e15e66b32e?pvs=204"
+    },
+    {
+      "id": "PDV-010",
+      "pageId": "4092c9a9-9917-8148-a078-eb7d549cecce",
+      "url": "https://app.notion.com/p/4092c9a999178148a078eb7d549cecce?pvs=204"
+    },
+    {
+      "id": "PDV-011",
+      "pageId": "4092c9a9-9917-8171-a60a-ed6ac3aa33d1",
+      "url": "https://app.notion.com/p/4092c9a999178171a60aed6ac3aa33d1?pvs=204"
+    },
+    {
+      "id": "PDV-012",
+      "pageId": "4092c9a9-9917-818f-b1dc-fc6022726204",
+      "url": "https://app.notion.com/p/4092c9a99917818fb1dcfc6022726204?pvs=204"
+    },
+    {
+      "id": "PDV-013",
+      "pageId": "4092c9a9-9917-8116-8ae2-c1400b42c527",
+      "url": "https://app.notion.com/p/4092c9a9991781168ae2c1400b42c527?pvs=204"
+    },
+    {
+      "id": "PDV-014",
+      "pageId": "4092c9a9-9917-811a-b16d-db80b5b9981b",
+      "url": "https://app.notion.com/p/4092c9a99917811ab16ddb80b5b9981b?pvs=204"
+    },
+    {
+      "id": "PDV-015",
+      "pageId": "4092c9a9-9917-81ff-8086-c77426c81816",
+      "url": "https://app.notion.com/p/4092c9a9991781ff8086c77426c81816?pvs=204"
+    },
+    {
+      "id": "PDV-016",
+      "pageId": "4092c9a9-9917-8163-b2f4-fab53e8aed3d",
+      "url": "https://app.notion.com/p/4092c9a999178163b2f4fab53e8aed3d?pvs=204"
+    },
+    {
+      "id": "PDV-017",
+      "pageId": "4092c9a9-9917-81e6-9f46-c7ff442b3319",
+      "url": "https://app.notion.com/p/4092c9a9991781e69f46c7ff442b3319?pvs=204"
+    },
+    {
+      "id": "PDV-018",
+      "pageId": "4092c9a9-9917-819f-9ca8-ca19a9d3c6fd",
+      "url": "https://app.notion.com/p/4092c9a99917819f9ca8ca19a9d3c6fd?pvs=204"
+    },
+    {
+      "id": "PDV-019",
+      "pageId": "4092c9a9-9917-81be-9841-f5804c942398",
+      "url": "https://app.notion.com/p/4092c9a9991781be9841f5804c942398?pvs=204"
+    },
+    {
+      "id": "PDV-020",
+      "pageId": "4092c9a9-9917-815c-8a84-c7a337aff5c0",
+      "url": "https://app.notion.com/p/4092c9a99917815c8a84c7a337aff5c0?pvs=204"
+    },
+    {
+      "id": "PDV-021",
+      "pageId": "4092c9a9-9917-81c4-a796-e2fbe8e288cb",
+      "url": "https://app.notion.com/p/4092c9a9991781c4a796e2fbe8e288cb?pvs=204"
+    },
+    {
+      "id": "PDV-022",
+      "pageId": "4092c9a9-9917-81cf-a8e2-d1d1c9f61895",
+      "url": "https://app.notion.com/p/4092c9a9991781cfa8e2d1d1c9f61895?pvs=204"
+    },
+    {
+      "id": "PDV-023",
+      "pageId": "4092c9a9-9917-8153-96d3-e55c85cd1cc8",
+      "url": "https://app.notion.com/p/4092c9a99917815396d3e55c85cd1cc8?pvs=204"
+    },
+    {
+      "id": "PDV-024",
+      "pageId": "4092c9a9-9917-8137-8553-dd3eadd161f3",
+      "url": "https://app.notion.com/p/4092c9a9991781378553dd3eadd161f3?pvs=204"
+    },
+    {
+      "id": "PDV-025",
+      "pageId": "4092c9a9-9917-8158-8bd4-ed1844f3e750",
+      "url": "https://app.notion.com/p/4092c9a9991781588bd4ed1844f3e750?pvs=204"
+    },
+    {
+      "id": "PDV-026",
+      "pageId": "4092c9a9-9917-81c2-938a-da931c5332db",
+      "url": "https://app.notion.com/p/4092c9a9991781c2938ada931c5332db?pvs=204"
+    },
+    {
+      "id": "PDV-027",
+      "pageId": "4092c9a9-9917-814f-aa7b-d4b02551120e",
+      "url": "https://app.notion.com/p/4092c9a99917814faa7bd4b02551120e?pvs=204"
+    },
+    {
+      "id": "PDV-028",
+      "pageId": "4092c9a9-9917-81c3-9371-e151bd0ba8af",
+      "url": "https://app.notion.com/p/4092c9a9991781c39371e151bd0ba8af?pvs=204"
+    },
+    {
+      "id": "PDV-029",
+      "pageId": "4092c9a9-9917-816d-a01f-c0dd3c880051",
+      "url": "https://app.notion.com/p/4092c9a99917816da01fc0dd3c880051?pvs=204"
+    },
+    {
+      "id": "PDV-030",
+      "pageId": "4092c9a9-9917-816b-9e42-e02e93001099",
+      "url": "https://app.notion.com/p/4092c9a99917816b9e42e02e93001099?pvs=204"
+    },
+    {
+      "id": "PDV-031",
+      "pageId": "4092c9a9-9917-81e4-bf03-d78dcddfecb6",
+      "url": "https://app.notion.com/p/4092c9a9991781e4bf03d78dcddfecb6?pvs=204"
+    },
+    {
+      "id": "PDV-032",
+      "pageId": "4092c9a9-9917-8123-88e3-ebbdc3388ab6",
+      "url": "https://app.notion.com/p/4092c9a99917812388e3ebbdc3388ab6?pvs=204"
+    },
+    {
+      "id": "PDV-033",
+      "pageId": "4092c9a9-9917-816b-8cac-d076aa2dfc17",
+      "url": "https://app.notion.com/p/4092c9a99917816b8cacd076aa2dfc17?pvs=204"
+    },
+    {
+      "id": "PDV-034",
+      "pageId": "4092c9a9-9917-8116-b1b0-f11f0151607e",
+      "url": "https://app.notion.com/p/4092c9a999178116b1b0f11f0151607e?pvs=204"
+    },
+    {
+      "id": "PDV-035",
+      "pageId": "4092c9a9-9917-81ee-8018-f30608375839",
+      "url": "https://app.notion.com/p/4092c9a9991781ee8018f30608375839?pvs=204"
+    },
+    {
+      "id": "PDV-036",
+      "pageId": "4092c9a9-9917-815a-a26f-fe26ced87409",
+      "url": "https://app.notion.com/p/4092c9a99917815aa26ffe26ced87409?pvs=204"
+    },
+    {
+      "id": "PDV-037",
+      "pageId": "4092c9a9-9917-817f-9f8f-deff82b5dad9",
+      "url": "https://app.notion.com/p/4092c9a99917817f9f8fdeff82b5dad9?pvs=204"
+    },
+    {
+      "id": "PDV-038",
+      "pageId": "4092c9a9-9917-81cb-af48-deecaaacbd81",
+      "url": "https://app.notion.com/p/4092c9a9991781cbaf48deecaaacbd81?pvs=204"
+    },
+    {
+      "id": "PDV-039",
+      "pageId": "4092c9a9-9917-81f0-84d4-e86acf07e56b",
+      "url": "https://app.notion.com/p/4092c9a9991781f084d4e86acf07e56b?pvs=204"
+    },
+    {
+      "id": "PDV-040",
+      "pageId": "4092c9a9-9917-8129-8a2a-ec4b5d402663",
+      "url": "https://app.notion.com/p/4092c9a9991781298a2aec4b5d402663?pvs=204"
+    },
+    {
+      "id": "PDV-041",
+      "pageId": "4092c9a9-9917-81e4-873a-d912541554df",
+      "url": "https://app.notion.com/p/4092c9a9991781e4873ad912541554df?pvs=204"
+    },
+    {
+      "id": "PDV-042",
+      "pageId": "4092c9a9-9917-8148-8499-c8f19d384b36",
+      "url": "https://app.notion.com/p/4092c9a9991781488499c8f19d384b36?pvs=204"
+    },
+    {
+      "id": "PDV-043",
+      "pageId": "4092c9a9-9917-817f-9b8a-ea419dd8b3c8",
+      "url": "https://app.notion.com/p/4092c9a99917817f9b8aea419dd8b3c8?pvs=204"
+    },
+    {
+      "id": "PDV-044",
+      "pageId": "4092c9a9-9917-81c3-b0ac-fcbe84904876",
+      "url": "https://app.notion.com/p/4092c9a9991781c3b0acfcbe84904876?pvs=204"
+    },
+    {
+      "id": "PDV-045",
+      "pageId": "4092c9a9-9917-81e0-a5b1-c606d381a133",
+      "url": "https://app.notion.com/p/4092c9a9991781e0a5b1c606d381a133?pvs=204"
+    },
+    {
+      "id": "PDV-046",
+      "pageId": "4092c9a9-9917-8122-acf1-f3d5ad4db10c",
+      "url": "https://app.notion.com/p/4092c9a999178122acf1f3d5ad4db10c?pvs=204"
+    },
+    {
+      "id": "PDV-047",
+      "pageId": "4092c9a9-9917-81b0-aaa4-e743b28fdd4f",
+      "url": "https://app.notion.com/p/4092c9a9991781b0aaa4e743b28fdd4f?pvs=204"
+    },
+    {
+      "id": "PDV-048",
+      "pageId": "4092c9a9-9917-81f4-9d39-f441ed0df59c",
+      "url": "https://app.notion.com/p/4092c9a9991781f49d39f441ed0df59c?pvs=204"
+    },
+    {
+      "id": "PDV-049",
+      "pageId": "4092c9a9-9917-8134-a75e-edd3c5807cb8",
+      "url": "https://app.notion.com/p/4092c9a999178134a75eedd3c5807cb8?pvs=204"
+    },
+    {
+      "id": "PDV-050",
+      "pageId": "4092c9a9-9917-8138-b32b-e01d2f8de9c5",
+      "url": "https://app.notion.com/p/4092c9a999178138b32be01d2f8de9c5?pvs=204"
+    },
+    {
+      "id": "PDV-051",
+      "pageId": "4092c9a9-9917-81c6-bb0b-ea1ca1217853",
+      "url": "https://app.notion.com/p/4092c9a9991781c6bb0bea1ca1217853?pvs=204"
+    },
+    {
+      "id": "PDV-052",
+      "pageId": "4092c9a9-9917-815c-9a48-e3cabc260768",
+      "url": "https://app.notion.com/p/4092c9a99917815c9a48e3cabc260768?pvs=204"
+    },
+    {
+      "id": "PDV-053",
+      "pageId": "4092c9a9-9917-8167-905e-cd1d2b0ea1d6",
+      "url": "https://app.notion.com/p/4092c9a999178167905ecd1d2b0ea1d6?pvs=204"
+    },
+    {
+      "id": "PDV-054",
+      "pageId": "4092c9a9-9917-81ae-a73c-d607f3f01087",
+      "url": "https://app.notion.com/p/4092c9a9991781aea73cd607f3f01087?pvs=204"
+    },
+    {
+      "id": "PDV-055",
+      "pageId": "4092c9a9-9917-81ea-bdf3-f150ce713e6e",
+      "url": "https://app.notion.com/p/4092c9a9991781eabdf3f150ce713e6e?pvs=204"
+    },
+    {
+      "id": "PDV-056",
+      "pageId": "4092c9a9-9917-8195-b3a0-d4219833ff80",
+      "url": "https://app.notion.com/p/4092c9a999178195b3a0d4219833ff80?pvs=204"
+    },
+    {
+      "id": "PDV-057",
+      "pageId": "4092c9a9-9917-8193-9e50-e45077bb3f45",
+      "url": "https://app.notion.com/p/4092c9a9991781939e50e45077bb3f45?pvs=204"
+    },
+    {
+      "id": "PDV-058",
+      "pageId": "4092c9a9-9917-815e-a8c4-f410fefcf544",
+      "url": "https://app.notion.com/p/4092c9a99917815ea8c4f410fefcf544?pvs=204"
+    },
+    {
+      "id": "PDV-059",
+      "pageId": "4092c9a9-9917-81c8-8a98-ec68ded4200d",
+      "url": "https://app.notion.com/p/4092c9a9991781c88a98ec68ded4200d?pvs=204"
+    },
+    {
+      "id": "PDV-060",
+      "pageId": "4092c9a9-9917-8186-bebb-cf191a13a4d5",
+      "url": "https://app.notion.com/p/4092c9a999178186bebbcf191a13a4d5?pvs=204"
+    }
+  ]
+}

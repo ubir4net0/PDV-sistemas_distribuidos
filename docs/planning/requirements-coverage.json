@@ -1,0 +1,265 @@
+{
+  "classification": "planned-traceability-not-implementation",
+  "coverage": [
+    {
+      "requirement": "RF-V01",
+      "tasks": [
+        "PDV-034"
+      ]
+    },
+    {
+      "requirement": "RF-V02",
+      "tasks": [
+        "PDV-029",
+        "PDV-030",
+        "PDV-040"
+      ]
+    },
+    {
+      "requirement": "RF-V03",
+      "tasks": [
+        "PDV-036",
+        "PDV-037",
+        "PDV-039",
+        "PDV-040"
+      ]
+    },
+    {
+      "requirement": "RF-V04",
+      "tasks": [
+        "PDV-041"
+      ]
+    },
+    {
+      "requirement": "RF-V05",
+      "tasks": [
+        "PDV-042"
+      ]
+    },
+    {
+      "requirement": "RF-V06",
+      "tasks": [
+        "PDV-039",
+        "PDV-042"
+      ]
+    },
+    {
+      "requirement": "RF-E01",
+      "tasks": [
+        "PDV-020"
+      ]
+    },
+    {
+      "requirement": "RF-E02",
+      "tasks": [
+        "PDV-027"
+      ]
+    },
+    {
+      "requirement": "RF-E03",
+      "tasks": [
+        "PDV-031"
+      ]
+    },
+    {
+      "requirement": "RF-E04",
+      "tasks": [
+        "PDV-026",
+        "PDV-032"
+      ]
+    },
+    {
+      "requirement": "RF-C01",
+      "tasks": [
+        "PDV-016"
+      ]
+    },
+    {
+      "requirement": "RF-C02",
+      "tasks": [
+        "PDV-017"
+      ]
+    },
+    {
+      "requirement": "RF-C03",
+      "tasks": [
+        "PDV-022"
+      ]
+    },
+    {
+      "requirement": "RF-C04",
+      "tasks": [
+        "PDV-023",
+        "PDV-024"
+      ]
+    },
+    {
+      "requirement": "RF-R01",
+      "tasks": [
+        "PDV-047"
+      ]
+    },
+    {
+      "requirement": "RF-R02",
+      "tasks": [
+        "PDV-046"
+      ]
+    },
+    {
+      "requirement": "RF-R03",
+      "tasks": [
+        "PDV-048"
+      ]
+    },
+    {
+      "requirement": "RF-A01",
+      "tasks": [
+        "PDV-011",
+        "PDV-013"
+      ]
+    },
+    {
+      "requirement": "RF-A02",
+      "tasks": [
+        "PDV-050"
+      ]
+    },
+    {
+      "requirement": "RNF01",
+      "tasks": [
+        "PDV-021",
+        "PDV-053"
+      ]
+    },
+    {
+      "requirement": "RNF02",
+      "tasks": [
+        "PDV-052"
+      ]
+    },
+    {
+      "requirement": "RNF03",
+      "tasks": [
+        "PDV-028"
+      ]
+    },
+    {
+      "requirement": "RNF04",
+      "tasks": [
+        "PDV-003",
+        "PDV-048",
+        "PDV-057"
+      ]
+    },
+    {
+      "requirement": "RNF05",
+      "tasks": [
+        "PDV-003",
+        "PDV-004",
+        "PDV-059"
+      ]
+    },
+    {
+      "requirement": "RNF06",
+      "tasks": [
+        "PDV-003",
+        "PDV-006",
+        "PDV-038"
+      ]
+    },
+    {
+      "requirement": "RNF07",
+      "tasks": [
+        "PDV-004",
+        "PDV-059"
+      ]
+    },
+    {
+      "requirement": "RNF08",
+      "tasks": [
+        "PDV-003",
+        "PDV-035",
+        "PDV-038"
+      ]
+    },
+    {
+      "requirement": "RNF09",
+      "tasks": [
+        "PDV-032",
+        "PDV-057"
+      ]
+    },
+    {
+      "requirement": "RNF10",
+      "tasks": [
+        "PDV-003",
+        "PDV-026"
+      ]
+    },
+    {
+      "requirement": "RNF11",
+      "tasks": [
+        "PDV-054"
+      ]
+    },
+    {
+      "requirement": "RNF12",
+      "tasks": [
+        "PDV-058"
+      ]
+    },
+    {
+      "requirement": "RNF13",
+      "tasks": [
+        "PDV-058"
+      ]
+    },
+    {
+      "requirement": "RNF14",
+      "tasks": [
+        "PDV-012",
+        "PDV-055"
+      ]
+    },
+    {
+      "requirement": "RNF15",
+      "tasks": [
+        "PDV-055"
+      ]
+    },
+    {
+      "requirement": "RNF16",
+      "tasks": [
+        "PDV-012",
+        "PDV-055"
+      ]
+    },
+    {
+      "requirement": "RNF17",
+      "tasks": [
+        "PDV-049"
+      ]
+    },
+    {
+      "requirement": "RNF18",
+      "tasks": [
+        "PDV-049"
+      ]
+    },
+    {
+      "requirement": "RNF19",
+      "tasks": [
+        "PDV-008",
+        "PDV-056",
+        "PDV-059"
+      ]
+    },
+    {
+      "requirement": "RNF20",
+      "tasks": [
+        "PDV-056",
+        "PDV-059"
+      ]
+    }
+  ]
+}

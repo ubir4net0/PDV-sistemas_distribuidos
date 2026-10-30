@@ -1,0 +1,807 @@
+{
+  "classification": "proposed-package-baseline-not-live-status",
+  "source": "docs/sources/PDV_ESPECIFICACAO_E_BACKLOG.md",
+  "tasks": [
+    {
+      "id": "PDV-001",
+      "title": "Auditar Notion e definir baseline de escopo",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [],
+      "sources": "Requisitos e diagramas",
+      "acceptance": "Ler página e anexos vivos, inventariar lacunas, registrar decisões e evitar duplicação de cards."
+    },
+    {
+      "id": "PDV-002",
+      "title": "Inicializar repositório, Gitflow e proteções",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-001"
+      ],
+      "sources": "Gitflow",
+      "acceptance": "Bootstrap documentado do repositório vazio; main/develop e convenções; sem segredos; proteção após setup."
+    },
+    {
+      "id": "PDV-003",
+      "title": "Documentar arquitetura e ADRs",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-001"
+      ],
+      "sources": "RNF04,05,06,08,10",
+      "acceptance": "ADRs explicam API+worker, PostgreSQL, RabbitMQ, Saga, consistência e limites acadêmicos."
+    },
+    {
+      "id": "PDV-004",
+      "title": "Criar Docker Compose e health checks",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-002",
+        "PDV-003"
+      ],
+      "sources": "RNF05,07",
+      "acceptance": "PostgreSQL e RabbitMQ sobem com health checks; ambiente reproduzível e sem senhas versionadas."
+    },
+    {
+      "id": "PDV-005",
+      "title": "Criar scaffold da API Spring Boot",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-002",
+        "PDV-003"
+      ],
+      "sources": "Backend",
+      "acceptance": "Java 21, Maven Wrapper, endpoints /actuator/health, camadas por domínio e build limpo."
+    },
+    {
+      "id": "PDV-006",
+      "title": "Criar scaffold do worker Java",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-004",
+        "PDV-005"
+      ],
+      "sources": "RNF06",
+      "acceptance": "Processo independente consome/publica mensagens com contrato tipado e tratamento de erros."
+    },
+    {
+      "id": "PDV-007",
+      "title": "Definir OpenAPI e contratos de evento",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-003",
+        "PDV-005"
+      ],
+      "sources": "API e eventos",
+      "acceptance": "DTOs, erros padronizados, versionamento de eventos e exemplos acessíveis à equipe."
+    },
+    {
+      "id": "PDV-008",
+      "title": "Implementar CI e qualidade",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-005",
+        "PDV-006"
+      ],
+      "sources": "RNF19",
+      "acceptance": "Pipeline com build, unitários, lint/typecheck e teste de integração quando infraestrutura disponível."
+    },
+    {
+      "id": "PDV-009",
+      "title": "Configurar Flyway e migrações iniciais",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-004",
+        "PDV-005"
+      ],
+      "sources": "Persistência",
+      "acceptance": "Migrations ordenadas, reversão testável por restauração/rebuild e testes contra PostgreSQL real."
+    },
+    {
+      "id": "PDV-010",
+      "title": "Criar AGENTS.md e workflow Notion da equipe",
+      "phase": "00",
+      "module": "Governança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-001",
+        "PDV-002"
+      ],
+      "sources": "Processo",
+      "acceptance": "Instruções de leitura viva, DoR/DoD, Gitflow, evidências e limites de escrita versionadas."
+    },
+    {
+      "id": "PDV-011",
+      "title": "Modelar usuários, papéis e permissões",
+      "phase": "01",
+      "module": "Segurança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-009"
+      ],
+      "sources": "RF-A01",
+      "acceptance": "Tabelas users/roles/permissions com FKs, unicidade, seed apenas de desenvolvimento."
+    },
+    {
+      "id": "PDV-012",
+      "title": "Implementar login, tokens e hash de senhas",
+      "phase": "01",
+      "module": "Segurança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-011"
+      ],
+      "sources": "RNF14,16",
+      "acceptance": "Autenticação Spring Security, Argon2id/BCrypt, expiração, erros seguros e testes negativos."
+    },
+    {
+      "id": "PDV-013",
+      "title": "Aplicar RBAC a todos os endpoints",
+      "phase": "01",
+      "module": "Segurança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-011",
+        "PDV-012"
+      ],
+      "sources": "RF-A01",
+      "acceptance": "Matriz de permissões testada para operador e administrador; 401/403 corretos."
+    },
+    {
+      "id": "PDV-014",
+      "title": "Gerenciar usuários e perfis no admin",
+      "phase": "01",
+      "module": "Segurança",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-011",
+        "PDV-013"
+      ],
+      "sources": "Casos de uso admin",
+      "acceptance": "Admin ativa/inativa usuário e define papéis; auditoria e validação de acesso."
+    },
+    {
+      "id": "PDV-015",
+      "title": "Construir login e sessão no frontend",
+      "phase": "01",
+      "module": "Segurança",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-007",
+        "PDV-012"
+      ],
+      "sources": "Tela 01,09",
+      "acceptance": "Tela responsiva, estados de erro/loading, rota protegida e logout funcional."
+    },
+    {
+      "id": "PDV-016",
+      "title": "Criar clientes com CPF/CNPJ único",
+      "phase": "02",
+      "module": "Cadastro",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-009",
+        "PDV-013"
+      ],
+      "sources": "RF-C01",
+      "acceptance": "Validação de documento e unicidade no banco; testes para duplicados e concorrência."
+    },
+    {
+      "id": "PDV-017",
+      "title": "Editar, consultar e inativar clientes",
+      "phase": "02",
+      "module": "Cadastro",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-016"
+      ],
+      "sources": "RF-C02",
+      "acceptance": "CRUD com filtros/paginação, histórico preservado, API testada e autorização."
+    },
+    {
+      "id": "PDV-018",
+      "title": "Modelar endereços e consulta regional",
+      "phase": "02",
+      "module": "Cadastro",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-016"
+      ],
+      "sources": "DER: enderecos_cliente",
+      "acceptance": "Cliente 1:N endereços, principal único por cliente e cidade/UF em relatórios."
+    },
+    {
+      "id": "PDV-019",
+      "title": "Criar telas de clientes",
+      "phase": "02",
+      "module": "Cadastro",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-015",
+        "PDV-016",
+        "PDV-017"
+      ],
+      "sources": "Tela 04",
+      "acceptance": "Lista, busca, formulário e validações acessíveis com feedback claro e estados vazios."
+    },
+    {
+      "id": "PDV-020",
+      "title": "Criar categorias e produtos",
+      "phase": "02",
+      "module": "Catálogo",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-009",
+        "PDV-013"
+      ],
+      "sources": "RF-E01",
+      "acceptance": "SKU único, preço Decimal, categoria, cadastro/edição/inativação e testes de integridade."
+    },
+    {
+      "id": "PDV-021",
+      "title": "Consultar catálogo com filtros/paginação",
+      "phase": "02",
+      "module": "Catálogo",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-020"
+      ],
+      "sources": "RNF01",
+      "acceptance": "Busca e filtros indexados; medição p95 sob carga média documentada."
+    },
+    {
+      "id": "PDV-022",
+      "title": "Cadastrar fornecedores e seus vínculos",
+      "phase": "02",
+      "module": "Compras",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-009",
+        "PDV-013",
+        "PDV-020"
+      ],
+      "sources": "RF-C03",
+      "acceptance": "CNPJ único, CRUD e associação produto/fornecedor; definir cardinalidade antes da migração."
+    },
+    {
+      "id": "PDV-023",
+      "title": "Implementar ordens e itens de compra",
+      "phase": "02",
+      "module": "Compras",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-022"
+      ],
+      "sources": "RF-C04",
+      "acceptance": "Criar/enviar/cancelar OCs, valor calculado, estados persistidos e testes de autorização."
+    },
+    {
+      "id": "PDV-024",
+      "title": "Receber compras e dar entrada em estoque",
+      "phase": "02",
+      "module": "Compras",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-023",
+        "PDV-027"
+      ],
+      "sources": "RF-C04",
+      "acceptance": "Recebimento idempotente gera movimentações; sem duplicar entrada; parcial se aprovado no refinamento."
+    },
+    {
+      "id": "PDV-025",
+      "title": "Criar telas produtos, fornecedores e OCs",
+      "phase": "02",
+      "module": "Cadastros",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-015",
+        "PDV-020",
+        "PDV-022",
+        "PDV-023"
+      ],
+      "sources": "Telas 03,05",
+      "acceptance": "CRUDs com formulários, filtros, alertas, tabelas responsivas e permissões."
+    },
+    {
+      "id": "PDV-026",
+      "title": "Definir saldo físico/reservado/disponível",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-009",
+        "PDV-020"
+      ],
+      "sources": "RF-E04,RNF10",
+      "acceptance": "Invariante disponível=físico-reservado; saldos nunca negativos; trilha auditável."
+    },
+    {
+      "id": "PDV-027",
+      "title": "Implementar entradas, saídas e ajustes atômicos",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-026"
+      ],
+      "sources": "RF-E02",
+      "acceptance": "Transações com movimentos imutáveis, motivo e usuário; lote tudo-ou-nada ou erro por item definido."
+    },
+    {
+      "id": "PDV-028",
+      "title": "Implementar concorrência otimista e ETags",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-026",
+        "PDV-027"
+      ],
+      "sources": "RNF03",
+      "acceptance": "Campo version/If-Match; conflito 409/412; dois escritores concorrentes não perdem atualização."
+    },
+    {
+      "id": "PDV-029",
+      "title": "Criar reserva com prazo de expiração",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-026",
+        "PDV-028"
+      ],
+      "sources": "RF-V02",
+      "acceptance": "Reserva atômica e TTL; consulta evita overselling; renovação e expiração com testes."
+    },
+    {
+      "id": "PDV-030",
+      "title": "Liberar reservas expiradas com job idempotente",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-029",
+        "PDV-006"
+      ],
+      "sources": "RF-V02",
+      "acceptance": "Worker libera no máximo uma vez, evita corrida com pagamento aprovado e gera status."
+    },
+    {
+      "id": "PDV-031",
+      "title": "Configurar alertas de estoque crítico",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-026",
+        "PDV-027"
+      ],
+      "sources": "RF-E03",
+      "acceptance": "Limite por produto, evento/alerta sem duplicação e visualização no painel."
+    },
+    {
+      "id": "PDV-032",
+      "title": "Sincronizar disponibilidade via eventos",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-006",
+        "PDV-026",
+        "PDV-038"
+      ],
+      "sources": "RF-E04,RNF09",
+      "acceptance": "Consumidores idempotentes, eventual consistency documentada e reconstrução de projeção."
+    },
+    {
+      "id": "PDV-033",
+      "title": "Criar telas de estoque e movimentações",
+      "phase": "03",
+      "module": "Estoque",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-025",
+        "PDV-027",
+        "PDV-029",
+        "PDV-031"
+      ],
+      "sources": "Tela 05",
+      "acceptance": "Saldo discriminado, ajustes autorizados, histórico, reservas e alertas em UI responsiva."
+    },
+    {
+      "id": "PDV-034",
+      "title": "Implementar carrinho e itens de venda",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-016",
+        "PDV-020",
+        "PDV-026"
+      ],
+      "sources": "RF-V01",
+      "acceptance": "Adicionar/alterar/remover itens; cálculo monetário correto; rejeitar inativo e quantidades inválidas."
+    },
+    {
+      "id": "PDV-035",
+      "title": "Criar checkout idempotente",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-029",
+        "PDV-034"
+      ],
+      "sources": "RNF08",
+      "acceptance": "Idempotency-Key persistida com fingerprint e resposta; retry não gera segunda venda/reserva."
+    },
+    {
+      "id": "PDV-036",
+      "title": "Modelar Saga e máquina de estados de venda",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-003",
+        "PDV-035"
+      ],
+      "sources": "RF-V03",
+      "acceptance": "Transições válidas/ilegais testadas; pagamento, reserva e confirmação reentrantes."
+    },
+    {
+      "id": "PDV-037",
+      "title": "Criar processador de pagamento simulado",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-006",
+        "PDV-036"
+      ],
+      "sources": "RF-V03, Tela 07",
+      "acceptance": "Worker com cenários determinísticos APROVADO/RECUSADO/TIMEOUT; nenhuma API financeira externa."
+    },
+    {
+      "id": "PDV-038",
+      "title": "Implementar Outbox/Inbox e consumo confiável",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-006",
+        "PDV-009",
+        "PDV-036"
+      ],
+      "sources": "RNF06,08",
+      "acceptance": "Publicação transacional via outbox, deduplicação inbox, retry e DLQ documentados/testados."
+    },
+    {
+      "id": "PDV-039",
+      "title": "Concluir venda, baixar estoque e emitir comprovante",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-029",
+        "PDV-036",
+        "PDV-037",
+        "PDV-038"
+      ],
+      "sources": "RF-V03,V06",
+      "acceptance": "Após aprovação confirmada, baixa única e comprovante global; nunca concluir com reserva inválida."
+    },
+    {
+      "id": "PDV-040",
+      "title": "Tratar recusa, timeout e reconciliação",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-030",
+        "PDV-036",
+        "PDV-037",
+        "PDV-038"
+      ],
+      "sources": "RF-V02,V03",
+      "acceptance": "Recusa libera reserva; timeout deixa estado inconclusivo até reconciliação, sem devolução prematura."
+    },
+    {
+      "id": "PDV-041",
+      "title": "Cancelar venda com compensação e estorno fictício",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-039",
+        "PDV-040"
+      ],
+      "sources": "RF-V04",
+      "acceptance": "Estorno simulado e reposição idempotentes; falhas rastreáveis e reprocessáveis."
+    },
+    {
+      "id": "PDV-042",
+      "title": "Consultar histórico e comprovantes paginados",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-039",
+        "PDV-041"
+      ],
+      "sources": "RF-V05,V06",
+      "acceptance": "Paginação keyset ou indexada, filtros cliente/período e download de comprovante seguro."
+    },
+    {
+      "id": "PDV-043",
+      "title": "Construir PDV e checkout no frontend",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-015",
+        "PDV-019",
+        "PDV-021",
+        "PDV-034",
+        "PDV-035"
+      ],
+      "sources": "Tela 02",
+      "acceptance": "Busca ágil, carrinho, total em destaque, seleção cliente, teclado e responsividade."
+    },
+    {
+      "id": "PDV-044",
+      "title": "Construir tela de pagamento simulado",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-037",
+        "PDV-040",
+        "PDV-043"
+      ],
+      "sources": "Tela 07",
+      "acceptance": "Operador escolhe cenário em demo; loading, pendência, recusa, aprovação e reconsulta."
+    },
+    {
+      "id": "PDV-045",
+      "title": "Exibir rastreamento do status da venda",
+      "phase": "04",
+      "module": "Vendas",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-036",
+        "PDV-039",
+        "PDV-040",
+        "PDV-044"
+      ],
+      "sources": "Tela 10",
+      "acceptance": "Timeline exibe estados, hora/trace e falhas, sem expor segredos."
+    },
+    {
+      "id": "PDV-046",
+      "title": "Gerar métricas por período/produto/região",
+      "phase": "05",
+      "module": "Relatórios",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-039",
+        "PDV-018"
+      ],
+      "sources": "RF-R02",
+      "acceptance": "Agregações validadas contra vendas reais e exclusão/tratamento de canceladas."
+    },
+    {
+      "id": "PDV-047",
+      "title": "Exportar relatórios CSV e PDF",
+      "phase": "05",
+      "module": "Relatórios",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-046"
+      ],
+      "sources": "RF-R01",
+      "acceptance": "Arquivos corretos, timezone BR, filtros preservados, encoding seguro e autorização."
+    },
+    {
+      "id": "PDV-048",
+      "title": "Criar snapshots e atualização programada",
+      "phase": "05",
+      "module": "Relatórios",
+      "priority": "P2",
+      "dependencies": [
+        "PDV-046",
+        "PDV-009"
+      ],
+      "sources": "RF-R03,RNF04",
+      "acceptance": "View materializada atualizada sem travar escrita; documentar plano real de réplica em etapa avançada."
+    },
+    {
+      "id": "PDV-049",
+      "title": "Criar métricas, tracing e logs JSON centralizados",
+      "phase": "05",
+      "module": "Operações",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-005",
+        "PDV-006",
+        "PDV-038"
+      ],
+      "sources": "RNF17,18",
+      "acceptance": "Trace ID atravessa API/worker/mensagem e logs sem dados sensíveis; dashboards locais."
+    },
+    {
+      "id": "PDV-050",
+      "title": "Criar painel de filas, retries e sincronização",
+      "phase": "05",
+      "module": "Operações",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-038",
+        "PDV-049"
+      ],
+      "sources": "RF-A02",
+      "acceptance": "Admin vê pendências, DLQ, última sincronização e reprocessa com segurança."
+    },
+    {
+      "id": "PDV-051",
+      "title": "Criar dashboard e relatórios responsivos",
+      "phase": "05",
+      "module": "Interfaces",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-033",
+        "PDV-046",
+        "PDV-047",
+        "PDV-050"
+      ],
+      "sources": "Telas 06,08",
+      "acceptance": "KPIs reais, gráficos legíveis, exportações, empty states e acesso por papel."
+    },
+    {
+      "id": "PDV-052",
+      "title": "Testar 100 consultas simultâneas ao estoque",
+      "phase": "06",
+      "module": "Qualidade",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-021",
+        "PDV-027",
+        "PDV-033"
+      ],
+      "sources": "RNF02",
+      "acceptance": "Teste com 100 concorrentes, sem erros inesperados, throughput e ambiente registrados."
+    },
+    {
+      "id": "PDV-053",
+      "title": "Validar p95 < 200 ms em catálogo",
+      "phase": "06",
+      "module": "Qualidade",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-021",
+        "PDV-049"
+      ],
+      "sources": "RNF01",
+      "acceptance": "Medir p95 e carga média definida; perfis, índices e resultados publicados com evidências."
+    },
+    {
+      "id": "PDV-054",
+      "title": "Testar circuit breaker, retries e falhas parciais",
+      "phase": "06",
+      "module": "Resiliência",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-037",
+        "PDV-038",
+        "PDV-049"
+      ],
+      "sources": "RNF11",
+      "acceptance": "Falhas injetadas não bloqueiam API indefinidamente; DLQ e recuperação demonstradas."
+    },
+    {
+      "id": "PDV-055",
+      "title": "Realizar testes de segurança, TLS e segredos",
+      "phase": "06",
+      "module": "Segurança",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-012",
+        "PDV-013",
+        "PDV-049"
+      ],
+      "sources": "RNF14,15,16",
+      "acceptance": "Acessos indevidos, rate limits, CSRF/CORS conforme modelo, HTTPS no perfil demo e secrets fora Git."
+    },
+    {
+      "id": "PDV-056",
+      "title": "Criar backup, restauração e migrações seguras",
+      "phase": "06",
+      "module": "Dados",
+      "priority": "P1",
+      "dependencies": [
+        "PDV-009",
+        "PDV-039"
+      ],
+      "sources": "RNF19,20",
+      "acceptance": "Backup incremental ou solução compatível explicitada; restore testado, RPO/RTO documentados."
+    },
+    {
+      "id": "PDV-057",
+      "title": "Laboratório de réplica de leitura e CQRS",
+      "phase": "07",
+      "module": "Avançado",
+      "priority": "P2",
+      "dependencies": [
+        "PDV-046",
+        "PDV-048"
+      ],
+      "sources": "RNF04,09",
+      "acceptance": "Consulta usa read replica; lag simulado/medido; fallback e consistência documentados."
+    },
+    {
+      "id": "PDV-058",
+      "title": "Laboratório de failover e disponibilidade",
+      "phase": "07",
+      "module": "Avançado",
+      "priority": "P2",
+      "dependencies": [
+        "PDV-049",
+        "PDV-056"
+      ],
+      "sources": "RNF12,13",
+      "acceptance": "Prova de failover automático e medição HA; se só projetado, marcar como não implementado."
+    },
+    {
+      "id": "PDV-059",
+      "title": "Rolling deploy, recuperação e ensaio de desastre",
+      "phase": "07",
+      "module": "Avançado",
+      "priority": "P2",
+      "dependencies": [
+        "PDV-008",
+        "PDV-055",
+        "PDV-056"
+      ],
+      "sources": "RNF05,07,19,20",
+      "acceptance": "Plano de migrações compatíveis, health gates e teste de restauração/switchover documentados."
+    },
+    {
+      "id": "PDV-060",
+      "title": "Executar testes e2e e montar demonstração final",
+      "phase": "08",
+      "module": "Entrega",
+      "priority": "P0",
+      "dependencies": [
+        "PDV-041",
+        "PDV-044",
+        "PDV-045",
+        "PDV-050",
+        "PDV-051",
+        "PDV-052",
+        "PDV-053",
+        "PDV-054",
+        "PDV-055",
+        "PDV-056"
+      ],
+      "sources": "Sistema completo",
+      "acceptance": "Demo do fluxo feliz e falhas; README, diagramas, vídeo/roteiro, testes e limitações honestas."
+    }
+  ]
+}
