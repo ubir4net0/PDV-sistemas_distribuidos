@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## Infraestrutura local da PDV-004
+
+O Compose da raiz fornece PostgreSQL 16.15 e RabbitMQ 4.3.7-management, fixados por digest, com health checks, timezone UTC e volumes/rede do projeto pdv-local. Portas loopback 55432/5673/15673, sem colisão com Amor e Vida. Credenciais são geradas em .env ignorado pelo Git. O script scripts/verify-infra.ps1 valida autenticação, SQL e publish/consume por HTTP management; -Restart exercita persistência após reinício. Evidências e limitações desta entrega estão em sdd/features/PDV-004-infra-local.md.
+
+Apenas infraestrutura local foi adicionada; não há aplicação, schema de domínio ou migration. Aceites e decisões anteriores permanecem no Notion, sem aprovação implícita por iniciar serviços.
+
 ## Arquitetura detalhada na PDV-003
 
 Cinco ADRs novas (ADR-002 a ADR-006), índice de decisões e spec registram API/worker independentes, PostgreSQL/Flyway, transações locais, Saga, RabbitMQ/outbox/inbox, idempotência e limites acadêmicos. A visão de arquitetura inclui as fronteiras de consistência; os registros descrevem alternativas, consequências e cenários futuros de falha.
@@ -16,7 +22,7 @@ O incremento técnico está pronto para validação do proprietário. Os diagram
 
 O proprietário informou que trabalhará sozinho e dispensou PR e aprovação externa. A ADR-001 define commits diretos em main, com autorevisão, specs, testes e rastreabilidade. A exigência de revisão de PR foi removida no GitHub; a API confirmou required_pull_request_reviews=null, mantendo force-push e exclusão bloqueados. O bootstrap documental antes preparado na feature foi trazido para main por fast-forward; develop e a feature permanecem como histórico. A CI passa a executar no push de main. Os registros abaixo descrevem o primeiro ciclo anterior a esse refinamento.
 
-## Confirmado nesta sessão
+## Evidências históricas do primeiro ciclo
 
 - Pacote ZIP com dois Markdown e um DOCX; sem código de aplicação ou diagramas incorporados.
 - Página mestre Notion inicialmente vazia, sem subpáginas/databases/anexos no fetch; busca PDV sem resultados no projeto/workspace acessível.
@@ -32,6 +38,6 @@ Fontes acadêmicas/diagramas, conciliação de estados e cardinalidade, polític
 
 ## Implementação
 
-Não há API, worker, frontend, Compose de produto, migrations ou regras de domínio implementadas. Diretórios reservados por README não são scaffolds funcionais. Nenhum RF/RNF atendido; nenhuma suíte de produto foi executada. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
+Há Compose funcional para as dependências locais PostgreSQL/RabbitMQ. Não há API, worker, frontend, migrations ou regras de domínio implementadas. Diretórios de aplicação reservados por README não são scaffolds funcionais. Os testes de infraestrutura não comprovam RF/RNF completos nem substituem uma suíte de produto. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
 
 Consulte relatório de reconciliação e Notion para próximos gates. Histórico local e arquivos de planejamento não substituem status vivo.

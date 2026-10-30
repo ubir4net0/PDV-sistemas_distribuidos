@@ -1,0 +1,60 @@
+name: pdv-local
+
+services:
+  postgres:
+    image: postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+    environment:
+      POSTGRES_DB: ${PDV_POSTGRES_DB:-pdv}
+      POSTGRES_USER: ${PDV_POSTGRES_USER:-pdv_dev}
+      POSTGRES_PASSWORD: ${PDV_POSTGRES_PASSWORD:?Execute scripts/init-local-env.ps1 antes de iniciar}
+      TZ: UTC
+      PGTZ: UTC
+    command: ["postgres", "-c", "timezone=UTC", "-c", "log_timezone=UTC"]
+    ports:
+      - "127.0.0.1:${PDV_POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  rabbitmq:
+    image: rabbitmq:4.3.7-management-alpine@sha256:1528a88eebf2bc4d0ab7e9d5d9bc542e9bdf5e1b105e65848fcf8de5c2186528
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${PDV_RABBITMQ_USER:-pdv_dev}
+      RABBITMQ_DEFAULT_PASS: ${PDV_RABBITMQ_PASSWORD:?Execute scripts/init-local-env.ps1 antes de iniciar}
+      RABBITMQ_DEFAULT_VHOST: ${PDV_RABBITMQ_VHOST:-pdv}
+      TZ: UTC
+    ports:
+      - "127.0.0.1:${PDV_RABBITMQ_PORT:-5673}:5672"
+      - "127.0.0.1:${PDV_RABBITMQ_MANAGEMENT_PORT:-15673}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms && rabbitmq-diagnostics -q check_port_connectivity"]
+      interval: 30s
+      timeout: 15s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  rabbitmq_data:

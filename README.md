@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Primeiro ciclo: planejamento e bootstrap documental, em 30/10/2026. A aplicação ainda não foi implementada.
+Projeto acadêmico para portfólio. Planejamento, bootstrap e infraestrutura local PostgreSQL/RabbitMQ disponíveis. A aplicação ainda não foi implementada.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -24,4 +24,16 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 
 Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. Não executa testes de produto. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual; ele não substitui a CI de API/worker/frontend prevista em PDV-008.
 
-Não existe comando para subir a aplicação nesta baseline. O Java padrão observado é 17; configurar Java 21 e os scaffolds nas tarefas elegíveis. Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
+## Ambiente local
+
+Na raiz, com Docker ativo e PowerShell:
+
+```powershell
+./scripts/init-local-env.ps1
+docker compose up -d --wait --wait-timeout 180
+./scripts/verify-infra.ps1
+```
+
+PostgreSQL em `127.0.0.1:55432`; RabbitMQ AMQP em `127.0.0.1:5673` e management em `http://127.0.0.1:15673`. Credenciais são geradas no `.env` ignorado pelo Git. Consulte [infra/README.md](infra/README.md) para configuração, reinício e limites dos testes. Rede e volumes pertencem ao projeto `pdv-local`.
+
+Não existe comando para subir a aplicação nesta baseline; os comandos acima iniciam suas dependências. O Java padrão observado é 17; configurar Java 21 e os scaffolds nas tarefas elegíveis. Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
