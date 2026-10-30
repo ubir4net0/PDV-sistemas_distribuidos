@@ -1,0 +1,20 @@
+---
+title: "PDV — Alternativas dos estados de compra — PROPOSTA v1"
+---
+flowchart TB
+    subgraph enum["Alternativa A — enum de referência da seção 7"]
+        a1["EMITIDA"] --> a2["EM_TRANSITO"] --> a3["ENTREGUE"]
+        a1 -. "origem da transição a validar" .-> a4["CANCELADA"]
+    end
+    subgraph fluxo["Alternativa B — fluxo da seção 9"]
+        b1["CRIADA"] --> b2["ENVIADA"] --> b3["RECEBIDA"]
+        b2 -. "guarda a validar" .-> b4["CANCELADA"]
+    end
+    a1 -. "equivalência não aprovada" .-> b1
+    a2 -. "equivalência não aprovada" .-> b2
+    a3 -. "equivalência não aprovada" .-> b3
+    pendente["DEC-02: definir enum e transições finais<br/>DEC-05: recebimento parcial depende de refinamento<br/>Entrada em estoque deve ser idempotente"]
+    a3 --> pendente
+    b3 --> pendente
+    classDef pending fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    class pendente pending

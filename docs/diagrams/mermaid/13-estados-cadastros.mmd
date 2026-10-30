@@ -1,0 +1,19 @@
+---
+title: "PDV — Estados candidatos de produto e cliente — PROPOSTA v1"
+---
+flowchart LR
+    subgraph produto["Produto — proposta da seção 9"]
+        p1["CADASTRADO"] --> p2["EM_REVISAO"] --> p3["ATIVO"]
+        p3 <--> p4["INATIVO"]
+    end
+    subgraph cliente["Cliente — proposta da seção 9"]
+        c1["CADASTRADO"] --> c2["ATIVO"]
+        c2 <--> c3["INATIVO"]
+        c2 -. "regra de bloqueio não definida" .-> c4["BLOQUEADO"]
+        c4 -. "regra de desbloqueio a definir" .-> c2
+    end
+    n["DEC-06 pendente<br/>Não inferir regras de aprovação/bloqueio<br/>Preservar vínculos e histórico"]
+    p4 -.-> n
+    c4 -.-> n
+    classDef pending fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    class n pending

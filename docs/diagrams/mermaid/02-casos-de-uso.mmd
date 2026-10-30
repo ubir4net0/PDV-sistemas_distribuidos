@@ -1,0 +1,36 @@
+---
+title: "PDV — Atores e casos de uso — PROPOSTA v1"
+---
+flowchart LR
+    op["Vendedor / operador"]
+    admin["Administrador"]
+    subgraph sistema["PDV acadêmico — fronteira da aplicação"]
+        login(["Autenticar e autorizar<br/>RF-A01"])
+        venda(["Carrinho e checkout<br/>RF-V01 / V02 / V03"])
+        cancelar(["Cancelar com compensação fictícia<br/>RF-V04"])
+        historico(["Consultar histórico e comprovante<br/>RF-V05 / V06"])
+        clientes(["Cadastrar / editar / consultar cliente<br/>RF-C01 / C02"])
+        consulta(["Consultar catálogo e disponibilidade<br/>RF-E04"])
+        estoque(["Gerir produtos e estoque<br/>RF-E01 / E02 / E03"])
+        compras(["Gerir fornecedores e ordens<br/>RF-C03 / C04"])
+        relatorio(["Consultar e exportar relatórios<br/>RF-R01 / R02 / R03"])
+        acesso(["Gerir usuários e perfis<br/>RF-A01"])
+        monitor(["Monitorar filas, falhas e sincronização<br/>RF-A02"])
+        simular(["Processar pagamento e estorno locais<br/>RF-V03 / V04"])
+    end
+    op --> login
+    op --> venda
+    op --> cancelar
+    op --> historico
+    op --> clientes
+    op --> consulta
+    admin --> login
+    admin --> estoque
+    admin --> compras
+    admin --> relatorio
+    admin --> acesso
+    admin --> monitor
+    venda -. "inclui autorização" .-> login
+    venda -. "consulta disponibilidade" .-> consulta
+    venda -. "solicita via evento" .-> simular
+    cancelar -. "quando aplicável" .-> simular

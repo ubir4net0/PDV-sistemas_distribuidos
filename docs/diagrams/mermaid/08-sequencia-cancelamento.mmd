@@ -1,0 +1,37 @@
+---
+title: "PDV — Sequência de cancelamento e compensação — PROPOSTA v1"
+---
+sequenceDiagram
+    autonumber
+    actor O as Operador autorizado
+    participant A as API e publicador
+    participant D as PostgreSQL
+    participant Q as RabbitMQ
+    participant W as Worker fictício
+    O->>A: Cancelar venda + chave idempotente
+    A->>D: TX: validar estado, idempotência, cancelamento pendente e outbox
+    D-->>A: COMMIT
+    A-->>O: Cancelamento pendente
+    A->>Q: Publicar solicitação fictícia da outbox
+    Q-->>A: Confirmar publicação
+    A->>D: Marcar evento publicado
+    Q->>W: Entregar solicitação, pode repetir
+    W->>D: TX: inbox, decisão de estorno fictício e outbox
+    D-->>W: COMMIT
+    W->>Q: ACK após commit
+    W->>Q: Publicar resultado da outbox
+    Q-->>W: Confirmar publicação
+    W->>D: Marcar resultado publicado
+    Q->>A: Entregar resultado
+    alt Estorno fictício confirmado
+        A->>D: TX: inbox, confirmar estorno, repor estoque uma vez, movimento e venda cancelada
+        D-->>A: COMMIT
+        A->>Q: ACK após commit
+    else Falha ou resultado desconhecido
+        A->>D: TX: inbox, manter pendência e registrar falha rastreável
+        D-->>A: COMMIT
+        A->>Q: ACK após persistir pendência
+        Note over A,W: Reconciliar ou reprocessar com idempotência. Não repetir reposição
+    end
+    O->>A: Consultar timeline
+    A-->>O: Estado e compensações confirmadas

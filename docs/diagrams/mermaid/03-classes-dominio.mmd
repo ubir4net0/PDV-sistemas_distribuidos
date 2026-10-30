@@ -1,0 +1,94 @@
+---
+title: "PDV — Classes de domínio — PROPOSTA v1"
+---
+classDiagram
+    direction LR
+    class Usuario {
+        UUID id
+        string email
+        boolean ativo
+    }
+    class Papel {
+        UUID id
+        string nome
+    }
+    class Permissao {
+        UUID id
+        string recurso
+        string acao
+    }
+    class Cliente {
+        UUID id
+        string cpfCnpj
+        string nome
+    }
+    class Venda {
+        UUID id
+        string numero
+        string status
+        Decimal total
+    }
+    class ItemVenda {
+        Decimal quantidade
+        Decimal precoUnitario
+        Decimal subtotal
+    }
+    class Pagamento {
+        UUID id
+        string status
+        Decimal valor
+    }
+    class CategoriaProduto {
+        UUID id
+        string nome
+    }
+    class Produto {
+        UUID id
+        string sku
+        Decimal precoVenda
+        Decimal estoqueFisico
+        integer version
+    }
+    class EstoqueMovimentacao {
+        UUID id
+        string tipo
+        Decimal quantidade
+        string referencia
+    }
+    class EstoqueReserva {
+        UUID id
+        Decimal quantidade
+        string status
+        Instant expiracao
+    }
+    class Fornecedor {
+        UUID id
+        string cnpj
+        string razaoSocial
+    }
+    class OrdemCompra {
+        UUID id
+        string status
+        Decimal total
+    }
+    class ItemOrdemCompra {
+        Decimal quantidade
+        Decimal precoCusto
+    }
+    Usuario "*" -- "*" Papel : associação
+    Papel "*" -- "*" Permissao : RBAC proposto
+    Usuario "1" --> "*" Venda : registra
+    Cliente "1" --> "*" Venda : realiza
+    Venda "1" *-- "1..*" ItemVenda : contém
+    Produto "1" --> "*" ItemVenda : referencia
+    Venda "1" --> "*" Pagamento : tentativas
+    Venda "1" --> "*" EstoqueReserva : reserva
+    Produto "1" --> "*" EstoqueReserva : quantidades
+    Produto "1" --> "*" EstoqueMovimentacao : trilha
+    CategoriaProduto "1" --> "*" Produto : classifica
+    Fornecedor "1" --> "*" OrdemCompra : recebe
+    OrdemCompra "1" *-- "1..*" ItemOrdemCompra : contém
+    Produto "1" --> "*" ItemOrdemCompra : referencia
+    Fornecedor .. Produto : cardinalidade pendente DEC-03
+    note for Venda "Estados candidatos: DEC-01"
+    note for OrdemCompra "Enum divergente: DEC-02"

@@ -1,0 +1,23 @@
+---
+title: "PDV — Estados candidatos da venda — PROPOSTA v1"
+---
+stateDiagram-v2
+    direction LR
+    [*] --> RASCUNHO
+    RASCUNHO --> AGUARDANDO_PAGAMENTO: checkout e reserva confirmados
+    AGUARDANDO_PAGAMENTO --> PAGAMENTO_APROVADO: aprovação fictícia confirmada
+    AGUARDANDO_PAGAMENTO --> PAGAMENTO_RECUSADO: recusa confirmada e liberação única
+    AGUARDANDO_PAGAMENTO --> AGUARDANDO_PAGAMENTO: resultado incerto exige reconciliação
+    PAGAMENTO_APROVADO --> CONCLUIDA: reserva válida, baixa única e comprovante
+    PAGAMENTO_APROVADO --> PAGAMENTO_APROVADO: falha de confirmação exige reconciliação
+    CONCLUIDA --> CANCELAMENTO_PENDENTE: solicitação autorizada e idempotente
+    CANCELAMENTO_PENDENTE --> CANCELAMENTO_PENDENTE: falha ou estorno inconclusivo
+    CANCELAMENTO_PENDENTE --> CANCELADA: estorno fictício e reposição confirmados
+    note right of AGUARDANDO_PAGAMENTO
+        TTL não decide sozinho
+        um resultado desconhecido
+    end note
+    note right of PAGAMENTO_APROVADO
+        Não concluir com reserva inválida
+        Compensação deve ser refinada
+    end note

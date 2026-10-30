@@ -1,0 +1,86 @@
+---
+title: "PDV — DER de vendas e estoque — PROPOSTA v1"
+---
+erDiagram
+    CLIENTES {
+        UUID id PK
+        string cpf_cnpj UK
+    }
+    USUARIOS {
+        UUID id PK
+        string email UK
+    }
+    PRODUTOS {
+        UUID id PK
+        string sku UK
+        decimal preco_venda
+        decimal estoque_fisico
+        decimal estoque_minimo
+        integer version
+    }
+    VENDAS {
+        UUID id PK
+        string numero UK
+        UUID cliente_id FK
+        UUID usuario_id FK
+        string status
+        decimal total
+        string idempotency_key
+    }
+    ITENS_VENDA {
+        UUID id PK
+        UUID venda_id FK
+        UUID produto_id FK
+        decimal quantidade
+        decimal preco_unitario
+        decimal desconto
+        decimal subtotal
+    }
+    PAGAMENTOS {
+        UUID id PK
+        UUID venda_id FK
+        string status
+        decimal valor
+        string transacao_id
+    }
+    ESTORNOS {
+        UUID id PK
+        UUID pagamento_id FK
+        decimal valor
+        string status
+    }
+    ESTOQUE_RESERVAS {
+        UUID id PK
+        UUID venda_id FK
+        UUID produto_id FK
+        decimal quantidade
+        string status
+        timestamp expiracao
+    }
+    ESTOQUE_MOVIMENTACOES {
+        UUID id PK
+        UUID produto_id FK
+        UUID usuario_id FK
+        string tipo
+        decimal quantidade
+        decimal estoque_anterior
+        decimal estoque_posterior
+        UUID referencia_id
+    }
+    COMPROVANTES {
+        UUID id PK
+        UUID venda_id FK
+        string numero UK
+        json snapshot_venda
+    }
+    CLIENTES ||--o{ VENDAS : realiza
+    USUARIOS ||--o{ VENDAS : registra
+    VENDAS ||--|{ ITENS_VENDA : contem
+    PRODUTOS ||--o{ ITENS_VENDA : referencia
+    VENDAS ||--o{ PAGAMENTOS : possui_tentativas
+    PAGAMENTOS ||--o{ ESTORNOS : recebe
+    VENDAS ||--o{ ESTOQUE_RESERVAS : reserva
+    PRODUTOS ||--o{ ESTOQUE_RESERVAS : compromete
+    PRODUTOS ||--o{ ESTOQUE_MOVIMENTACOES : movimenta
+    USUARIOS ||--o{ ESTOQUE_MOVIMENTACOES : registra
+    VENDAS ||--o{ COMPROVANTES : emite

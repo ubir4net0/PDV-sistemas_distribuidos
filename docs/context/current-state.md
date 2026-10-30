@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## Novos diagramas derivados da baseline textual
+
+O proprietário solicitou novos diagramas para a PDV-001. Foram gerados 15 arquivos Mermaid e 15 SVGs em docs/diagrams/, com índice, requisitos, notas de decisão e comando reproduzível. Todos renderizados por Mermaid CLI 12.0.0 e inspecionados visualmente por prévias PNG locais. XML/viewBox dos SVGs verificados; fontes originais e os 60 IDs/aceites/dependências preservados. A página Diagramas propostos do PDV v1 no Notion é a cópia para revisão.
+
+O incremento técnico está pronto para validação do proprietário. Os diagramas são novos modelos propostos; os originais acadêmicos continuam ausentes e as decisões de domínio não foram aprovadas por sua geração. A aplicação permanece sem implementação.
+
 ## Atualização vigente do fluxo individual
 
 O proprietário informou que trabalhará sozinho e dispensou PR e aprovação externa. A ADR-001 define commits diretos em main, com autorevisão, specs, testes e rastreabilidade. A exigência de revisão de PR foi removida no GitHub; a API confirmou required_pull_request_reviews=null, mantendo force-push e exclusão bloqueados. O bootstrap documental antes preparado na feature foi trazido para main por fast-forward; develop e a feature permanecem como histórico. A CI passa a executar no push de main. Os registros abaixo descrevem o primeiro ciclo anterior a esse refinamento.

@@ -1,0 +1,82 @@
+---
+title: "PDV — DER de cadastros e acesso — PROPOSTA v1"
+---
+erDiagram
+    USUARIOS {
+        UUID id PK
+        string nome
+        string email UK
+        string senha_hash
+        boolean ativo
+    }
+    PAPEIS {
+        UUID id PK
+        string nome
+    }
+    USUARIOS_PAPEIS {
+        UUID id PK
+        UUID usuario_id FK
+        UUID papel_id FK
+    }
+    PERMISSOES {
+        UUID id PK
+        string recurso
+        string acao
+    }
+    PAPEIS_PERMISSOES {
+        UUID papel_id FK
+        UUID permissao_id FK
+    }
+    CLIENTES {
+        UUID id PK
+        string tipo_pessoa
+        string cpf_cnpj UK
+        string nome
+        boolean ativo
+    }
+    ENDERECOS_CLIENTE {
+        UUID id PK
+        UUID cliente_id FK
+        string cidade
+        string estado
+        boolean principal
+    }
+    CATEGORIAS_PRODUTOS {
+        UUID id PK
+        string nome
+        boolean ativo
+    }
+    PRODUTOS {
+        UUID id PK
+        UUID categoria_id FK
+        string sku UK
+        string nome
+    }
+    FORNECEDORES {
+        UUID id PK
+        string cnpj UK
+        string razao_social
+        boolean ativo
+    }
+    ORDENS_COMPRA {
+        UUID id PK
+        UUID fornecedor_id FK
+        string status
+        decimal valor_total
+    }
+    ITENS_ORDEM_COMPRA {
+        UUID id PK
+        UUID ordem_compra_id FK
+        UUID produto_id FK
+        decimal quantidade
+        decimal preco_custo
+    }
+    USUARIOS ||--o{ USUARIOS_PAPEIS : possui
+    PAPEIS ||--o{ USUARIOS_PAPEIS : liga
+    PAPEIS ||--o{ PAPEIS_PERMISSOES : tem
+    PERMISSOES ||--o{ PAPEIS_PERMISSOES : atribui
+    CLIENTES ||--o{ ENDERECOS_CLIENTE : possui
+    CATEGORIAS_PRODUTOS ||--o{ PRODUTOS : classifica
+    FORNECEDORES ||--o{ ORDENS_COMPRA : atende
+    ORDENS_COMPRA ||--|{ ITENS_ORDEM_COMPRA : contem
+    PRODUTOS ||--o{ ITENS_ORDEM_COMPRA : referencia

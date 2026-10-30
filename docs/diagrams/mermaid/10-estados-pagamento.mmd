@@ -1,0 +1,22 @@
+---
+title: "PDV — Estados candidatos do pagamento — PROPOSTA v1"
+---
+stateDiagram-v2
+    direction LR
+    [*] --> CRIADO
+    CRIADO --> EM_PROCESSAMENTO: pedido idempotente
+    EM_PROCESSAMENTO --> APROVADO: decisão fictícia confirmada
+    EM_PROCESSAMENTO --> RECUSADO: recusa fictícia confirmada
+    EM_PROCESSAMENTO --> INDETERMINADO: timeout ou decisão desconhecida
+    INDETERMINADO --> INDETERMINADO: resultado ainda desconhecido
+    INDETERMINADO --> APROVADO: reconciliação confirma aprovação
+    INDETERMINADO --> RECUSADO: reconciliação confirma recusa
+    note right of INDETERMINADO
+        Não liberar nem baixar
+        estoque por suposição
+    end note
+    note right of APROVADO
+        Aprovação não conclui a venda
+        Estorno é processo separado
+        e inteiramente fictício
+    end note

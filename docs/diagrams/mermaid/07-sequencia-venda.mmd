@@ -1,0 +1,48 @@
+---
+title: "PDV — Sequência da venda e pagamento fictício — PROPOSTA v1"
+---
+sequenceDiagram
+    autonumber
+    actor O as Operador
+    participant F as Frontend
+    participant A as API e publicador
+    participant D as PostgreSQL
+    participant Q as RabbitMQ
+    participant W as Worker e publicador
+    O->>F: Cliente e carrinho
+    F->>A: Checkout autenticado + chave idempotente
+    A->>A: Validar RBAC, dados e fingerprint
+    alt Chave já conhecida
+        A->>D: Consultar operação persistida
+        D-->>A: Mesma resposta, ou conflito de fingerprint
+        A-->>F: Reutilizar resultado ou rejeitar conflito
+    else Nova operação válida
+        A->>D: TX: venda, itens, reserva atômica, idempotência, outbox
+        D-->>A: COMMIT
+        A-->>F: Venda aguardando processamento
+        A->>D: Ler evento pendente da outbox
+        A->>Q: Publicar pedido de pagamento
+        Q-->>A: Publisher confirm
+        A->>D: Marcar publicação confirmada
+        Q->>W: Entregar pedido, sujeito a reentrega
+        W->>D: TX: inbox, decisão fictícia e outbox de resultado
+        D-->>W: COMMIT
+        W->>Q: ACK do pedido após commit
+        W->>Q: Publicar resultado da outbox
+        Q-->>W: Publisher confirm
+        W->>D: Marcar resultado publicado
+        Q->>A: Entregar resultado, sujeito a reentrega
+        alt Aprovação confirmada e reserva válida
+            A->>D: TX: inbox, confirmar reserva, baixa única, venda concluída e snapshot do comprovante
+        else Recusa confirmada
+            A->>D: TX: inbox, registrar recusa e liberar reserva uma vez
+        else Resultado indeterminado
+            A->>D: TX: inbox, registrar pendência e manter reserva protegida
+            Note over A,W: Reconciliar antes de liberar ou confirmar, mesmo após TTL
+        end
+        D-->>A: COMMIT
+        A->>Q: ACK do resultado após commit
+        F->>A: Consultar status da mesma venda
+        A-->>F: Estado, timeline e comprovante quando concluída
+    end
+    Note over A,D: Reserva e baixa são locais e atômicas. Saga não é transação global

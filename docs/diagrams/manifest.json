@@ -1,0 +1,128 @@
+{
+  "version": "1.0",
+  "classification": "proposed-derived-models-not-original-evidence",
+  "source": "docs/sources/PDV_ESPECIFICACAO_E_BACKLOG.md",
+  "task": "PDV-001",
+  "diagrams": [
+    {
+      "id": "01-arquitetura",
+      "title": "Arquitetura e fronteiras",
+      "refs": "RF-A01, RF-A02; RNF05, RNF06, RNF08, RNF10, RNF17, RNF18",
+      "notes": "Alvo declarado no pacote, ainda não implementado. PostgreSQL compartilhado é simplificação acadêmica; API e worker são somente dois processos. TLS, réplica e HA não são demonstrados por este desenho.",
+      "mermaid": "mermaid/01-arquitetura.mmd",
+      "svg": "svg/01-arquitetura.svg"
+    },
+    {
+      "id": "02-casos-de-uso",
+      "title": "Atores e casos de uso",
+      "refs": "RF-V01 a RF-V06; RF-E01 a RF-E04; RF-C01 a RF-C04; RF-R01 a RF-R03; RF-A01 e RF-A02",
+      "notes": "Representação de casos de uso em flowchart, sem alegar notação UML estrita. A matriz exata de permissões será definida em PDV-013; nenhuma permissão adicional é concedida por este desenho.",
+      "mermaid": "mermaid/02-casos-de-uso.mmd",
+      "svg": "svg/02-casos-de-uso.svg"
+    },
+    {
+      "id": "03-classes-dominio",
+      "title": "Classes de domínio",
+      "refs": "Especificação §7; RF-V01 a V06, RF-C01 a C04, RF-E01 a E04, RF-A01",
+      "notes": "As 14 classes citadas no pacote são preservadas. Atributos resumidos e cardinalidades são conceituais; não são entidades ORM. A associação Fornecedor–Produto permanece sem cardinalidade até DEC-03. RBAC físico e entidades técnicas aparecem nos DERs.",
+      "mermaid": "mermaid/03-classes-dominio.mmd",
+      "svg": "svg/03-classes-dominio.svg"
+    },
+    {
+      "id": "04-der-cadastros-acesso",
+      "title": "DER de cadastros e acesso",
+      "refs": "Especificação §7; RF-A01, RF-C01 a C04, RF-E01; DEC-03 e DEC-04",
+      "notes": "Modelo conceitual proposto, não DDL. Nomes e tipos físicos ainda serão padronizados. Permissões e papel-permissão são complementos pendentes em DEC-04. Não se desenha FK fornecedor-produto como decisão já tomada. Unicidades compostas e nulabilidade devem ser refinadas antes de migrations.",
+      "mermaid": "mermaid/04-der-cadastros-acesso.mmd",
+      "svg": "svg/04-der-cadastros-acesso.svg"
+    },
+    {
+      "id": "05-der-vendas-estoque",
+      "title": "DER de vendas e estoque",
+      "refs": "Especificação §7–9; RF-V01 a V06, RF-E02 e E04; RNF03, RNF08, RNF10",
+      "notes": "DER conceitual: Produto repete a referência do DER de cadastros. Disponível e reservado são conceitos derivados, sem coluna obrigatória nova. Comprovantes são complemento proposto (DEC-04). Histórico de compras deriva de vendas/itens. Estados e campos físicos finais continuam pendentes.",
+      "mermaid": "mermaid/05-der-vendas-estoque.mmd",
+      "svg": "svg/05-der-vendas-estoque.svg"
+    },
+    {
+      "id": "06-der-confiabilidade",
+      "title": "DER técnico e rastreabilidade",
+      "refs": "Especificação §7–8; RNF06, RNF08, RNF09, RNF17, RNF18; DEC-04",
+      "notes": "Todas as estruturas técnicas são propostas, não schema existente. Campos de eventos e chaves compostas são sugestões a aprovar nos contratos. Outbox/inbox e deduplicação pertencem a transações locais; não garantem entrega exatamente uma vez. Relações de entidade_tipo/id são referências lógicas, não FKs para toda tabela.",
+      "mermaid": "mermaid/06-der-confiabilidade.mmd",
+      "svg": "svg/06-der-confiabilidade.svg"
+    },
+    {
+      "id": "07-sequencia-venda",
+      "title": "Sequência da venda e pagamento fictício",
+      "refs": "RF-V01, RF-V02, RF-V03, RF-V06; RNF06, RNF08, RNF10; DEC-01",
+      "notes": "Sequência proposta, sem contrato HTTP/evento aprovado. O publicador roda nos processos API/worker, não num terceiro serviço. Retentativas consultam a mesma chave/fingerprint. Resultado desconhecido mantém a reserva até reconciliação; não é sinônimo de recusa.",
+      "mermaid": "mermaid/07-sequencia-venda.mmd",
+      "svg": "svg/07-sequencia-venda.svg"
+    },
+    {
+      "id": "08-sequencia-cancelamento",
+      "title": "Sequência de cancelamento e compensação",
+      "refs": "RF-V04; RNF06, RNF08, RNF10; DEC-01",
+      "notes": "Fluxo proposto para cancelamento pós-aprovação. Cancelamento antes da aprovação depende da definição final da Saga. Não há estorno bancário: apenas simulação local. Falha ou resultado desconhecido não autoriza devolver estoque prematuramente.",
+      "mermaid": "mermaid/08-sequencia-cancelamento.mmd",
+      "svg": "svg/08-sequencia-cancelamento.svg"
+    },
+    {
+      "id": "09-estados-venda",
+      "title": "Estados candidatos da venda",
+      "refs": "Especificação §9; RF-V02, RF-V03, RF-V04; DEC-01",
+      "notes": "DEC-01 pendente. Usa os nomes candidatos da seção 9, sem declarar enum final. O nome APROVADA de outra descrição continua divergente. Cancelamento antes da confirmação, repetição de tentativa e transições administrativas ainda precisam de refinamento.",
+      "mermaid": "mermaid/09-estados-venda.mmd",
+      "svg": "svg/09-estados-venda.svg"
+    },
+    {
+      "id": "10-estados-pagamento",
+      "title": "Estados candidatos do pagamento",
+      "refs": "Especificação §9; RF-V03, RF-V04; DEC-01",
+      "notes": "Somente simulação local. INDETERMINADO representa resultado desconhecido; TIMEOUT é cenário de execução, não recusa automática. Estorno é entidade/processo separado, sem inventar enum final de pagamento.",
+      "mermaid": "mermaid/10-estados-pagamento.mmd",
+      "svg": "svg/10-estados-pagamento.svg"
+    },
+    {
+      "id": "11-estados-reserva",
+      "title": "Reservas e invariantes de estoque",
+      "refs": "RF-V02; RF-E02, RF-E04; RNF03, RNF08, RNF10",
+      "notes": "Estados da reserva conforme texto. A elegibilidade segura de expiração precisa de contrato; reserva ligada a resultado incerto/em processamento não é liberada só pelo relógio. O diagrama não cria um enum persistido de estoque nem altera saldo físico ao reservar.",
+      "mermaid": "mermaid/11-estados-reserva.mmd",
+      "svg": "svg/11-estados-reserva.svg"
+    },
+    {
+      "id": "12-estados-ordem-compra",
+      "title": "Alternativas dos estados de compra",
+      "refs": "Especificação §7 e §9; RF-C04; DEC-02, DEC-05",
+      "notes": "As duas nomenclaturas são apresentadas separadamente para não aprovar uma por omissão. Equivalência de ENVIADA/EM_TRANSITO e tratamento de recebimentos parciais não foram confirmados. Não há transição de retorno de OC recebida inventada.",
+      "mermaid": "mermaid/12-estados-ordem-compra.mmd",
+      "svg": "svg/12-estados-ordem-compra.svg"
+    },
+    {
+      "id": "13-estados-cadastros",
+      "title": "Estados candidatos de produto e cliente",
+      "refs": "Especificação §9; RF-E01, RF-C01, RF-C02; DEC-06",
+      "notes": "Representa a descrição textual, não aprovação de etapas de revisão ou critérios de bloqueio. Transições mínimas de ativação/inativação são candidatas; regras e permissões finais serão definidas nas specs. Inativação não apaga histórico.",
+      "mermaid": "mermaid/13-estados-cadastros.mmd",
+      "svg": "svg/13-estados-cadastros.svg"
+    },
+    {
+      "id": "14-fornecedor-produto",
+      "title": "Alternativas de fornecedor e produto",
+      "refs": "Especificação §7 e §10; RF-C03; DEC-03",
+      "notes": "N:1 é a referência original descrita; N:N é alternativa a avaliar. As duas são possibilidades incompatíveis como decisão final: nenhuma migration/FK é aprovada por este desenho. A seleção depende dos requisitos de compras e catálogo.",
+      "mermaid": "mermaid/14-fornecedor-produto.mmd",
+      "svg": "svg/14-fornecedor-produto.svg"
+    },
+    {
+      "id": "15-outbox-inbox",
+      "title": "Mensageria e efeitos idempotentes",
+      "refs": "RNF06, RNF08, RNF09, RNF10, RNF17; PDV-038; DEC-04",
+      "notes": "Entrega ao menos uma vez e efeitos idempotentes, sem promessa de exactly-once. Cada consumidor precisa de inbox por evento+consumidor e efeito na mesma transação local. Política de retry, DLQ, ordenação e contratos será refinada em PDV-007/038.",
+      "mermaid": "mermaid/15-outbox-inbox.mmd",
+      "svg": "svg/15-outbox-inbox.svg"
+    }
+  ]
+}

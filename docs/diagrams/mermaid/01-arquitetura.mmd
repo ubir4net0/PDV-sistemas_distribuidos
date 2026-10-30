@@ -1,0 +1,37 @@
+---
+title: "PDV — Arquitetura e fronteiras — PROPOSTA v1"
+---
+flowchart TB
+    pessoa["Operador e administrador"]
+    ui["Frontend React + TypeScript<br/>PDV e administração"]
+    subgraph apiProc["Processo Java 21 — API Spring Boot"]
+        api["REST + autenticação + RBAC"]
+        dominio["Vendas / estoque / cadastros<br/>Saga e transações locais"]
+        pubApi["Outbox: publicação e consumo de resultados"]
+        api --> dominio --> pubApi
+    end
+    subgraph workerProc["Processo Java 21 — worker Spring Boot"]
+        worker["Inbox + processador fictício<br/>aprovação / recusa / resultado incerto / estorno"]
+        pubWorker["Outbox de resultados<br/>jobs de reservas e reconciliação"]
+        worker --> pubWorker
+    end
+    pg[("PostgreSQL compartilhado<br/>dados + reservas + movimentos<br/>outbox / inbox / idempotência")]
+    mq["RabbitMQ<br/>eventos, confirmações e reentregas"]
+    dlq["DLQ<br/>inspeção e reprocessamento controlado"]
+    obs["Observabilidade proposta<br/>trace e logs sem dados sensíveis"]
+    pessoa --> ui --> api
+    dominio <--> pg
+    pubApi <--> pg
+    worker <--> pg
+    pubWorker <--> pg
+    pubApi --> mq --> worker
+    pubWorker --> mq --> pubApi
+    mq -. "falhas após política de tentativas" .-> dlq
+    api -.-> obs
+    worker -.-> obs
+    aviso["PROPOSTA: nenhum gateway, banco ou serviço fiscal externo"]
+    aviso -.- worker
+    classDef dados fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef alerta fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    class pg,mq dados
+    class aviso,dlq alerta

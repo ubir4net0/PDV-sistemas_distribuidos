@@ -1,0 +1,30 @@
+---
+title: "PDV — Reservas e invariantes de estoque — PROPOSTA v1"
+---
+stateDiagram-v2
+    direction LR
+    [*] --> ATIVA: reserva atômica com saldo disponível
+    ATIVA --> CONFIRMADA: aprovação e confirmação atômica da baixa
+    ATIVA --> LIBERADA: recusa confirmada ou liberação segura autorizada
+    ATIVA --> EXPIRADA: TTL e elegibilidade segura confirmados
+    ATIVA --> ATIVA: pagamento em processamento ou incerto
+    note left of ATIVA
+        disponível = físico - reservado
+        reservar reduz disponível
+        sem alterar físico
+        nenhum saldo pode ser negativo
+    end note
+    note right of CONFIRMADA
+        físico e reservado caem juntos
+        movimento auditável único
+        não confirmar duas vezes
+    end note
+    note right of LIBERADA
+        reduz reservado, preserva físico
+        liberação no máximo uma vez
+    end note
+    note right of EXPIRADA
+        job não vence pagamento
+        aprovado ou desconhecido
+        sem reconciliação
+    end note

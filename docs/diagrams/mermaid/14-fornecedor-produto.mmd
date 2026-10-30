@@ -1,0 +1,16 @@
+---
+title: "PDV — Alternativas de fornecedor e produto — PROPOSTA v1"
+---
+flowchart TB
+    subgraph original["Alternativa A — N:1 descrita na referência"]
+        fa["Fornecedor"] -->|"um fornecedor para vários produtos"| pa["Produto com fornecedor_id"]
+    end
+    subgraph alternativa["Alternativa B — N:N a avaliar"]
+        fb["Fornecedor"] -->|"um para vários vínculos"| vinculo["Vínculo fornecedor-produto<br/>estrutura proposta"]
+        pb["Produto"] -->|"um para vários vínculos"| vinculo
+    end
+    decidir{"DEC-03<br/>validar multiplicidade requerida"}
+    pa -. "sem decisão física" .-> decidir
+    vinculo -. "sem decisão física" .-> decidir
+    classDef pending fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    class decidir pending

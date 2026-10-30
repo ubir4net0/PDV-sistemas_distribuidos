@@ -2,6 +2,8 @@
 
 Nota de vigência: este relatório preserva a auditoria inicial. O proprietário posteriormente definiu trabalho individual com commits diretos em main, sem PR/aprovação externa, conforme a [ADR-001](../decisions/ADR-001-fluxo-individual.md). Regras operacionais anteriores de Gitflow/PR são históricas; os 60 IDs, fontes originais e aceites de produto permanecem preservados.
 
+Atualização da PDV-001: o proprietário solicitou [15 diagramas novos](../diagrams/README.md), gerados a partir da baseline textual e validados por renderização/inspeção visual. Eles tornam o modelo proposto revisável, mas não comprovam equivalência aos originais ausentes. SRC-01 agora distingue ausência da fonte original de validação pendente dos novos modelos; DEC-01 a DEC-06 continuam sem aprovação silenciosa.
+
 ## Resultado da reconciliação
 Em 30/10/2026, o acesso MCP autenticado permitiu ler a página mestre completa. O conteúdo anterior estava vazio. Assim, foi possível confirmar a ausência de conteúdo publicado nessa página, mas não validar os requisitos e diagramas acadêmicos originais. O pacote passa a ser uma baseline textual proposta, aguardando validação acadêmica.
 

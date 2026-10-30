@@ -1,0 +1,34 @@
+---
+title: "PDV — Mensageria e efeitos idempotentes — PROPOSTA v1"
+---
+flowchart TB
+    comando["Comando autenticado<br/>chave idempotente + fingerprint"]
+    tx1["TX local do produtor<br/>dados de domínio + outbox"]
+    outbox[("Outbox pendente")]
+    pub["Publicador no processo API ou worker"]
+    broker["RabbitMQ"]
+    confirmar{"Publisher confirm?"}
+    marcar["Marcar evento publicado"]
+    repetir["Manter pendente<br/>republicação pode duplicar"]
+    consumidor["Consumidor"]
+    dedup{"Evento + consumidor<br/>já processado?"}
+    tx2["TX local do consumidor<br/>inbox + efeito de domínio + nova outbox se necessário"]
+    ack["ACK somente após commit"]
+    retry["Falha sem commit<br/>reentrega conforme política"]
+    dlq["DLQ<br/>inspeção e replay controlado"]
+    comando --> tx1 --> outbox --> pub --> broker
+    broker --> confirmar
+    confirmar -->|"sim"| marcar
+    confirmar -->|"não ou queda antes de registrar"| repetir --> pub
+    broker --> consumidor --> dedup
+    dedup -->|"sim: não repetir efeito"| ack
+    dedup -->|"não"| tx2
+    tx2 -->|"commit"| ack
+    tx2 -->|"rollback"| retry --> consumidor
+    retry -. "após política definida" .-> dlq
+    dlq -. "replay preserva idempotência" .-> consumidor
+    nota["PROPOSTA — dois bancos lógicos não são exigidos<br/>API e worker compartilham PostgreSQL no laboratório<br/>não existe atomicidade global entre banco e broker"]
+    nota -.- tx1
+    nota -.- tx2
+    classDef pending fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    class nota,dlq pending

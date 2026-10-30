@@ -2,6 +2,8 @@
 
 Estado: requisitos do pacote v1.0, sujeitos à conciliação acadêmica. Não implementado.
 
+Os [15 diagramas novos](../diagrams/README.md) representam a baseline textual como proposta v1. Incluem arquitetura, domínio, três DERs, sequências e estados; não substituem a verificação dos originais acadêmicos ausentes nem aprovam contratos, cardinalidade ou schema. DEC-01 a DEC-06 permanecem indicadas nos modelos.
+
 Frontend React/TypeScript/Vite/Tailwind -> API Java 21/Spring Boot -> PostgreSQL/Flyway. RabbitMQ conecta API e worker Spring Boot independente. Maven Wrapper para builds. Spring Security, Validation, JPA, Spring AMQP e Actuator serão definidos nos scaffolds.
 
 Banco compartilhado entre dois processos é simplificação acadêmica. Transações fortes locais protegem estoque e reserva; Saga coordena fechamento/cancelamento com consistência eventual. Outbox/inbox e idempotência protegem reentregas. Timeout de resultado desconhecido exige reconciliação antes de liberar/confirmar reserva.

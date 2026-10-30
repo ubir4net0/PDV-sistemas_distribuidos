@@ -1,0 +1,48 @@
+---
+title: "PDV — DER técnico e rastreabilidade — PROPOSTA v1"
+---
+erDiagram
+    OUTBOX_EVENTOS {
+        UUID id PK
+        UUID agregado_id
+        string tipo_evento
+        integer versao
+        json payload
+        timestamp ocorrido_em
+        timestamp publicado_em
+        string trace_id
+    }
+    INBOX_EVENTOS {
+        UUID evento_id
+        string consumidor
+        timestamp processado_em
+    }
+    IDEMPOTENCIA_REQUISICOES {
+        string chave
+        string escopo
+        string fingerprint
+        string estado
+        json resposta
+        timestamp expiracao
+    }
+    CONTROLE_PROJECAO {
+        string projecao
+        string posicao
+        timestamp atualizado_em
+    }
+    RASTREAMENTO_STATUS {
+        UUID id PK
+        string entidade_tipo
+        UUID entidade_id
+        string status_anterior
+        string status_atual
+        timestamp criado_em
+    }
+    LOGS_MONITORAMENTO {
+        UUID id PK
+        string servico
+        string nivel
+        string trace_id
+        json contexto
+        timestamp criado_em
+    }
