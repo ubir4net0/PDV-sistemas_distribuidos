@@ -34,4 +34,4 @@ Comando, resultado, ambiente e limitações desta sessão. Planejamento não equ
 
 ## Revisão e aceite
 
-Branch, PR, revisão e validação reais. PR aberto não conclui a tarefa.
+Branch main, hash/link do commit, autorevisão e validação reais. PR e aprovação de terceiros não são exigidos no fluxo individual da ADR-001. Commit/push não concluem a tarefa por si só.

@@ -1,5 +1,7 @@
 # Evidências do primeiro ciclo em 30 de outubro de 2026
 
+Registro histórico anterior à decisão de trabalho individual. A [ADR-001](../decisions/ADR-001-fluxo-individual.md) substitui as exigências de Gitflow/PR/revisão externa descritas neste relatório. O fluxo vigente usa commits diretos em main e mantém bloqueados force-push/exclusão; fontes, testes e aceites continuam obrigatórios.
+
 ## Resultado
 
 Planejamento e bootstrap documental preparados no repositório independente PDV-sistemas_distribuidos. Não há código de produto implementado. O primeiro ciclo pedido no pacote abrange board, reconciliação, ordem de execução e bootstrap condicional; não inclui implementar as sessenta tarefas.

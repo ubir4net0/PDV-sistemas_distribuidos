@@ -1,7 +1,9 @@
 # Plano de implementação do PDV
 
+Fluxo vigente: trabalho individual com commits diretos em main, sem PR ou revisão de terceiros, conforme a [ADR-001](../decisions/ADR-001-fluxo-individual.md). Fontes, aceites, dependências e ordem abaixo foram preservados; menções originais a Gitflow são históricas e não impõem PR.
+
 ## Ordem de implementação proposta
-A sequência abaixo respeita todas as dependências declaradas e prioriza P0 dentre as tarefas elegíveis; sem ciclos no grafo de 60 tarefas. Ela não altera a prioridade dos cards nem representa autorização para iniciar tarefa bloqueada. Após cada entrega, reler a próxima tarefa viva, aplicar DoR e criar spec e feature branch.
+A sequência abaixo respeita todas as dependências declaradas e prioriza P0 dentre as tarefas elegíveis; sem ciclos no grafo de 60 tarefas. Ela não altera a prioridade dos cards nem representa autorização para iniciar tarefa bloqueada. Após cada entrega, reler a próxima tarefa viva, aplicar DoR e criar a spec; implementar com commits diretos em main e registrar evidências, sem PR obrigatório.
 
 ## Gates
 1. Validar as fontes e decisões em PDV-001; preparar a baseline documental e Gitflow de PDV-002/010 e revisar arquitetura PDV-003.

@@ -1,7 +1,9 @@
-# Gitflow e proteções
+# Fluxo individual e proteção do histórico
 
-main é a linha de liberação; develop integra; feature/PDV-XXX-slug parte de develop; hotfix/PDV-XXX-slug parte de main; release/versao parte de develop. Commits convencionais com ID e PR para develop. Sem force-push main/develop, exclusão de branches, merge ou deploy automático.
+Conforme a ADR-001, o proprietário trabalha sozinho e usa commits diretos em main. Não exigir Gitflow, feature branch, develop, PR ou aprovação de outra conta. O caminho deste arquivo foi mantido para preservar referências existentes; o fluxo Gitflow original foi substituído.
 
-Em 30/10/2026 foi confirmado repositório vazio. A exceção inicial cria um commit documental base em main e o mesmo commit em develop; as alterações seguintes ficam em feature/PDV-002-bootstrap-planejamento e PR. Essa exceção está consumida, não é fluxo recorrente.
+Conferir git status e preservar mudanças locais. Em main, atualizar origin/main por fast-forward quando o working tree permitir; executar a tarefa/spec e autorevisar o diff. Criar commit convencional com ID e registrar hash, fonte viva, testes e limitações na tarefa. Fazer push normal para o remoto autorizado quando incluído no escopo. Não criar PR automaticamente. Branches auxiliares são opcionais e não alteram os gates de validação.
 
-Proteções de branches são parte do aceite integral PDV-002, após revisão do setup. Recomenda-se PR obrigatório, aprovação de revisão, checks pertinentes, resolução de discussões, bloqueio de force-push e exclusão. Não impor check de aplicação que ainda não existe. Este ciclo não presume proteção ativa; verificar/configurar com o responsável no setup, sem inventar aprovação de equipe.
+main mantém proteção contra force-push e exclusão, aplicada também a administradores, permitindo commits diretos sem PR ou revisão obrigatórios. A CI roda no push de main; falha deve ser corrigida antes de prosseguir, sem alegar teste aprovado. Commit e push não concluem tarefa por si só.
+
+O bootstrap inicial criou main/develop e a feature documental. Na adoção do fluxo individual, main incorpora os commits já existentes por fast-forward e recebe o commit desta decisão. O PR anterior é substituído; branches e fontes originais ficam preservadas. Deploy e ações destrutivas continuam exigindo autorização específica.

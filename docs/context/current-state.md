@@ -1,5 +1,9 @@
 # Estado observado em 30 de outubro de 2026
 
+## Atualização vigente do fluxo individual
+
+O proprietário informou que trabalhará sozinho e dispensou PR e aprovação externa. A ADR-001 define commits diretos em main, com autorevisão, specs, testes e rastreabilidade. A exigência de revisão de PR foi removida no GitHub; a API confirmou required_pull_request_reviews=null, mantendo force-push e exclusão bloqueados. O bootstrap documental antes preparado na feature foi trazido para main por fast-forward; develop e a feature permanecem como histórico. A CI passa a executar no push de main. Os registros abaixo descrevem o primeiro ciclo anterior a esse refinamento.
+
 ## Confirmado nesta sessão
 
 - Pacote ZIP com dois Markdown e um DOCX; sem código de aplicação ou diagramas incorporados.
@@ -16,6 +20,6 @@ Fontes acadêmicas/diagramas, conciliação de estados e cardinalidade, polític
 
 ## Implementação
 
-Não há API, worker, frontend, Compose de produto, migrations ou regras de domínio implementadas. Diretórios reservados por README não são scaffolds funcionais. Nenhum RF/RNF atendido; nenhuma suíte de produto foi executada. Proteções de branches não estão presumidas ativas.
+Não há API, worker, frontend, Compose de produto, migrations ou regras de domínio implementadas. Diretórios reservados por README não são scaffolds funcionais. Nenhum RF/RNF atendido; nenhuma suíte de produto foi executada. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
 
 Consulte relatório de reconciliação e Notion para próximos gates. Histórico local e arquivos de planejamento não substituem status vivo.

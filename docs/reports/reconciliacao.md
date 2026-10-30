@@ -1,5 +1,7 @@
 # Reconciliação das fontes do PDV
 
+Nota de vigência: este relatório preserva a auditoria inicial. O proprietário posteriormente definiu trabalho individual com commits diretos em main, sem PR/aprovação externa, conforme a [ADR-001](../decisions/ADR-001-fluxo-individual.md). Regras operacionais anteriores de Gitflow/PR são históricas; os 60 IDs, fontes originais e aceites de produto permanecem preservados.
+
 ## Resultado da reconciliação
 Em 30/10/2026, o acesso MCP autenticado permitiu ler a página mestre completa. O conteúdo anterior estava vazio. Assim, foi possível confirmar a ausência de conteúdo publicado nessa página, mas não validar os requisitos e diagramas acadêmicos originais. O pacote passa a ser uma baseline textual proposta, aguardando validação acadêmica.
 

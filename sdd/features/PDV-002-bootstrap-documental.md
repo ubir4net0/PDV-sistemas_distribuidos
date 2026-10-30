@@ -1,5 +1,13 @@
 # PDV-002 bootstrap documental do repositório vazio
 
+## Refinamento autorizado para trabalho individual
+
+Em 30/10/2026 o proprietário informou que trabalhará sozinho e pediu remover a exigência de PR, usando commits diretos. Este refinamento substitui o fluxo Gitflow/PR anterior; o restante desta spec preserva a baseline histórica.
+
+Escopo: registrar ADR do fluxo individual, atualizar AGENTS.md, README, workflows e template SDD, executar CI em pushes de main, remover a exigência de PR/revisão no GitHub e manter bloqueados force-push/exclusão. Consolidar os commits já preparados do bootstrap na main por fast-forward, sem novo PR, rebase ou exclusão de branches; encerrar o PR anterior como substituído pelo fluxo direto. Código de produto, migrations e deploy permanecem fora do escopo.
+
+Aceite do refinamento: main recebe commits diretos; PR e revisão de terceiros deixam de ser gates; autorevisão, testes, specs e evidências continuam; fontes originais e histórico preservados. API deve confirmar ausência de required_pull_request_reviews e manter allow_force_pushes=false/allow_deletions=false. Validar o planejamento, whitespace, push e CI da main. Este ajuste não conclui a auditoria acadêmica nem os demais aceites de PDV-002.
+
 ## Estado e fonte
 
 Notion: https://app.notion.com/p/4092c9a9991781359c70ed9efb999125?pvs=204
