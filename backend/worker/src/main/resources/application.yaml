@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: pdv-worker
+  main:
+    web-application-type: none
+  rabbitmq:
+    host: ${PDV_RABBITMQ_HOST:rabbitmq}
+    port: ${PDV_RABBITMQ_PORT:5672}
+    username: ${PDV_RABBITMQ_USER}
+    password: ${PDV_RABBITMQ_PASSWORD}
+    virtual-host: ${PDV_RABBITMQ_VHOST}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    connection-timeout: 5s
+
+pdv:
+  probe:
+    prefix: ${PDV_PROBE_PREFIX:pdv.scaffold.probe}
+    publish-timeout-ms: 5000

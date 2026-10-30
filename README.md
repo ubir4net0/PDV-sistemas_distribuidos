@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura local PostgreSQL/RabbitMQ e scaffold técnico da API Java 21 disponíveis. Funcionalidades de negócio, worker e frontend ainda não foram implementados.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ e scaffolds Java 21 da API e worker disponíveis. Funcionalidades de negócio e frontend ainda não foram implementados.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -46,5 +46,16 @@ Com Docker ativo, na raiz:
 ```
 
 API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health representa somente o processo; este scaffold ainda não conecta banco/filas e bloqueia os demais caminhos até a implementação dos contratos e autenticação.
+
+## Scaffold do worker
+
+Com RabbitMQ local saudável:
+
+```powershell
+./scripts/worker.ps1 -Action Verify
+./scripts/worker.ps1 -Action Run
+```
+
+Processo independente, sem porta HTTP, com diagnóstico JSON tipado por AMQP e tratamento de erros em DLQ. O build testa o broker real em filas próprias e não implementa pagamentos ou eventos de venda. [Contrato técnico, operação e limites](backend/worker/README.md).
 
 Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.

@@ -1,5 +1,5 @@
 {
-  "purpose": "Toolchain local da PDV-005; Wrapper controla a versao Maven executada.",
+  "purpose": "Toolchain local compartilhada da API/worker; cada Wrapper controla a versao Maven executada.",
   "image": "maven:3.9-eclipse-temurin-21@sha256:99e61abcff91a9b1333463bd8451fb18495d6eba9250ac66a338b518f8278320",
   "java": 21,
   "mavenWrapper": "3.3.4",

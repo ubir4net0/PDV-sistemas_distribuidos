@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## Scaffold do worker na PDV-006
+
+backend/worker fornece processo Java 21/Spring Boot 4.1.2 independente da API, sem HTTP. O diagnóstico técnico consome JSON tipado por AMQP, publica resposta com correlação, confirma publicação/roteamento e rejeita entradas inválidas para DLQ, sem logging do corpo. O namespace pdv.scaffold.probe não contém filas ou contratos de negócio. Scripts e instruções estão em backend/worker/README.md; testes usam RabbitMQ real e namespace próprio com limpeza restrita.
+
+Não há pagamento, Saga, API produtora, inbox/outbox ou persistência implementados. Ack/confirm não elimina duplicação ou incerteza em falhas. A spec sdd/features/PDV-006-worker-scaffold.md registra evidências e limites; contratos de domínio continuam pendentes.
+
 ## Scaffold técnico da API na PDV-005
 
 backend/api contém aplicação Spring Boot 4.1.2/Java 21, Maven Wrapper oficial 3.3.4 (bin), Maven 3.10.0 com checksum e pacotes por domínio/camada. Web MVC, Validation, Security e Actuator compõem o bootstrap. Health e probes são públicos sem detalhes; outros caminhos permanecem bloqueados. Não existe conta padrão em memória.
@@ -44,6 +50,6 @@ Fontes acadêmicas/diagramas, conciliação de estados e cardinalidade, polític
 
 ## Implementação
 
-Há Compose funcional para PostgreSQL/RabbitMQ e scaffold executável da API com health. Worker, frontend, migrations e regras de domínio não estão implementados. Testes do scaffold e infraestrutura não comprovam RF/RNF completos. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
+Há Compose funcional, API com health e worker independente com diagnóstico AMQP. Frontend, migrations e regras de domínio não estão implementados. Testes técnicos e de infraestrutura não comprovam RF/RNF completos ou integração de negócio API→worker. A main está protegida contra force-push/exclusão e permite commits diretos no fluxo individual.
 
 Consulte relatório de reconciliação e Notion para próximos gates. Histórico local e arquivos de planejamento não substituem status vivo.

@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. Infraestrutura local disponível pela PDV-004 e scaffold técnico da API pela PDV-005. Domínio e integrações ainda não implementados.
+Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. Infraestrutura pela PDV-004, API pela PDV-005 e worker técnico pela PDV-006 disponíveis. Domínio e integrações de negócio ainda não implementados.
 
 ## Registros de decisão
 
@@ -19,6 +19,8 @@ Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessam
 Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). O scaffold da API usa Spring Boot 4.1.2 estável, confirmado no Initializr oficial, e Java 21 isolado. [API](../../backend/api/README.md) documenta módulos/camadas e limites: health mede o processo; datasource/JPA/Flyway/AMQP serão adicionados nas integrações correspondentes. Nenhum contrato ou schema foi aprovado pelo bootstrap.
 
 ## Fronteiras de consistência
+
+O [worker](../../backend/worker/README.md) tem build/processo próprios e um diagnóstico AMQP real com contrato JSON fixo, confirms/returns e DLQ. Não recebe comandos da API nem processa pagamentos. Esse scaffold não implementa a outbox/inbox ou garantias transacionais da arquitetura alvo abaixo.
 
 | Fronteira | Garantia alvo | Limitação |
 | --- | --- | --- |

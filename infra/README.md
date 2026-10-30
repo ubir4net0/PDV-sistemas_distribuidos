@@ -1,6 +1,6 @@
 # Infraestrutura local do PDV
 
-O [Compose da raiz](../compose.yaml) inicia PostgreSQL 16.15 e RabbitMQ 4.3.7 com management, usando imagens oficiais fixadas por digest. A [PDV-004](../sdd/features/PDV-004-infra-local.md) registra escopo e evidências. Este ambiente contém apenas dependências locais; API, worker, frontend e migrations ainda não existem.
+O [Compose da raiz](../compose.yaml) inicia PostgreSQL 16.15 e RabbitMQ 4.3.7 com management, usando imagens oficiais fixadas por digest. A [PDV-004](../sdd/features/PDV-004-infra-local.md) registra escopo e evidências. Este Compose contém apenas dependências locais; os scaffolds de [API](../backend/api/README.md) e [worker](../backend/worker/README.md) são executados separadamente. Frontend e migrations ainda não existem.
 
 ## Iniciar no Windows
 
