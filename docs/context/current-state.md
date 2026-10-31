@@ -1,5 +1,9 @@
 # Estado observado em 30 de outubro de 2026
 
+## Guia de execução na PDV-010
+
+AGENTS.md e o workflow Notion do bootstrap foram revisados e complementados com roteiro operacional, matriz de escrita, leitura de dependências, evidências e condições de transição. O roteiro em docs/workflows/task-execution.md aplica commits diretos em main conforme ADR-001 e diferencia entrega técnica de aceite. A spec sdd/features/PDV-010-guia-agentes-workflow.md registra o critério original, o refinamento de Gitflow e verificações desta entrega documental. Baseline e decisões de domínio permanecem pendentes; nenhum código ou infraestrutura foi alterado.
+
 ## CI e qualidade na PDV-008
 
 Backend quality executa API e worker em Java 21 com Checkstyle compartilhado, compilação, Surefire para seis unitários do publisher, empacotamento e Failsafe para dez testes HTTP e onze AMQP reais. O job worker cria RabbitMQ temporário com senha aleatória e health obrigatório, removendo seu container ao final. Planning integrity continua separado. Comandos, limites e fontes estão em docs/workflows/ci.md; resultados desta sessão na spec sdd/features/PDV-008-ci-qualidade.md.

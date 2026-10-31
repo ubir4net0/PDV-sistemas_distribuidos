@@ -16,6 +16,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 ## Leitura e verificação
 
 - [Guia para agentes](AGENTS.md) e [workflow Notion](docs/workflows/notion-task.md).
+- [Roteiro de execução de uma tarefa](docs/workflows/task-execution.md): DoR/DoD, comandos, autorevisão, evidências e limites de escrita no fluxo individual.
 - [Estado observado](docs/context/current-state.md) e [arquitetura alvo](docs/context/architecture.md).
 - [Índice de ADRs](docs/decisions/README.md): processos, transações, Saga, mensageria, idempotência e limites acadêmicos documentados na PDV-003.
 - [15 diagramas propostos](docs/diagrams/README.md): arquitetura, casos de uso, classes, DER, sequências e estados, com fontes Mermaid editáveis e SVGs.

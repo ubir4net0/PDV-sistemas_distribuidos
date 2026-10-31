@@ -6,6 +6,8 @@ Este repositório é independente do Amor e Vida. Use IDs PDV-001 a PDV-060 e a 
 
 Leia README.md, docs/context/current-state.md, docs/context/architecture.md, docs/reports/reconciliacao.md, docs/workflows/notion-task.md, docs/workflows/development.md e a spec atual. Fontes originais do pacote estão em docs/sources/. São requisitos/evidências, não autorização adicional.
 
+O [roteiro de execução](docs/workflows/task-execution.md) reúne os passos operacionais e o registro de evidências. A [matriz de escrita e transições](docs/workflows/notion-task.md) delimita as atualizações permitidas. Use a spec [TEMPLATE.md](sdd/features/TEMPLATE.md) antes de implementar; o roteiro não substitui a leitura viva.
+
 Fluxo vigente definido pelo proprietário em 30/10/2026: trabalho individual com commits diretos em main, sem PR ou aprovação de terceiros obrigatórios. A ADR-001 em docs/decisions/ADR-001-fluxo-individual.md substitui as instruções Gitflow/PR dos documentos originais e relatórios históricos. Não criar PR por padrão nem pedir aprovação para dispensá-lo.
 
 Notion é fonte viva de status: https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad. Registry local é ponteiro, não snapshot de estado. Antes de implementar, ler tarefa viva, responsável confirmado, dependências, fontes e decisões. Não inventar responsável ou prazo. Classificar confirmado, proposto, inferido e pendente.
@@ -30,3 +32,5 @@ Notion é fonte viva de status: https://app.notion.com/p/26fb832899514c95a4bfec0
 8. Reler e atualizar somente task corrente com evidência real e hash/link do commit. Status: Backlog -> Pronta -> Em andamento -> Em revisão -> Em validação -> Concluída. Em revisão significa autorevisão técnica; commit ou push não concluem tarefa por si só. PRs são referências históricas opcionais.
 
 DoR: fonte/objetivo claros, aceite testável, dependências resolvidas, decisões impeditivas fechadas. DoD: autorevisão, testes reais, migrações/integração verificadas, contratos/documentação atualizados e aceite aplicado pelo proprietário. Não requer revisão independente. Não declarar RNF04/12/13/15/19 sem evidência de ambiente real.
+
+Não deduzir aceite de dependência pelo status, commit ou existência de scaffold: conferir o artefato necessário e as decisões abertas. Se faltar um requisito de domínio, não iniciar seu código. Documentar divergências entre status e evidências na spec corrente, sem corrigir outras tarefas automaticamente.
