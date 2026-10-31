@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## Catálogo — PDV-020
+
+Categorias/produtos com JPA e V7, SKU único canônico e Decimal validado sem arredondamento. Refinamento confirmado: ADMIN gerencia, OPERATOR consulta; estados CADASTRADO→EM_REVISAO→ATIVO↔INATIVO, edição conserva estado. Histórico atômico, locks categoria→produto, versões e FKs preservam vínculos. Contrato em [catálogo](../workflows/catalog.md); busca paginada/fornecedores pertencem aos incrementos seguintes. Evidências na spec e tarefa viva; não implica aceite do proprietário.
+
 ## Endereços e regiões — PDV-018
 
 V6 customer_addresses com FK 1:N, principal único parcial e versão. API JPA permite consultar/criar/editar endereços com permissões explícitas; principal alternado, versões e histórico são transacionais. Consulta regional real usa principal e conserva grupo sem localização, sem duplicar clientes. Sem frontend, exclusão física ou relatório de vendas. Contrato em docs/workflows/customers.md.

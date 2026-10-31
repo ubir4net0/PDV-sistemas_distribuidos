@@ -165,10 +165,13 @@ class RbacHttpIT {
                         mapping.getPatternValues().forEach(path -> actual.add(method + " " + path)));
             }
         });
-        assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me", "GET /customers", "GET /customers/regions", "GET /customers/{id}", "GET /customers/{id}/addresses",
-                "GET /customers/{id}/history", "PATCH /customers/{id}/status", "POST /auth/login", "POST /auth/logout",
-                "POST /customers", "POST /customers/{id}/addresses", "PUT /customers/{id}",
-                "PUT /customers/{id}/addresses/{addressId}");
+        assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me",
+                "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
+                "GET /customers/{id}", "GET /customers/{id}/addresses", "GET /customers/{id}/history",
+                "GET /products/{id}", "GET /products/{id}/history", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
+                "PATCH /products/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",
+                "POST /customers", "POST /customers/{id}/addresses", "POST /products", "PUT /categories/{id}",
+                "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}");
     }
 
     private String token(String role) throws Exception {

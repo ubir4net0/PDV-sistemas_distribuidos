@@ -20,6 +20,8 @@ Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features
 
 ## Fronteiras de consistência
 
+Incremento PDV-020: catalog possui CRUD JPA real de categorias/produtos e V7; histórico por JDBC compartilha a transação JPA. Locks categoria→produto e versões protegem mudanças, UNIQUE protege SKU. Refinamento de estados/permissões confirmado pelo proprietário, documentado no [contrato](../workflows/catalog.md). Isso não implementa saldo, Saga ou compras.
+
 O [worker](../../backend/worker/README.md) tem build/processo próprios e um diagnóstico AMQP real com contrato JSON fixo, confirms/returns e DLQ. Não recebe comandos da API nem processa pagamentos. Esse scaffold não implementa a outbox/inbox ou garantias transacionais da arquitetura alvo abaixo.
 
 | Fronteira | Garantia alvo | Limitação |
