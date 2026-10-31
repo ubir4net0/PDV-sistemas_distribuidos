@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,6 +26,7 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
  * Header-only authentication; no ambient browser credentials.
  */
 @Configuration(proxyBeanMethods = false)
+@EnableMethodSecurity
 class SecurityConfiguration {
 
     @Bean
@@ -62,6 +64,7 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/access/permissions").hasRole("ADMIN")
                         .anyRequest().denyAll())
                 .addFilterBefore(new BearerTokenFilter(auth), AnonymousAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

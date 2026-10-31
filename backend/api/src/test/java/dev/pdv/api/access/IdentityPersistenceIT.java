@@ -157,7 +157,11 @@ class IdentityPersistenceIT {
         }
         assertThat(jdbc.queryForList("SELECT code FROM roles ORDER BY code", String.class)).containsExactly("ADMIN", "OPERATOR");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM users", Integer.class)).isZero();
-        assertThat(jdbc.queryForObject("SELECT count(*) FROM role_permissions", Integer.class)).isZero();
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM role_permissions", Integer.class)).isEqualTo(1);
+        assertThat(jdbc.queryForList("""
+                SELECT r.code FROM roles r JOIN role_permissions rp ON rp.role_id=r.id
+                JOIN permissions p ON p.id=rp.permission_id WHERE p.resource='access.permissions' AND p.action='read'
+                """, String.class)).containsExactly("ADMIN");
     }
 
     @Test

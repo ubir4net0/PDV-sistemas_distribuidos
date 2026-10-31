@@ -45,3 +45,7 @@ Somente planejamento, reconciliação e bootstrap documental. Nenhum RF/RNF est�
 
 ## Próxima ação elegível
 Resolver SRC-01 em PDV-001 e validar os refinamentos bloqueantes. Não marcar Pronta ou Concluída apenas por criar o board ou abrir PR. Responsável e prazos continuam sem atribuição.
+
+## Atualização da PDV-013 — recorte de RBAC aprovado
+
+O proprietário aprovou explicitamente a matriz inicial: health/login públicos, perfil/logout próprios para autenticados, catálogo apenas administrativo, demais rotas negadas. A [spec PDV-013](../../sdd/features/PDV-013-rbac-endpoints.md) registra o recorte implementado/testado. DEC-06 continua aberta para permissões de negócios futuros, TTL operacional e demais políticas; a aprovação inicial não os define. As indicações anteriores preservam o estado histórico de cada entrega.

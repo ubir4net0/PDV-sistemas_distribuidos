@@ -22,5 +22,16 @@ public class DevelopmentIdentitySeed implements ApplicationRunner {
     public void run(ApplicationArguments arguments) {
         jdbc.update("INSERT INTO roles(code, name) VALUES ('ADMIN', 'Administrador') ON CONFLICT (code) DO NOTHING");
         jdbc.update("INSERT INTO roles(code, name) VALUES ('OPERATOR', 'Operador') ON CONFLICT (code) DO NOTHING");
+        jdbc.update("""
+                INSERT INTO permissions(resource, action, description)
+                VALUES ('access.permissions', 'read', 'Consultar catalogo de permissoes')
+                ON CONFLICT (resource, action) DO NOTHING
+                """);
+        jdbc.update("""
+                INSERT INTO role_permissions(role_id, permission_id)
+                SELECT r.id, p.id FROM roles r CROSS JOIN permissions p
+                WHERE r.code = 'ADMIN' AND p.resource = 'access.permissions' AND p.action = 'read'
+                ON CONFLICT (role_id, permission_id) DO NOTHING
+                """);
     }
 }

@@ -10,7 +10,7 @@ Cada job executa `./mvnw -B -ntp clean verify` no respectivo módulo:
 | Enforcer / javac release 21 | Toolchain e verificação de tipos Java |
 | Surefire 3.5.6 | Classes Test/Tests; três cenários de autenticação na API e seis do publisher no worker |
 | JAR Spring Boot | Artefato empacotado de cada processo |
-| Failsafe 3.5.6 | Classes IT; HTTP/startup/autenticação, migrations e identidade PostgreSQL reais na API; onze AMQP no worker |
+| Failsafe 3.5.6 | Classes IT; HTTP/startup/autenticação/RBAC, migrations e identidade PostgreSQL reais na API; onze AMQP no worker |
 
 A API inclui unitários de BCrypt/limite UTF-8/codec e integração HTTP de autenticação, identidade e migrations em PostgreSQL real. Failsafe falha se não encontrar testes em qualquer módulo. `mvn test` não executa integração; usar `verify` para o gate completo. Relatórios locais ficam em target/surefire-reports e target/failsafe-reports, ignorados pelo Git.
 
@@ -27,3 +27,5 @@ Frontend/TypeScript não foi criado: lint e typecheck serão adicionados com o c
 Referências primárias usadas para configuração: [Maven Checkstyle](https://maven.apache.org/plugins/maven-checkstyle-plugin/examples/custom-checker-config.html), [Checkstyle e JDK mínimo](https://checkstyle.org/), [Failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/), [setup-java](https://github.com/actions/setup-java) e [Java/Maven no GitHub Actions](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-maven).
 
 O job API e Verify definem TTL de 900 segundos apenas para testes; Run exige configuração operacional explícita.
+
+RbacHttpIT testa matriz anônimo/operador/admin, guardas, métodos não liberados, revogação de autoridades e cobertura de mappings dos controllers existentes.

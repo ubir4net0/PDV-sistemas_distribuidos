@@ -34,8 +34,10 @@ A matriz de falhas da ADR-004 orienta os testes futuros. Os contratos finais de 
 
 ## Decisões pendentes
 
-Consultar o índice de decisões: estados de venda/pagamento (DEC-01), lote/recebimento parcial (DEC-05), TTLs/RBAC/descontos/carga (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
+Consultar o índice de decisões: estados de venda/pagamento (DEC-01), lote/recebimento parcial (DEC-05), TTLs/descontos/carga e RBAC de negócios futuros (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
 
 ## Validação alvo
 
 JUnit/Spring Boot Test/Testcontainers, PostgreSQL/RabbitMQ reais, Vitest/Testing Library/Playwright e carga declarada. RNF04/12/13/15/19 dependem de implantação/ensaio real; nenhum é comprovado pela arquitetura desenhada.
+
+A PDV-013 implementa a matriz inicial explicitamente aprovada pelo proprietário, com guardas Spring Security de rota/método e catálogo administrativo. Permissões das funcionalidades futuras continuam pendentes; consultar docs/workflows/identity-security.md e a spec PDV-013.

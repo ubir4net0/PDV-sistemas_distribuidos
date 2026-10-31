@@ -1,5 +1,10 @@
 # Estado observado em 30 de outubro de 2026
 
+## Matriz inicial na PDV-013
+
+Matriz aprovada pelo proprietário aplicada aos endpoints existentes: health/login públicos, perfil/logout próprios autenticados, catálogo GET /access/permissions somente ADMIN com concessão access.permissions.read. Demais métodos/caminhos negados com 401/403 conforme autenticação. Guardas de rota/método consultam autoridades atuais por token; seed development concede só o catálogo a ADMIN. Testes HTTP/PostgreSQL exercitam matriz e revogação de autoridades. Não há gestão HTTP de usuários ou permissões de negócios futuros.
+
+
 ## Autenticação na PDV-012
 
 Spring Security + BCrypt implementam login, perfil próprio e logout por token Bearer opaco. V3 persiste somente digest, expiração/revogação e fingerprint de credenciais; TTL obrigatório, sem conta padrão. Provisionamento development requer opt-in e credenciais privadas. Testes HTTP/PostgreSQL verificam cenários negativos e invalidações. Contrato e limites em docs/workflows/identity-security.md. RBAC do catálogo pertence ao commit PDV-013; demais negócios seguem pendentes. Seções anteriores abaixo descrevem o estado histórico de cada incremento.

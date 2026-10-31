@@ -33,6 +33,8 @@ As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “De
 | DEC-03 | Obrigatoriedade/nullable do fornecedor, sem reabrir a cardinalidade máxima N:1 | PDV-020/022 |
 | DEC-04 | Campos/restrições/políticas dos complementos já admitidos | Specs de PDV-011/035/038/039 e projeções justificadas |
 | DEC-05 | Atomicidade de lote e recebimento parcial | PDV-024 e PDV-027 |
-| DEC-06 | RBAC exato, TTLs, descontos, estados auxiliares e carga | Specs das respectivas tarefas |
+| DEC-06 | RBAC de negócios futuros, TTLs, descontos, estados auxiliares e carga | Specs das respectivas tarefas |
 
 As ADRs preservam histórico: decisão posterior deve citar e substituir o registro anterior, sem apagar a justificativa. A ADR-007 aprova a inclusão dos complementos, não todos os seus campos, políticas ou implementação.
+
+O proprietário aprovou a matriz inicial de endpoints da [PDV-013](../../sdd/features/PDV-013-rbac-endpoints.md): health/login públicos, perfil/logout próprios autenticados, catálogo administrativo e denyAll para o restante. Isso não aprova os demais itens da DEC-06.

@@ -1,0 +1,193 @@
+package dev.pdv.api.access;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import tools.jackson.databind.json.JsonMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class RbacHttpIT {
+    @Value("${local.server.port}") private int port;
+    @Autowired private JdbcTemplate jdbc;
+    @Autowired @Qualifier("requestMappingHandlerMapping") private RequestMappingHandlerMapping mappings;
+    private final HttpClient client = HttpClient.newHttpClient();
+    private final JsonMapper json = JsonMapper.builder().build();
+    private final UUID admin = UUID.randomUUID();
+    private final UUID operator = UUID.randomUUID();
+    private final UUID adminRole = UUID.randomUUID();
+    private final UUID operatorRole = UUID.randomUUID();
+    private final UUID readPermission = UUID.randomUUID();
+    private final UUID extraPermission = UUID.randomUUID();
+    private final String password = UUID.randomUUID().toString();
+
+    @BeforeEach
+    void provisionSyntheticMatrix() {
+        String hash = new BCryptPasswordEncoder(4).encode(password);
+        for (var user : new UUID[]{admin, operator}) {
+            jdbc.update("INSERT INTO users(id,name,email,password_hash,active) VALUES (?,'Synthetic',?,?,true)",
+                    user, user + "@example.test", hash);
+        }
+        jdbc.update("INSERT INTO roles(id,code,name) VALUES (?,'ADMIN','Administrador'),(?,'OPERATOR','Operador')",
+                adminRole, operatorRole);
+        jdbc.update("INSERT INTO user_roles(user_id,role_id) VALUES (?,?),(?,?)", admin, adminRole, operator, operatorRole);
+        jdbc.update("""
+                INSERT INTO permissions(id,resource,action) VALUES (?,'access.permissions','read'),(?,'synthetic.catalog','read')
+                """, readPermission, extraPermission);
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) VALUES (?,?)", adminRole, readPermission);
+    }
+
+    @AfterEach
+    void cleanupOnlyOwnSyntheticObjects() {
+        jdbc.update("DELETE FROM users WHERE id IN (?,?)", admin, operator);
+        jdbc.update("DELETE FROM roles WHERE id IN (?,?)", adminRole, operatorRole);
+        jdbc.update("DELETE FROM permissions WHERE id IN (?,?)", readPermission, extraPermission);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"ANONYMOUS,401", "OPERATOR,403", "ADMIN,200"})
+    void catalogRequiresAdministratorAndExplicitPermission(String role, int status) throws Exception {
+        var response = send("GET", "/access/permissions", token(role), null);
+        assertThat(response.statusCode()).isEqualTo(status);
+        assertThat(response.headers().firstValue("Set-Cookie")).isEmpty();
+        if (status == 200) {
+            var body = json.readTree(response.body());
+            assertThat(body.size()).isEqualTo(2);
+            assertThat(body.get(0).get("id").asString()).isEqualTo(readPermission.toString());
+            assertThat(body.get(1).get("id").asString()).isEqualTo(extraPermission.toString());
+        } else {
+            assertThat(response.body()).isEqualTo(status == 401
+                    ? "{\"code\":\"unauthorized\"}" : "{\"code\":\"forbidden\"}");
+            assertThat(response.headers().firstValue("WWW-Authenticate").isPresent()).isEqualTo(status == 401);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ANONYMOUS", "OPERATOR", "ADMIN"})
+    void healthAndLoginRemainPublicForAllRoles(String role) throws Exception {
+        var token = token(role);
+        for (String path : new String[]{"/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness"}) {
+            assertThat(send("GET", path, token, null).statusCode()).isEqualTo(200);
+        }
+        var response = send("POST", "/auth/login", token,
+                json.writeValueAsString(Map.of("email", operator + "@example.test", "password", password)));
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"OPERATOR", "ADMIN"})
+    void authenticatedRolesOnlyReadOwnProfileAndRevokeOwnCurrentToken(String role) throws Exception {
+        UUID own = "ADMIN".equals(role) ? admin : operator;
+        UUID other = "ADMIN".equals(role) ? operator : admin;
+        var token = token(role);
+        var otherToken = token("ADMIN".equals(role) ? "OPERATOR" : "ADMIN");
+        var profile = send("GET", "/auth/me?user_id=" + other, token, null);
+        assertThat(profile.statusCode()).isEqualTo(200);
+        assertThat(json.readTree(profile.body()).get("id").asString()).isEqualTo(own.toString());
+        assertThat(send("POST", "/auth/logout?user_id=" + other, token, null).statusCode()).isEqualTo(204);
+        assertThat(send("GET", "/auth/me", token, null).statusCode()).isEqualTo(401);
+        assertThat(send("GET", "/auth/me", otherToken, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/auth/me", null, null).statusCode()).isEqualTo(401);
+        assertThat(send("POST", "/auth/logout", null, null).statusCode()).isEqualTo(401);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"GET,/api/customers", "POST,/access/permissions", "PUT,/access/permissions", "DELETE,/access/permissions",
+            "GET,/auth/login", "POST,/auth/me", "GET,/auth/logout", "POST,/actuator/health", "GET,/actuator/env", "GET,/"})
+    void unapprovedMethodsAndPathsStayDeniedForEveryRole(String method, String path) throws Exception {
+        assertThat(send(method, path, null, null).statusCode()).isEqualTo(401);
+        for (String role : new String[]{"OPERATOR", "ADMIN"}) {
+            var response = send(method, path, token(role), null);
+            assertThat(response.statusCode()).isEqualTo(403);
+            assertThat(response.body()).isEqualTo("{\"code\":\"forbidden\"}");
+        }
+    }
+
+    @Test
+    void administratorWithoutGrantIsDeniedByMethodSecurity() throws Exception {
+        var token = token("ADMIN");
+        jdbc.update("DELETE FROM role_permissions WHERE role_id=? AND permission_id=?", adminRole, readPermission);
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(403);
+        assertThat(send("GET", "/auth/me", token, null).statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    void operatorWithAccidentalGrantDoesNotBecomeAdministrator() throws Exception {
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) VALUES (?,?)", operatorRole, readPermission);
+        assertThat(send("GET", "/access/permissions", token("OPERATOR"), null).statusCode()).isEqualTo(403);
+    }
+
+    @Test
+    void removingRoleAppliesOnNextRequestWithoutReissuingToken() throws Exception {
+        var token = token("ADMIN");
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(200);
+        jdbc.update("DELETE FROM user_roles WHERE user_id=? AND role_id=?", admin, adminRole);
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(403);
+        assertThat(send("GET", "/auth/me", token, null).statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    void removingAndRestoringGrantAppliesOnNextRequestWithoutReissuingToken() throws Exception {
+        var token = token("ADMIN");
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(200);
+        jdbc.update("DELETE FROM role_permissions WHERE role_id=? AND permission_id=?", adminRole, readPermission);
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(403);
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) VALUES (?,?)", adminRole, readPermission);
+        assertThat(send("GET", "/access/permissions", token, null).statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    void everyApplicationControllerMappingRequiresAnExplicitMatrixEntry() {
+        var actual = new TreeSet<String>();
+        mappings.getHandlerMethods().forEach((mapping, handler) -> {
+            if (handler.getBeanType().getPackageName().startsWith("dev.pdv.api")) {
+                assertThat(mapping.getMethodsCondition().getMethods()).as("Explicit HTTP methods required").isNotEmpty();
+                mapping.getMethodsCondition().getMethods().forEach(method ->
+                        mapping.getPatternValues().forEach(path -> actual.add(method + " " + path)));
+            }
+        });
+        assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me", "POST /auth/login", "POST /auth/logout");
+    }
+
+    private String token(String role) throws Exception {
+        if ("ANONYMOUS".equals(role)) {
+            return null;
+        }
+        UUID user = "ADMIN".equals(role) ? admin : operator;
+        var response = send("POST", "/auth/login", null,
+                json.writeValueAsString(Map.of("email", user + "@example.test", "password", password)));
+        assertThat(response.statusCode()).isEqualTo(200);
+        return json.readTree(response.body()).get("accessToken").asString();
+    }
+
+    private HttpResponse<String> send(String method, String path, String token, String body) throws Exception {
+        var builder = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path)).timeout(Duration.ofSeconds(15));
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        if (body != null) {
+            builder.header("Content-Type", "application/json");
+        }
+        return client.send(builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
+                : HttpRequest.BodyPublishers.ofString(body)).build(), HttpResponse.BodyHandlers.ofString());
+    }
+}

@@ -1,6 +1,6 @@
 # API PDV — Java 21 / Spring Boot
 
-API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. RBAC do catálogo pertence à PDV-013; cadastros comerciais, estoque, vendas, JPA e comunicação com o worker seguem pendentes.
+API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. Catálogo de permissões exige ADMIN e concessão explícita (PDV-013); cadastros comerciais, estoque, vendas, JPA e comunicação com o worker seguem pendentes.
 
 ## Build e execução no Windows
 
@@ -38,6 +38,7 @@ Em Unix: `./mvnw -B -ntp clean verify`. O build exige Java 21 e Maven >= 3.10, <
 | POST /auth/login | 200 com token Bearer opaco; entrada inválida 400; credenciais inválidas 401 |
 | GET /auth/me | 200 somente para o próprio token válido |
 | POST /auth/logout | 204, revogação somente do token atual |
+| GET /access/permissions | 200 para ADMIN com access.permissions.read; anônimo 401; demais 403 |
 | Outros caminhos/métodos | 401 anônimo, 403 autenticado; sem redirect, Basic ou sessão |
 
 Health agregado e readiness consultam PostgreSQL; liveness continua independente do banco. RabbitMQ não é consultado pela API. UP não significa fluxo de venda pronto. Somente health é exposto; componentes, detalhes, descoberta e /actuator/flyway permanecem ocultos/bloqueados. Nenhum usuário/senha em memória é gerado. Autenticação é implementada na PDV-012; outros caminhos continuam bloqueados.
@@ -61,6 +62,6 @@ Cada módulo reserva três camadas por `package-info.java`: `domain` para regras
 
 ## Verificações e fontes
 
-Os onze testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueios, ausência de contas padrão e Flyway/JDBC reais. Seis `MigrationsIT` verificam replay, rebuild, checksum, rollback de DDL, clean bloqueado e migradores concorrentes. Failsafe executa ambos em `verify`; Checkstyle inclui fontes e testes. AuthenticationTest cobre BCrypt, limites UTF-8 e tokens; AuthHttpIT/AuthPersistenceIT cobrem o contrato e persistência de autenticação, incluindo provisionamento dev opt-in. Não são testes de estoque, filas, Saga ou concorrência de negócio. [CI e gates](../../docs/workflows/ci.md) executam o build completo com PostgreSQL próprio.
+Os onze testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueios, ausência de contas padrão e Flyway/JDBC reais. Seis `MigrationsIT` verificam replay, rebuild, checksum, rollback de DDL, clean bloqueado e migradores concorrentes. Failsafe executa ambos em `verify`; Checkstyle inclui fontes e testes. RbacHttpIT cobre a matriz, fallback, catálogo real, perfil próprio e revogação de autoridades. AuthenticationTest cobre BCrypt, limites UTF-8 e tokens; AuthHttpIT/AuthPersistenceIT cobrem o contrato e persistência de autenticação, incluindo provisionamento dev opt-in. Não são testes de estoque, filas, Saga ou concorrência de negócio. [CI e gates](../../docs/workflows/ci.md) executam o build completo com PostgreSQL próprio.
 
 Bootstrap obtido do [Spring Initializr](https://start.spring.io), compatibilidade conferida nos [requisitos Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html). Ver também [Maven Wrapper](https://maven.apache.org/tools/wrapper/), [Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) e [auto-configuração de contas em memória](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/security/autoconfigure/UserDetailsServiceAutoConfiguration.html). Versões selecionadas estão fixadas no POM/Wrapper/toolchain; não atualizar silenciosamente.
