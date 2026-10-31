@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## Fornecedores — PDV-022
+
+V9 suppliers/supplier_changes e vínculo opcional N:1 em products. CRUD JPA com CNPJ canônico único e validação local, versões e histórico transacional; ADMIN gerencia, OPERATOR consulta. Inativação/DELETE lógico preservam cadastro e vínculos; novos vínculos exigem fornecedor ativo, locks serializam disputa. Contratos em [fornecedores](../workflows/suppliers.md). Sem compras/recebimento/estoque/frontend; evidências reais na spec/tarefa viva, sem aceite implícito.
+
 ## Consulta do catálogo — PDV-021
 
 GET /products e /categories paginados; prefixo literal nome/SKU, filtros de categoria/estado e índices V8. Guardas catalog.read/ADMIN ou OPERATOR preservadas. Ensaio HTTP real usa carga confirmada pelo proprietário; resultados e limites na [spec](../../sdd/features/PDV-021-consulta-catalogo.md), sem inferir capacidade de produção ou aceite.

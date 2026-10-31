@@ -16,6 +16,7 @@ import java.util.UUID;
 public class ProductEntity {
     @Id private UUID id;
     @Column(name = "category_id", nullable = false) private UUID categoryId;
+    @Column(name = "supplier_id") private UUID supplierId;
     @Column(nullable = false, length = 64) private String sku;
     @Column(nullable = false, length = 200) private String name;
     @Column(length = 2000) private String description;
@@ -34,11 +35,12 @@ public class ProductEntity {
     }
     public ProductView view() {
         return new ProductView(id, categoryId, sku, name, description, salePrice, cost, unit, minimumStock,
-                status, version, createdAt, updatedAt);
+                status, version, supplierId, createdAt, updatedAt);
     }
     public void change(ProductInput input, String canonicalSku, Instant now) {
         categoryId = input.categoryId(); sku = canonicalSku; name = input.name().strip(); description = input.description();
         salePrice = input.salePrice(); cost = input.cost(); unit = input.unit().strip(); minimumStock = input.minimumStock(); updatedAt = now;
     }
     public void status(String value, Instant now) { status = value; updatedAt = now; }
+    public void supplier(UUID value, Instant now) { supplierId = value; updatedAt = now; }
 }

@@ -29,6 +29,6 @@ public final class CatalogModels {
     public record CategoryView(UUID id, String name, String description, boolean active, long version,
             Instant createdAt, Instant updatedAt) { }
     public record ProductView(UUID id, UUID categoryId, String sku, String name, String description,
-            BigDecimal salePrice, BigDecimal cost, String unit, long minimumStock, String status, long version,
+            BigDecimal salePrice, BigDecimal cost, String unit, long minimumStock, String status, long version, UUID supplierId,
             Instant createdAt, Instant updatedAt) { }
 }

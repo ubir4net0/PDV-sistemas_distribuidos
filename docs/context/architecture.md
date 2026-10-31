@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. Infraestrutura pela PDV-004, API pela PDV-005 e worker técnico pela PDV-006 disponíveis. Domínio e integrações de negócio ainda não implementados.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo e fornecedores disponíveis nos incrementos documentados. Estoque, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros não comprova essas integrações.
 
 ## Registros de decisão
 
@@ -16,11 +16,13 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). A API usa Spring Boot 4.1.2 e Java 21 isolado; a [base técnica Flyway](../workflows/database-migrations.md) adiciona JDBC e namespace versionado; V2/V3 implementam persistência de identidade/tokens, com Spring Security e BCrypt conforme o [contrato](../workflows/identity-security.md). V4/PDV-016 adiciona cadastro de clientes com JPA, validação local de documento e UNIQUE. Outros cadastros comerciais seguem pendentes. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas; JPA está ativo para clientes; AMQP pela API e demais contratos de negócio permanecem pendentes. Nenhuma decisão de domínio foi aprovada pelo bootstrap.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V9, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, estoque, compras e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
 
 Incremento PDV-020: catalog possui CRUD JPA real de categorias/produtos e V7; histórico por JDBC compartilha a transação JPA. Locks categoria→produto e versões protegem mudanças, UNIQUE protege SKU. Refinamento de estados/permissões confirmado pelo proprietário, documentado no [contrato](../workflows/catalog.md). Isso não implementa saldo, Saga ou compras.
+
+PDV-021 adiciona leitura paginada/índices V8 e ensaio de carga confirmado. PDV-022 implementa fornecedores JPA/V9 e relação opcional N:1, com locks fornecedor→produto e histórico transacional; [contrato](../workflows/suppliers.md). Obrigatoriedade e RBAC desse cadastro foram confirmados pelo proprietário; compras e outros itens da DEC-06 permanecem nas tarefas próprias.
 
 O [worker](../../backend/worker/README.md) tem build/processo próprios e um diagnóstico AMQP real com contrato JSON fixo, confirms/returns e DLQ. Não recebe comandos da API nem processa pagamentos. Esse scaffold não implementa a outbox/inbox ou garantias transacionais da arquitetura alvo abaixo.
 
