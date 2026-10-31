@@ -10,9 +10,9 @@ Cada job executa `./mvnw -B -ntp clean verify` no respectivo módulo:
 | Enforcer / javac release 21 | Toolchain e verificação de tipos Java |
 | Surefire 3.5.6 | Classes Test/Tests; seis cenários unitários do publisher no worker |
 | JAR Spring Boot | Artefato empacotado de cada processo |
-| Failsafe 3.5.6 | Classes IT; onze HTTP/startup e seis migrations PostgreSQL reais na API, onze AMQP contra broker real no worker |
+| Failsafe 3.5.6 | Classes IT; onze HTTP/startup, seis migrations e dez identidade PostgreSQL reais na API; onze AMQP no worker |
 
-A API ainda não tem lógica isolada que justifique unitários; seus dezessete testes são integração. Failsafe falha se não encontrar testes em qualquer módulo. `mvn test` não executa integração; usar `verify` para o gate completo. Relatórios locais ficam em target/surefire-reports e target/failsafe-reports, ignorados pelo Git.
+A API ainda não tem lógica isolada que justifique unitários; seus 27 testes são integração. Failsafe falha se não encontrar testes em qualquer módulo. `mvn test` não executa integração; usar `verify` para o gate completo. Relatórios locais ficam em target/surefire-reports e target/failsafe-reports, ignorados pelo Git.
 
 O job worker inicia um RabbitMQ 4.3.7 fixado por digest, aguarda health e configura usuário/vhost próprios e senha aleatória mascarada. A senha passa por ambiente efêmero do runner; não usa segredo do desenvolvedor nem credencial GitHub. Somente AMQP é publicado em loopback. Ao final, remove o container que criou. Falha de infraestrutura ou teste falha o job; não há caminho que ignore a integração. Objetos de teste têm prefixo UUID e limpeza restrita.
 

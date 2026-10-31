@@ -72,14 +72,15 @@ class ScaffoldHttpIT {
     @Test
     void initializesFlywayAndApplicationNamespaceOnRealPostgres() {
         var flyway = context.getBean(Flyway.class);
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("1");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
         assertThat(flyway.getConfiguration().isCleanDisabled()).isTrue();
         assertThat(flyway.getConfiguration().isBaselineOnMigrate()).isFalse();
         assertThat(flyway.getConfiguration().isOutOfOrder()).isFalse();
         var jdbc = context.getBean(JdbcTemplate.class);
         assertThat(jdbc.queryForObject("SELECT current_schema()", String.class)).isEqualTo("pdv");
-        assertThat(jdbc.queryForObject("SELECT count(*) FROM information_schema.tables WHERE table_schema = 'pdv'", Integer.class))
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM pdv.users", Integer.class))
                 .isZero();
+        assertThat(context.getBeansOfType(dev.pdv.api.access.infrastructure.DevelopmentIdentitySeed.class)).isEmpty();
     }
 
     private HttpResponse<String> send(String method, String path) throws Exception {

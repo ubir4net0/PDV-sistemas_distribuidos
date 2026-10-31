@@ -2,11 +2,13 @@
 [CmdletBinding()]
 param(
     [ValidateSet('Verify', 'Run', 'Version', 'Migrate', 'Validate', 'Info')]
-    [string]$Action = 'Verify'
+    [string]$Action = 'Verify',
+    [switch]$Development
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ($Development -and $Action -ne 'Run') { throw '-Development requer -Action Run.' }
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $apiRoot = Join-Path $repoRoot 'backend/api'
 $qualityRoot = Join-Path $repoRoot 'config'
@@ -44,6 +46,7 @@ try {
             PDV_DB_URL = 'jdbc:postgresql://postgres:5432/' + [Uri]::EscapeDataString($database)
             PDV_DB_USER = $credentials[1]; PDV_DB_PASSWORD = $credentials[2]
         }
+        if ($Development) { $values['SPRING_PROFILES_ACTIVE'] = 'development' }
         foreach ($key in $values.Keys) {
             $previousEnv[$key] = [Environment]::GetEnvironmentVariable($key, 'Process')
             [Environment]::SetEnvironmentVariable($key, $values[$key], 'Process')

@@ -25,7 +25,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 
 Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual.
 
-O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/PostgreSQL/AMQP real com bancos e broker temporários. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend ainda não tem código/gates; persistência está limitada à base técnica.
+O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/PostgreSQL/AMQP real com bancos e broker temporários. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend ainda não tem código/gates; persistência inclui base técnica e [identidade](docs/workflows/identity-security.md).
 
 ## Ambiente local
 

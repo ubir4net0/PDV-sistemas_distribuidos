@@ -44,7 +44,7 @@ Flyway tem clean-disabled=true, baseline-on-migrate=false, out-of-order=false e 
 
 MigrationsIT usa PostgreSQL real com namespaces pdv_it_<UUID> e pdv_it_<UUID>_history. Testa replay, checksum alterado, clean proibido, rollback de DDL com falha e dois migradores concorrentes aplicando o incremento uma vez. O ciclo de recuperação é migrate -> remoção controlada dos dois namespaces próprios -> migrate, comparando versão/checksum e presença do schema. Nunca executa Flyway.clean nem remove objetos compartilhados.
 
-Fixtures V2 válidas/com erro estão somente em src/test/resources/db/test. Não entram no JAR da aplicação. Testes HTTP verificam o startup com histórico real, search_path pdv e ausência de tabelas de domínio neste incremento. Health agregado e readiness consultam o banco, mantendo detalhes ocultos; liveness continua independente dele. /actuator/flyway não é exposto.
+Fixtures V9000 válidas/com erro estão somente em src/test/resources/db/test, com versão reservada para não colidir com migrations reais. Não entram no JAR. V2 adiciona [identidade](identity-security.md), com constraints e seed development opt-in; testes HTTP verificam histórico real, search_path pdv e ausência de conta padrão. Health/readiness consultam banco sem detalhes; liveness continua independente dele. /actuator/flyway não é exposto.
 
 Esse rebuild comprova recuperação da base estrutural vazia. Não comprova backup/restore de dados, RPO/RTO, estoque, concorrência de negócio, privilégios finais ou RNF19/20. Essas evidências pertencem às entregas correspondentes; não há undo automático presumido.
 

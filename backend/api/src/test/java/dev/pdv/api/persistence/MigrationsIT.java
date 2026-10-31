@@ -33,7 +33,7 @@ class MigrationsIT {
     @BeforeEach
     void migrateOwnNamespaces() {
         flyway = configured(MAIN);
-        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);
+        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(2);
     }
 
     @AfterEach
@@ -44,7 +44,7 @@ class MigrationsIT {
     @Test
     void replayDoesNotReapplyMigration() {
         assertThat(flyway.migrate().migrationsExecuted).isZero();
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("1");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
     }
 
     @Test
@@ -52,7 +52,7 @@ class MigrationsIT {
         var checksum = flyway.info().current().getChecksum();
         dropOwnNamespaces();
         var rebuilt = configured(MAIN);
-        assertThat(rebuilt.migrate().migrationsExecuted).isEqualTo(1);
+        assertThat(rebuilt.migrate().migrationsExecuted).isEqualTo(2);
         assertThat(rebuilt.info().current().getChecksum()).isEqualTo(checksum);
         try (var connection = connection();
                 var statement = connection.prepareStatement("SELECT count(*) FROM pg_namespace WHERE nspname = ?")) {
@@ -66,6 +66,9 @@ class MigrationsIT {
 
     @Test
     void changedAppliedScriptFailsChecksumValidation() throws Exception {
+        try (var source = getClass().getResourceAsStream("/db/migration/V2__identity_roles_permissions.sql")) {
+            Files.write(temporary.resolve("V2__identity_roles_permissions.sql"), source.readAllBytes());
+        }
         try (var source = getClass().getResourceAsStream("/db/migration/V1__create_application_schema.sql")) {
             assertThat(source).isNotNull();
             var changed = new String(source.readAllBytes(), StandardCharsets.UTF_8) + "\nSELECT 42;\n";
@@ -89,7 +92,7 @@ class MigrationsIT {
             }
         }
         flyway.validate();
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("1");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
     }
 
     @Test
@@ -124,7 +127,7 @@ class MigrationsIT {
                 result.next();
                 assertThat(result.getInt(1)).isEqualTo(1);
             }
-            assertThat(first.info().current().getVersion().toString()).isEqualTo("2");
+            assertThat(first.info().current().getVersion().toString()).isEqualTo("9000");
         } finally {
             executor.shutdownNow();
             if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {

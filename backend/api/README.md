@@ -1,6 +1,6 @@
 # API PDV — Java 21 / Spring Boot
 
-API técnica iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. A [base Flyway da PDV-009](../../docs/workflows/database-migrations.md) conecta PostgreSQL e cria namespace/histórico, sem tabelas de domínio. Somente health/probes estão disponíveis; login, RBAC, cadastros, estoque, vendas, JPA e comunicação com o worker continuam ausentes.
+API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace e V2 de identidade. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Somente health/probes estão disponíveis; login, RBAC, cadastros comerciais, estoque, vendas, JPA e comunicação com o worker continuam ausentes.
 
 ## Build e execução no Windows
 

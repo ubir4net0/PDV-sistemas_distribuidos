@@ -1,5 +1,9 @@
 # Estado observado em 30 de outubro de 2026
 
+## Identidade na PDV-011
+
+V2 adiciona users/roles/permissions e associações com FKs/unicidade no PostgreSQL. Adaptador JDBC consulta credenciais e autoridades; seed explícito development insere só ADMIN/OPERATOR, sem contas/senhas. Testes cobrem constraints, concorrência de email, rollback e rebuild/replay. Operação em docs/workflows/identity-security.md. Login e RBAC serão implementados nos commits próprios PDV-012/013; tabelas não comprovam essas funcionalidades.
+
 ## ADR-007 aprovada pelo proprietário
 
 O proprietário respondeu “pode aprovar tudo” à pergunta da ADR-007: baseline textual e novos diagramas como referência de desenvolvimento; OC CRIADA/ENVIADA/RECEBIDA/CANCELADA; produto com no máximo um fornecedor (N:1); complementos técnicos incrementais com nomes SQL em inglês. A decisão está em docs/decisions/ADR-007-proposta-base-dominio.md, cujo caminho histórico foi preservado.
