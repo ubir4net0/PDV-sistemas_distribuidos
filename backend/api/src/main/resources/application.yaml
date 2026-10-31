@@ -1,4 +1,9 @@
 spring:
+  jpa:
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
   jackson:
     deserialization:
       fail-on-unknown-properties: true
@@ -26,6 +31,13 @@ spring:
       include-message: never
       include-stacktrace: never
       include-binding-errors: never
+
+logging:
+  level:
+    org.hibernate.SQL: "OFF"
+    org.hibernate.orm.jdbc.bind: "OFF"
+    org.hibernate.orm.jdbc.error: "OFF"
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: "OFF"
 
 pdv:
   auth:

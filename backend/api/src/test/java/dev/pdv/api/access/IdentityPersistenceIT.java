@@ -157,7 +157,7 @@ class IdentityPersistenceIT {
         }
         assertThat(jdbc.queryForList("SELECT code FROM roles ORDER BY code", String.class)).containsExactly("ADMIN", "OPERATOR");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM users", Integer.class)).isZero();
-        assertThat(jdbc.queryForObject("SELECT count(*) FROM role_permissions", Integer.class)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM role_permissions", Integer.class)).isEqualTo(3);
         assertThat(jdbc.queryForList("""
                 SELECT r.code FROM roles r JOIN role_permissions rp ON rp.role_id=r.id
                 JOIN permissions p ON p.id=rp.permission_id WHERE p.resource='access.permissions' AND p.action='read'
@@ -171,10 +171,10 @@ class IdentityPersistenceIT {
             var olderJdbc = older.jdbc();
             olderJdbc.execute("CREATE TABLE preserved_marker (id INTEGER PRIMARY KEY)");
             olderJdbc.update("INSERT INTO preserved_marker VALUES (42)");
-            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(2);
+            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(dev.pdv.api.support.MigrationBaseline.COUNT - 1);
             assertThat(olderJdbc.queryForObject("SELECT id FROM preserved_marker", Integer.class)).isEqualTo(42);
             older.close();
-            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(3);
+            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(dev.pdv.api.support.MigrationBaseline.COUNT);
             assertThat(older.jdbc().queryForObject("SELECT count(*) FROM users", Integer.class)).isZero();
         }
     }

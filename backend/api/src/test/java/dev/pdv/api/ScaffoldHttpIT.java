@@ -72,7 +72,7 @@ class ScaffoldHttpIT {
     @Test
     void initializesFlywayAndApplicationNamespaceOnRealPostgres() {
         var flyway = context.getBean(Flyway.class);
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo(dev.pdv.api.support.MigrationBaseline.VERSION);
         assertThat(flyway.getConfiguration().isCleanDisabled()).isTrue();
         assertThat(flyway.getConfiguration().isBaselineOnMigrate()).isFalse();
         assertThat(flyway.getConfiguration().isOutOfOrder()).isFalse();

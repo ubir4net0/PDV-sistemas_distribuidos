@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ e scaffolds Java 21 da API e worker disponíveis. Funcionalidades de negócio e frontend ainda não foram implementados.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação e cadastro de clientes, e worker de diagnóstico disponíveis. Estoque, vendas e frontend ainda não foram implementados.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -45,7 +45,7 @@ Com Docker e PostgreSQL PDV saudáveis, na raiz:
 
 ```powershell
 ./scripts/api.ps1 -Action Verify
-./scripts/api.ps1 -Action Run
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
 ```
 
 API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health/readiness incluem PostgreSQL sem detalhes públicos; liveness mede o processo. Login, perfil próprio, logout e catálogo de permissões restrito a ADMIN estão disponíveis por Bearer opaco; [contrato de autenticação](docs/workflows/identity-security.md). Os demais caminhos seguem bloqueados. A [base Flyway da PDV-009](docs/workflows/database-migrations.md) cria namespace/histórico e testa rebuild/replay; V2/V3 adicionam identidade e tokens, sem implementar os cadastros comerciais.
@@ -62,3 +62,5 @@ Com RabbitMQ local saudável:
 Processo independente, sem porta HTTP, com diagnóstico JSON tipado por AMQP e tratamento de erros em DLQ. O build testa o broker real em filas próprias e não implementa pagamentos ou eventos de venda. [Contrato técnico, operação e limites](backend/worker/README.md).
 
 Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
+
+PDV-016 oferece POST /customers com validação local CPF/CNPJ (numérico/alfanumérico), unicidade PostgreSQL e CRUD JPA. Operação e limites no [guia de clientes](docs/workflows/customers.md). Consulta/edição e endereços entram nos commits próprios 017/018.

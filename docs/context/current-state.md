@@ -1,5 +1,10 @@
 # Estado observado em 30 de outubro de 2026
 
+## Cadastro de clientes — PDV-016
+
+V4 cria customers e documento canônico único. POST /customers usa JPA (schema validado, sem auto-DDL), valida CPF/CNPJ numérico/alfanumérico e exige ADMIN ou OPERATOR com customer.create, conforme recorte aprovado para o lote 016–018. Duplicidade 409, entrada inválida 400; regressões e concorrência PostgreSQL em testes próprios. Não há consultas/alterações de clientes neste incremento; entram na PDV-017.
+
+
 ## Matriz inicial na PDV-013
 
 Matriz aprovada pelo proprietário aplicada aos endpoints existentes: health/login públicos, perfil/logout próprios autenticados, catálogo GET /access/permissions somente ADMIN com concessão access.permissions.read. Demais métodos/caminhos negados com 401/403 conforme autenticação. Guardas de rota/método consultam autoridades atuais por token; seed development concede só o catálogo a ADMIN. Testes HTTP/PostgreSQL exercitam matriz e revogação de autoridades. Não há gestão HTTP de usuários ou permissões de negócios futuros.

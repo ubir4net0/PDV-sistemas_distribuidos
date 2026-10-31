@@ -65,6 +65,7 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
                         .requestMatchers(HttpMethod.GET, "/access/permissions").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/customers").authenticated()
                         .anyRequest().denyAll())
                 .addFilterBefore(new BearerTokenFilter(auth), AnonymousAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

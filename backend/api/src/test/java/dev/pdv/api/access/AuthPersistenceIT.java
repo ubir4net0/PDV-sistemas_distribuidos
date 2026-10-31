@@ -71,7 +71,7 @@ class AuthPersistenceIT {
                     INSERT INTO users(name,email,password_hash,active) VALUES ('Synthetic','upgrade@example.test',?,true)
                     RETURNING id
                     """, UUID.class, hash);
-            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(1);
+            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(dev.pdv.api.support.MigrationBaseline.COUNT - 2);
             assertThat(older.jdbc().queryForObject("SELECT active FROM users WHERE id = ?", Boolean.class, id)).isTrue();
             assertThat(older.jdbc().queryForObject("SELECT count(*) FROM auth_tokens", Integer.class)).isZero();
         }
