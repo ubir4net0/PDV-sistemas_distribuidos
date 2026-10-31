@@ -1,4 +1,7 @@
 spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
   application:
     name: pdv-api
   datasource:
@@ -23,6 +26,10 @@ spring:
       include-message: never
       include-stacktrace: never
       include-binding-errors: never
+
+pdv:
+  auth:
+    token-ttl-seconds: ${PDV_AUTH_TOKEN_TTL_SECONDS}
 
 server:
   address: 127.0.0.1

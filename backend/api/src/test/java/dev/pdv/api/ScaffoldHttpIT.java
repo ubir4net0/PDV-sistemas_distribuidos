@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,28 +51,28 @@ class ScaffoldHttpIT {
     @ValueSource(strings = {"/", "/actuator", "/actuator/env", "/login", "/api/customers"})
     void deniesNonHealthPathsWithoutLoginOrSession(String path) throws Exception {
         var response = send("GET", path);
-        assertThat(response.statusCode()).isEqualTo(403);
+        assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.headers().firstValue("Location")).isEmpty();
         assertThat(response.headers().firstValue("Set-Cookie")).isEmpty();
-        assertThat(response.headers().firstValue("WWW-Authenticate")).isEmpty();
+        assertThat(response.headers().firstValue("WWW-Authenticate")).contains("Bearer");
     }
 
     @Test
     void doesNotAllowMutationsOnHealth() throws Exception {
         var response = send("POST", "/actuator/health");
-        assertThat(response.statusCode()).isEqualTo(403);
+        assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.headers().firstValue("Set-Cookie")).isEmpty();
     }
 
     @Test
     void doesNotCreateDefaultInMemoryAccounts() {
-        assertThat(context.getBeansOfType(UserDetailsService.class)).isEmpty();
+        assertThat(context.getBeansOfType(InMemoryUserDetailsManager.class)).isEmpty();
     }
 
     @Test
     void initializesFlywayAndApplicationNamespaceOnRealPostgres() {
         var flyway = context.getBean(Flyway.class);
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
         assertThat(flyway.getConfiguration().isCleanDisabled()).isTrue();
         assertThat(flyway.getConfiguration().isBaselineOnMigrate()).isFalse();
         assertThat(flyway.getConfiguration().isOutOfOrder()).isFalse();

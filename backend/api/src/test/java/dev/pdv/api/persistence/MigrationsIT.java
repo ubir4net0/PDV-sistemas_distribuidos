@@ -33,7 +33,7 @@ class MigrationsIT {
     @BeforeEach
     void migrateOwnNamespaces() {
         flyway = configured(MAIN);
-        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(2);
+        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(3);
     }
 
     @AfterEach
@@ -44,7 +44,7 @@ class MigrationsIT {
     @Test
     void replayDoesNotReapplyMigration() {
         assertThat(flyway.migrate().migrationsExecuted).isZero();
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
     }
 
     @Test
@@ -52,7 +52,7 @@ class MigrationsIT {
         var checksum = flyway.info().current().getChecksum();
         dropOwnNamespaces();
         var rebuilt = configured(MAIN);
-        assertThat(rebuilt.migrate().migrationsExecuted).isEqualTo(2);
+        assertThat(rebuilt.migrate().migrationsExecuted).isEqualTo(3);
         assertThat(rebuilt.info().current().getChecksum()).isEqualTo(checksum);
         try (var connection = connection();
                 var statement = connection.prepareStatement("SELECT count(*) FROM pg_namespace WHERE nspname = ?")) {
@@ -68,6 +68,9 @@ class MigrationsIT {
     void changedAppliedScriptFailsChecksumValidation() throws Exception {
         try (var source = getClass().getResourceAsStream("/db/migration/V2__identity_roles_permissions.sql")) {
             Files.write(temporary.resolve("V2__identity_roles_permissions.sql"), source.readAllBytes());
+        }
+        try (var source = getClass().getResourceAsStream("/db/migration/V3__authentication_tokens.sql")) {
+            Files.write(temporary.resolve("V3__authentication_tokens.sql"), source.readAllBytes());
         }
         try (var source = getClass().getResourceAsStream("/db/migration/V1__create_application_schema.sql")) {
             assertThat(source).isNotNull();
@@ -92,7 +95,7 @@ class MigrationsIT {
             }
         }
         flyway.validate();
-        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
     }
 
     @Test

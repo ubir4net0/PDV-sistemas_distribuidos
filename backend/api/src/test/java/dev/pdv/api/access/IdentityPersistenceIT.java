@@ -167,10 +167,10 @@ class IdentityPersistenceIT {
             var olderJdbc = older.jdbc();
             olderJdbc.execute("CREATE TABLE preserved_marker (id INTEGER PRIMARY KEY)");
             olderJdbc.update("INSERT INTO preserved_marker VALUES (42)");
-            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(1);
+            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(2);
             assertThat(olderJdbc.queryForObject("SELECT id FROM preserved_marker", Integer.class)).isEqualTo(42);
             older.close();
-            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(2);
+            assertThat(older.flyway().migrate().migrationsExecuted).isEqualTo(3);
             assertThat(older.jdbc().queryForObject("SELECT count(*) FROM users", Integer.class)).isZero();
         }
     }

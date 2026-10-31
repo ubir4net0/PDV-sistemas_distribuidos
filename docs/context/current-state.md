@@ -1,5 +1,10 @@
 # Estado observado em 30 de outubro de 2026
 
+## Autenticação na PDV-012
+
+Spring Security + BCrypt implementam login, perfil próprio e logout por token Bearer opaco. V3 persiste somente digest, expiração/revogação e fingerprint de credenciais; TTL obrigatório, sem conta padrão. Provisionamento development requer opt-in e credenciais privadas. Testes HTTP/PostgreSQL verificam cenários negativos e invalidações. Contrato e limites em docs/workflows/identity-security.md. RBAC do catálogo pertence ao commit PDV-013; demais negócios seguem pendentes. Seções anteriores abaixo descrevem o estado histórico de cada incremento.
+
+
 ## Identidade na PDV-011
 
 V2 adiciona users/roles/permissions e associações com FKs/unicidade no PostgreSQL. Adaptador JDBC consulta credenciais e autoridades; seed explícito development insere só ADMIN/OPERATOR, sem contas/senhas. Testes cobrem constraints, concorrência de email, rollback e rebuild/replay. Operação em docs/workflows/identity-security.md. Login e RBAC serão implementados nos commits próprios PDV-012/013; tabelas não comprovam essas funcionalidades.

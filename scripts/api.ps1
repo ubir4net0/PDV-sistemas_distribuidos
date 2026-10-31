@@ -3,12 +3,15 @@
 param(
     [ValidateSet('Verify', 'Run', 'Version', 'Migrate', 'Validate', 'Info')]
     [string]$Action = 'Verify',
-    [switch]$Development
+    [switch]$Development,
+    [Nullable[int]]$TokenTtlSeconds,
+    [switch]$BootstrapDevelopment
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if ($Development -and $Action -ne 'Run') { throw '-Development requer -Action Run.' }
+if ($BootstrapDevelopment -and (-not $Development)) { throw '-BootstrapDevelopment requer -Development.' }
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $apiRoot = Join-Path $repoRoot 'backend/api'
 $qualityRoot = Join-Path $repoRoot 'config'
@@ -47,6 +50,23 @@ try {
             PDV_DB_USER = $credentials[1]; PDV_DB_PASSWORD = $credentials[2]
         }
         if ($Development) { $values['SPRING_PROFILES_ACTIVE'] = 'development' }
+        if ($Action -eq 'Verify') { $values['PDV_AUTH_TOKEN_TTL_SECONDS'] = '900' }
+        if ($Action -eq 'Run') {
+            $ttl = if ($null -ne $TokenTtlSeconds) { $TokenTtlSeconds } else { $env:PDV_AUTH_TOKEN_TTL_SECONDS }
+            $parsedTtl = 0
+            if (-not [int]::TryParse([string]$ttl, [ref]$parsedTtl) -or $parsedTtl -le 0) {
+                throw 'Run requer TokenTtlSeconds positivo ou PDV_AUTH_TOKEN_TTL_SECONDS privado.'
+            }
+            $values['PDV_AUTH_TOKEN_TTL_SECONDS'] = [string]$parsedTtl
+            if ($BootstrapDevelopment) {
+                foreach ($devKey in @('PDV_DEV_EMAIL', 'PDV_DEV_PASSWORD')) {
+                    $devValue = [Environment]::GetEnvironmentVariable($devKey, 'Process')
+                    if (-not $devValue) { throw 'Bootstrap requer email e senha no ambiente privado.' }
+                    $values[$devKey] = $devValue
+                }
+                $values['PDV_DEV_BOOTSTRAP_USER'] = 'true'
+            }
+        }
         foreach ($key in $values.Keys) {
             $previousEnv[$key] = [Environment]::GetEnvironmentVariable($key, 'Process')
             [Environment]::SetEnvironmentVariable($key, $values[$key], 'Process')

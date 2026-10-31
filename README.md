@@ -48,7 +48,7 @@ Com Docker e PostgreSQL PDV saudáveis, na raiz:
 ./scripts/api.ps1 -Action Run
 ```
 
-API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health/readiness incluem PostgreSQL sem detalhes públicos; liveness mede o processo. Os demais caminhos seguem bloqueados. A [base Flyway da PDV-009](docs/workflows/database-migrations.md) cria namespace/histórico e testa rebuild/replay; tabelas de domínio e decisões de schema continuam pendentes.
+API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health/readiness incluem PostgreSQL sem detalhes públicos; liveness mede o processo. Login, perfil próprio e logout estão disponíveis por Bearer opaco; [contrato de autenticação](docs/workflows/identity-security.md). Os demais caminhos seguem bloqueados. A [base Flyway da PDV-009](docs/workflows/database-migrations.md) cria namespace/histórico e testa rebuild/replay; V2/V3 adicionam identidade e tokens, sem implementar os cadastros comerciais.
 
 ## Scaffold do worker
 

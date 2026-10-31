@@ -37,6 +37,11 @@ public class IdentityRepository {
                 """, String.class, userId);
     }
 
+    public Optional<UserCredentials> lockByEmail(String email) {
+        return jdbc.query("SELECT id, name, email, password_hash, active FROM users WHERE email = lower(btrim(?)) FOR UPDATE",
+                USER, email).stream().findFirst();
+    }
+
     public List<String> authorities(UUID userId) {
         return jdbc.queryForList("""
                 SELECT DISTINCT p.resource || '.' || p.action AS authority

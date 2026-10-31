@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). A API usa Spring Boot 4.1.2 e Java 21 isolado; a [base técnica Flyway](../workflows/database-migrations.md) adiciona JDBC e namespace versionado, sem tabelas de domínio. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas; JPA, AMQP pela API e contratos de negócio permanecem pendentes. Nenhuma decisão de domínio foi aprovada pelo bootstrap.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia somente PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). A API usa Spring Boot 4.1.2 e Java 21 isolado; a [base técnica Flyway](../workflows/database-migrations.md) adiciona JDBC e namespace versionado; V2/V3 implementam persistência de identidade/tokens, com Spring Security e BCrypt conforme o [contrato](../workflows/identity-security.md). Cadastros comerciais seguem pendentes. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas; JPA, AMQP pela API e contratos de negócio permanecem pendentes. Nenhuma decisão de domínio foi aprovada pelo bootstrap.
 
 ## Fronteiras de consistência
 

@@ -1,6 +1,6 @@
 # API PDV — Java 21 / Spring Boot
 
-API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace e V2 de identidade. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Somente health/probes estão disponíveis; login, RBAC, cadastros comerciais, estoque, vendas, JPA e comunicação com o worker continuam ausentes.
+API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. RBAC do catálogo pertence à PDV-013; cadastros comerciais, estoque, vendas, JPA e comunicação com o worker seguem pendentes.
 
 ## Build e execução no Windows
 
@@ -12,12 +12,12 @@ Com Docker ativo e PostgreSQL PDV saudável, executar na raiz do repositório:
 ./scripts/api.ps1 -Action Migrate
 ./scripts/api.ps1 -Action Validate
 ./scripts/api.ps1 -Action Info
-./scripts/api.ps1 -Action Run
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
 ```
 
 A toolchain oficial Java 21 é fixada por digest em [infra/java-toolchain.json](../../infra/java-toolchain.json). A versão Maven executada é controlada pelo Wrapper, independentemente do Maven pré-instalado na imagem. O cache fica no volume local `pdv-api-maven-cache`; classes, relatórios e JAR ficam em `backend/api/target`, ignorado pelo Git. O primeiro build requer acesso aos repositórios oficiais. Nenhum Java global ou serviço do Amor e Vida é alterado.
 
-`Verify` executa `clean verify`, incluindo onze testes HTTP/startup e seis testes de migrations contra PostgreSQL real. Usa banco UUID descartável e remove somente esse banco ao terminar. `Migrate/Validate/Info` operam o banco PDV local existente sem limpeza. `Run` exige o JAR compilado, migra/valida no startup, usa 127.0.0.1:8081 e fica em primeiro plano no container `pdv-api-local`; Ctrl+C ou `docker stop pdv-api-local` encerra esse container. Nome existente não é sobrescrito. Escuta interna Docker em 0.0.0.0, publicação do host restrita a loopback.
+`Verify` executa `clean verify`, incluindo autenticação HTTP, identidade e migrations contra PostgreSQL real. Usa banco UUID descartável e remove somente esse banco ao terminar. `Migrate/Validate/Info` operam o banco PDV local existente sem limpeza. `Run` exige o JAR compilado e TTL positivo explícito, migra/valida no startup, usa 127.0.0.1:8081 e fica em primeiro plano no container `pdv-api-local`; Ctrl+C ou `docker stop pdv-api-local` encerra esse container. Nome existente não é sobrescrito. Escuta interna Docker em 0.0.0.0, publicação do host restrita a loopback.
 
 Com **JDK 21** instalado e selecionado, configurar PDV_DB_URL/USER/PASSWORD em ambiente privado conforme o [guia de migrations](../../docs/workflows/database-migrations.md). Para verify nativo usar banco descartável próprio. Em backend/api:
 
@@ -35,12 +35,14 @@ Em Unix: `./mvnw -B -ntp clean verify`. O build exige Java 21 e Maven >= 3.10, <
 | GET /actuator/health | 200, status UP e nomes dos grupos de probes, sem detalhes internos |
 | GET /actuator/health/liveness | 200, estado de liveness do processo |
 | GET /actuator/health/readiness | 200 após inicialização com PostgreSQL acessível; sem detalhes internos |
-| Outros caminhos | 403, sem login redirecionado, HTTP Basic ou sessão |
-| POST /actuator/health | 403; endpoint não oferece mutações |
+| POST /auth/login | 200 com token Bearer opaco; entrada inválida 400; credenciais inválidas 401 |
+| GET /auth/me | 200 somente para o próprio token válido |
+| POST /auth/logout | 204, revogação somente do token atual |
+| Outros caminhos/métodos | 401 anônimo, 403 autenticado; sem redirect, Basic ou sessão |
 
-Health agregado e readiness consultam PostgreSQL; liveness continua independente do banco. RabbitMQ não é consultado pela API. UP não significa fluxo de venda pronto. Somente health é exposto; componentes, detalhes, descoberta e /actuator/flyway permanecem ocultos/bloqueados. Nenhum usuário/senha em memória é gerado. A autenticação real pertence à PDV-012/013; outros caminhos continuam bloqueados.
+Health agregado e readiness consultam PostgreSQL; liveness continua independente do banco. RabbitMQ não é consultado pela API. UP não significa fluxo de venda pronto. Somente health é exposto; componentes, detalhes, descoberta e /actuator/flyway permanecem ocultos/bloqueados. Nenhum usuário/senha em memória é gerado. Autenticação é implementada na PDV-012; outros caminhos continuam bloqueados.
 
-Startup, migrations e testes exigem credenciais PostgreSQL por ambiente. O script as lê do Compose local sem imprimir valores; o usuário administrativo é bootstrap de laboratório, não uma política de privilégios de produção. CSRF permanece desabilitado neste scaffold sem autenticação por cookie e sem mutações permitidas; PDV-012/013 devem revisar a política. JPA e AMQP pela API seguem pendentes. Para iniciar dependências, consultar [infra/README.md](../../infra/README.md).
+Startup, migrations e testes exigem credenciais PostgreSQL por ambiente. Startup e testes também exigem PDV_AUTH_TOKEN_TTL_SECONDS; Verify/CI usam 900 somente como dado técnico. O script as lê do Compose local sem imprimir valores; o usuário administrativo é bootstrap de laboratório, não uma política de privilégios de produção. CSRF está desabilitado pelo contrato exclusivo de Authorization: Bearer, sem autenticação por cookie/sessão. JPA e AMQP pela API seguem pendentes. Para iniciar dependências, consultar [infra/README.md](../../infra/README.md).
 
 ## Organização por domínio
 
@@ -55,10 +57,10 @@ Namespace `dev.pdv.api`, com entrada `PdvApiApplication` e configuração transv
 | inventory | Saldo, reservas e movimentações |
 | sales | Carrinho, venda e Saga |
 
-Cada módulo reserva três camadas por `package-info.java`: `domain` para regras sem framework, `application` para casos de uso/portas e `infrastructure` para adaptadores. HTTP entrará em `infrastructure.web` do respectivo módulo. Os arquivos documentam fronteiras; não implementam entidades, serviços, controllers ou tabelas. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e inclusão dos complementos. Contratos de negócio e os detalhes excluídos dessa decisão continuam nas tarefas próprias.
+Cada módulo reserva três camadas por `package-info.java`: `domain` para regras sem framework, `application` para casos de uso/portas e `infrastructure` para adaptadores. HTTP de access está em `access.http`; os demais módulos ainda não possuem adaptadores HTTP. Os arquivos documentam fronteiras; não implementam entidades, serviços, controllers ou tabelas. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e inclusão dos complementos. Contratos de negócio e os detalhes excluídos dessa decisão continuam nas tarefas próprias.
 
 ## Verificações e fontes
 
-Os onze testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueios, ausência de contas padrão e Flyway/JDBC reais. Seis `MigrationsIT` verificam replay, rebuild, checksum, rollback de DDL, clean bloqueado e migradores concorrentes. Failsafe executa ambos em `verify`; Checkstyle inclui fontes e testes. Não há unitários isolados nesta API sem casos de uso. Não são testes de estoque, filas, Saga ou concorrência de negócio. [CI e gates](../../docs/workflows/ci.md) executam o build completo com PostgreSQL próprio.
+Os onze testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes, ocultação de detalhes, bloqueios, ausência de contas padrão e Flyway/JDBC reais. Seis `MigrationsIT` verificam replay, rebuild, checksum, rollback de DDL, clean bloqueado e migradores concorrentes. Failsafe executa ambos em `verify`; Checkstyle inclui fontes e testes. AuthenticationTest cobre BCrypt, limites UTF-8 e tokens; AuthHttpIT/AuthPersistenceIT cobrem o contrato e persistência de autenticação, incluindo provisionamento dev opt-in. Não são testes de estoque, filas, Saga ou concorrência de negócio. [CI e gates](../../docs/workflows/ci.md) executam o build completo com PostgreSQL próprio.
 
 Bootstrap obtido do [Spring Initializr](https://start.spring.io), compatibilidade conferida nos [requisitos Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html). Ver também [Maven Wrapper](https://maven.apache.org/tools/wrapper/), [Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) e [auto-configuração de contas em memória](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/security/autoconfigure/UserDetailsServiceAutoConfiguration.html). Versões selecionadas estão fixadas no POM/Wrapper/toolchain; não atualizar silenciosamente.

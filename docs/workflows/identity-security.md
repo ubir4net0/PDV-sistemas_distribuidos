@@ -10,9 +10,23 @@ O startup padrão não faz seed. Para habilitar explicitamente os papéis ADMIN 
 
 ```powershell
 ./scripts/api.ps1 -Action Migrate
-./scripts/api.ps1 -Action Run -Development
+./scripts/api.ps1 -Action Run -Development -TokenTtlSeconds 900
 ```
 
 O profile development insere somente os dois papéis de forma idempotente, sem usuários, senhas ou permissões concedidas. Não usar esse profile em produção. O script restaura o ambiente anterior ao encerrar. Seeds de teste usam namespaces/banco exclusivos e não entram no JAR.
 
 Validação: clean verify inclui testes de constraints/FKs, consultas, transação revertida, disputa concorrente de email, seed opt-in/idempotente e upgrade V1 -> V2 preservando marcador sintético, seguido de rebuild/replay. Isso não comprova RBAC ou autenticação; pertencem às próximas tarefas do lote. Resultados da execução constam na [spec PDV-011](../../sdd/features/PDV-011-identidade-persistencia.md).
+
+## PDV-012 — Autenticação
+
+POST /auth/login recebe JSON email/password e retorna accessToken, tokenType Bearer e expiresAt UTC. GET /auth/me consulta somente o próprio perfil; POST /auth/logout revoga somente o token do header. Sem refresh token ou gestão HTTP de usuários. Demais caminhos: 401 anônimo e 403 autenticado. Health/probes GET continuam públicos.
+
+O token opaco tem 256 bits aleatórios e transporte exclusivo Authorization: Bearer. Cookies, query string e Basic não autenticam. V3 guarda somente SHA-256, FK, datas e fingerprint do hash BCrypt; expiração/revogação/inativação/troca de senha invalidam o acesso. Papéis e autoridades são lidos a cada requisição. Login usa AuthenticationManager do Spring Security e BCrypt com custo padrão 10; senhas acima de 72 bytes UTF-8 são rejeitadas, evitando truncamento. JSON desconhecido/inválido retorna 400; credenciais inválidas retornam 401 uniforme, indisponibilidade do banco 503, sem causas/valores sensíveis. Cache-Control no-store; sem sessão/Set-Cookie. CSRF desabilitado pelo contrato exclusivo de header.
+
+PDV_AUTH_TOKEN_TTL_SECONDS é obrigatório e positivo. Run aceita -TokenTtlSeconds ou variável privada. O valor 900 nos comandos acima, Verify e CI é dado técnico de laboratório, sem definir política de produção. Execução nativa exige essa variável também em clean verify. Migrate/Validate/Info não precisam de TTL.
+
+Provisionamento local opcional: com PDV_DEV_EMAIL e PDV_DEV_PASSWORD fornecidos no ambiente privado, executar Run -Development -BootstrapDevelopment -TokenTtlSeconds com prazo escolhido. O script só encaminha as credenciais quando esse opt-in está presente. Não digitar senha em linha de comando/histórico nem versionar arquivo de credenciais. O profile padrão não provisiona contas; development sozinho cria apenas papéis. Bootstrap cria um novo ADMIN ativo, recusa email existente e não sobrescreve nem eleva identidades. Desabilitar bootstrap nos próximos startups. Gestão completa pertence à PDV-014.
+
+A implementação não comprova TLS, rate limit, recuperação de senha, política adicional de complexidade ou segurança de produção. A matriz do catálogo será implementada e testada no commit próprio PDV-013.
+
+Fontes: [armazenamento de senhas Spring Security](https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html) e [sessões](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html).

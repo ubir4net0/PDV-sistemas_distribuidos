@@ -18,7 +18,7 @@ docker compose up -d --wait --wait-timeout 180 postgres
 ./scripts/api.ps1 -Action Migrate
 ./scripts/api.ps1 -Action Validate
 ./scripts/api.ps1 -Action Info
-./scripts/api.ps1 -Action Run
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
 ```
 
 Migrate aplica somente as migrations versionadas ao banco PDV local existente. Validate confere histórico/checksums; Info lista estado e versões. Run executa o JAR já verificado e também migra/valida no startup. Os comandos não fazem clean, repair, baseline automático ou reversão. Schema preexistente sem histórico compatível exige investigação; não acrescentar IF NOT EXISTS, baseline ou repair para esconder divergência.
@@ -53,3 +53,5 @@ Esse rebuild comprova recuperação da base estrutural vazia. Não comprova back
 [Backend quality](../../.github/workflows/backend.yml) inicia PostgreSQL 16.15 temporário somente no job API, com senha aleatória mascarada e imagem fixada por digest. Aguarda health, executa clean verify real e remove seu container. Worker mantém RabbitMQ próprio. Falha de infraestrutura/teste falha o job; não há H2 ou integração ignorada.
 
 Fontes oficiais consultadas: [inicialização e Flyway no Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [endpoints e grupos de health](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) e [suporte PostgreSQL do Flyway](https://github.com/flyway/flyway/blob/main/documentation/Reference/Database%20Driver%20Reference/PostgreSQL%20Database.md).
+
+V3 adiciona auth_tokens conforme o [contrato de autenticação](identity-security.md). Upgrade preserva dados, constraints/FKs são testadas em PostgreSQL real e o rebuild/replay aplica V1–V3; scripts aplicados permanecem imutáveis.
