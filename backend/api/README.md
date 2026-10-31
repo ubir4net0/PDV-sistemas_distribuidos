@@ -55,7 +55,7 @@ Namespace `dev.pdv.api`, com entrada `PdvApiApplication` e configuração transv
 | inventory | Saldo, reservas e movimentações |
 | sales | Carrinho, venda e Saga |
 
-Cada módulo reserva três camadas por `package-info.java`: `domain` para regras sem framework, `application` para casos de uso/portas e `infrastructure` para adaptadores. HTTP entrará em `infrastructure.web` do respectivo módulo. Os arquivos documentam fronteiras; não implementam entidades, serviços, controllers ou tabelas. Contratos de negócio, estados e cardinalidades continuam pendentes.
+Cada módulo reserva três camadas por `package-info.java`: `domain` para regras sem framework, `application` para casos de uso/portas e `infrastructure` para adaptadores. HTTP entrará em `infrastructure.web` do respectivo módulo. Os arquivos documentam fronteiras; não implementam entidades, serviços, controllers ou tabelas. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e inclusão dos complementos. Contratos de negócio e os detalhes excluídos dessa decisão continuam nas tarefas próprias.
 
 ## Verificações e fontes
 

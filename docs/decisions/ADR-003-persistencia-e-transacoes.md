@@ -1,5 +1,7 @@
 # ADR-003 persistência e transações locais
 
+Vigência posterior: a [ADR-007 aprovada](ADR-007-proposta-base-dominio.md) resolve vocabulário de OC, fornecedor N:1 e inclusão dos complementos. Os trechos de pendência abaixo preservam o registro original; campos, restrições e políticas continuam nas tarefas próprias.
+
 Data: 30/10/2026. Tarefa: [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md). Estado: PostgreSQL/Flyway e transações locais declarados no pacote; mecanismo de concorrência e schema pendentes.
 
 ## Contexto e fontes

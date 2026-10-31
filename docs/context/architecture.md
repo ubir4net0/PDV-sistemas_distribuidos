@@ -4,11 +4,11 @@ Estado: arquitetura alvo do pacote v1.0, sujeita à conciliação acadêmica. In
 
 ## Registros de decisão
 
-A [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md) detalha as escolhas declaradas no pacote em cinco ADRs: [processos e fronteiras](../decisions/ADR-002-processos-e-fronteiras.md), [persistência e transações](../decisions/ADR-003-persistencia-e-transacoes.md), [Saga e consistência](../decisions/ADR-004-saga-e-consistencia.md), [mensageria e idempotência](../decisions/ADR-005-mensageria-e-idempotencia.md) e [limites acadêmicos](../decisions/ADR-006-limites-e-laboratorios.md). O [índice de decisões](../decisions/README.md) distingue requisitos declarados, propostas e questões abertas. A dependência PDV-001 continua em validação; este avanço documental não libera código de domínio.
+A [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md) detalha as escolhas declaradas no pacote em cinco ADRs: [processos e fronteiras](../decisions/ADR-002-processos-e-fronteiras.md), [persistência e transações](../decisions/ADR-003-persistencia-e-transacoes.md), [Saga e consistência](../decisions/ADR-004-saga-e-consistencia.md), [mensageria e idempotência](../decisions/ADR-005-mensageria-e-idempotencia.md) e [limites acadêmicos](../decisions/ADR-006-limites-e-laboratorios.md). A [ADR-007 aprovada](../decisions/ADR-007-proposta-base-dominio.md) adota a referência textual, vocabulário de OC, fornecedor N:1 e complementos técnicos. O [índice](../decisions/README.md) distingue essas decisões dos detalhes ainda pendentes. Status de predecessoras não foi alterado pela aprovação.
 
 ## Componentes e fluxo alvo
 
-Os [15 diagramas novos](../diagrams/README.md) representam a baseline textual como proposta v1. Incluem arquitetura, domínio, três DERs, sequências e estados; não substituem a verificação dos originais acadêmicos ausentes nem aprovam contratos, cardinalidade ou schema. DEC-01 a DEC-06 permanecem indicadas nos modelos.
+Os [15 diagramas novos](../diagrams/README.md) representam a baseline textual v1 e foram adotados como referência de desenvolvimento na ADR-007. Preservam notas de decisão anteriores à aprovação; a ADR-007 prevalece para OC, fornecedor e complementos. Não comprovam equivalência aos originais ausentes nem schema implementado.
 
 Frontend React/TypeScript/Vite/Tailwind -> API Java 21/Spring Boot -> PostgreSQL/Flyway. RabbitMQ conecta API e worker Spring Boot independente. Maven Wrapper para builds. Spring Security, Validation, JPA, Spring AMQP e Actuator serão definidos nos scaffolds.
 
@@ -34,7 +34,7 @@ A matriz de falhas da ADR-004 orienta os testes futuros. Os contratos finais de 
 
 ## Decisões pendentes
 
-Ver docs/reports/reconciliacao.md: estados de venda/pagamento/OC, cardinalidade fornecedor-produto, complementos do DER, semântica de lote, TTLs, RBAC e ambiente avançado. Não criar contratos ou migrations de domínio a partir de decisão não resolvida.
+Consultar o índice de decisões: estados de venda/pagamento (DEC-01), lote/recebimento parcial (DEC-05), TTLs/RBAC/descontos/carga (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
 
 ## Validação alvo
 

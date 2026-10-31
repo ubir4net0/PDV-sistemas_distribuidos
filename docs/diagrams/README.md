@@ -1,5 +1,7 @@
 # Diagramas propostos do PDV
 
+Vigência: o proprietário adotou estes modelos como referência de desenvolvimento na [ADR-007 aprovada](../decisions/ADR-007-proposta-base-dominio.md). Os arquivos preservam a versão produzida anteriormente; para OC, fornecedor N:1 e complementos, prevalecem as decisões da ADR. Notas antigas de pendência não reabrem escolhas já aprovadas.
+
 15 diagramas novos derivados de PDV_ESPECIFICACAO_E_BACKLOG.md v1.0, por solicitação do proprietário em 30/10/2026, no incremento PDV-001. São modelos para revisão: não são os diagramas acadêmicos originais ausentes, nem evidência de implementação ou aprovação de schema/contratos.
 
 [Cópia para revisão no Notion](https://app.notion.com/p/4092c9a99917819c86f4fcd92b288c88).

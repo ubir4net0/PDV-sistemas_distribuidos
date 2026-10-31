@@ -1,10 +1,16 @@
 # Estado observado em 30 de outubro de 2026
 
+## ADR-007 aprovada pelo proprietário
+
+O proprietário respondeu “pode aprovar tudo” à pergunta da ADR-007: baseline textual e novos diagramas como referência de desenvolvimento; OC CRIADA/ENVIADA/RECEBIDA/CANCELADA; produto com no máximo um fornecedor (N:1); complementos técnicos incrementais com nomes SQL em inglês. A decisão está em docs/decisions/ADR-007-proposta-base-dominio.md, cujo caminho histórico foi preservado.
+
+Essas escolhas não precisam de nova confirmação. Originais acadêmicos continuam ausentes; DEC-01/05/06 e campos/políticas/transições excluídos da ADR continuam pendentes. As seções de entregas anteriores abaixo preservam o contexto de cada incremento; a ADR-007 prevalece sobre as indicações históricas de pendência das escolhas aprovadas. Nenhum status de outra tarefa foi aceito automaticamente.
+
 ## Base técnica Flyway na PDV-009
 
 API conecta PostgreSQL por JDBC e aplica V1 pelo Flyway 12.4.0. V1 cria somente o namespace pdv; histórico em pdv_migrations. Não há tabelas de domínio, JPA ou seeds. Health/readiness incluem banco sem detalhes públicos; liveness continua do processo. Scripts Migrate/Validate/Info operam o banco local, Verify usa banco UUID descartável, e CI da API sobe PostgreSQL temporário. Testes exercitam rebuild/replay, checksum, clean bloqueado, DDL transacional e migradores concorrentes.
 
-docs/workflows/database-migrations.md e sdd/features/PDV-009-flyway-base.md registram operação, resultados e limites. DEC-02/03/04 continuam impedindo migrations de domínio; este incremento não conclui o schema ou aceita predecessoras.
+docs/workflows/database-migrations.md e sdd/features/PDV-009-flyway-base.md registram operação, resultados e limites. A aprovação da ADR-007 remove o bloqueio das escolhas acima; tabelas de domínio serão implementadas nas tarefas próprias. A base técnica está pronta para validação, sem afirmar schema completo ou aceite de predecessoras.
 
 ## Guia de execução na PDV-010
 

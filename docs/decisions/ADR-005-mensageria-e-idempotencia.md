@@ -1,5 +1,7 @@
 # ADR-005 mensageria confiável e idempotência
 
+Vigência posterior: a [ADR-007 aprovada](ADR-007-proposta-base-dominio.md) admite complementos técnicos incrementalmente, incluindo outbox/inbox e idempotência nas tarefas próprias. As referências a DEC-04 como proposta abaixo são históricas; campos, contratos e políticas continuam sujeitos às specs correspondentes.
+
 Data: 30/10/2026. Tarefa: [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md). Estado: RabbitMQ, outbox/inbox, retry e DLQ declarados no pacote; contratos e entidades técnicas ainda propostos (DEC-04).
 
 ## Contexto e fontes

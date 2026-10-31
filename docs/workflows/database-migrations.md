@@ -6,7 +6,7 @@ A [spec](../../sdd/features/PDV-009-flyway-base.md) delimita esta entrega. Flywa
 
 [V1](../../backend/api/src/main/resources/db/migration/V1__create_application_schema.sql) cria somente o namespace pdv. Histórico fica em pdv_migrations.flyway_schema_history, separado dos futuros objetos da aplicação. O placeholder applicationSchema é fixado em pdv na configuração da aplicação/plugin e recebe nome UUID apenas nos testes.
 
-Não há tabelas de domínio, seeds, JPA, RBAC, entidades de outbox/inbox ou regras financeiras nesta migration. DEC-02/03/04 continuam abertas. Namespace e histórico não comprovam schema de negócio concluído nem liberam suas tarefas dependentes.
+Não há tabelas de domínio, seeds, JPA, RBAC, entidades de outbox/inbox ou regras financeiras nesta migration. A [ADR-007 aprovada](../decisions/ADR-007-proposta-base-dominio.md) resolve referência de desenvolvimento, vocabulário de OC, fornecedor N:1 e inclusão dos complementos. Cada tabela e suas restrições pertencem à tarefa correspondente; namespace/histórico não comprovam implementação do domínio.
 
 ## Comandos locais
 

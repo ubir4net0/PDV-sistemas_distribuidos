@@ -6,13 +6,13 @@ Tarefa viva: https://app.notion.com/p/4092c9a9991781c2b27df2e15e66b32e. Fonte: e
 
 ## Objetivo, DoR e dependências
 
-Implementar a base técnica de Flyway/PostgreSQL disponível sem decisões de domínio. PDV-004/005 fornecem infraestrutura e API; evidências técnicas não substituem seu aceite formal. Tarefa e decisões vivas consultadas: DEC-02/03/04 continuam impedindo tabelas/enums/cardinalidades de negócio. A própria tarefa limita esse bloqueio às migrations de domínio. Não escolher estados ou criar entidades propostas para contorná-lo. Responsável/prazo não confirmados.
+Implementar a base técnica de Flyway/PostgreSQL. PDV-004/005 fornecem infraestrutura e API; evidências técnicas não substituem seu aceite formal. Na abertura, DEC-02/03/04 impediam tabelas/enums/cardinalidades de negócio; a base foi implementada sem contornar esse bloqueio. Depois do incremento, o proprietário aprovou explicitamente a ADR-007, conforme atualização abaixo. Responsável/prazo não confirmados.
 
 ## Fronteiras e decisão técnica
 
 API passa a usar JDBC/PostgreSQL e Flyway no startup. Histórico isolado em pdv_migrations e namespace de aplicação pdv criado por V1; nenhum cliente, produto, usuário, permissão, venda ou tabela de confiabilidade é modelado. Uma migration versionada de namespace é a fundação, não o schema de negócio concluído. Worker permanece sem persistência. Rotas e envelopes públicos são preservados; health agregado/readiness agora dependem do banco, liveness continua do processo. Autenticação, JPA e APIs de negócio não foram implementadas.
 
-A [ADR-007](../../docs/decisions/ADR-007-proposta-base-dominio.md) oferece uma proposta concreta para o proprietário decidir sobre referência de desenvolvimento, estados de OC, cardinalidade e complementos técnicos. Permanece proposta, sem aplicação em SQL ou atualização das demais tarefas.
+A [ADR-007](../../docs/decisions/ADR-007-proposta-base-dominio.md) foi aprovada explicitamente pelo proprietário. Referência textual, estados de OC, fornecedor N:1 e inclusão dos complementos foram decididos; tabelas serão criadas nas tarefas próprias. Nenhuma tabela adicional ou status de outra tarefa foi alterado por essa aprovação.
 
 Flyway valida nomes/checksums, proíbe clean e baseline automático/out-of-order. Maven plugin e runtime usam versão gerenciada pelo Spring Boot existente. Credenciais exclusivamente por ambiente; scripts leem somente os campos necessários do PostgreSQL local sem imprimir valores. Verify usa banco novo com nome UUID, criado e removido pela própria execução; Run/Migrate usam o banco local existente sem limpeza. Nenhuma operação no Amor e Vida.
 
@@ -23,7 +23,7 @@ Flyway valida nomes/checksums, proíbe clean e baseline automático/out-of-order
 - Integração verifica mudança de checksum, rollback transacional de DDL com erro, bloqueio de clean e execução concorrente de migration.
 - Fixtures adicionais existem somente em src/test/resources, fora do JAR de produção.
 - CI da API inicia PostgreSQL temporário e exige os testes reais, sem fallback H2 ou skips.
-- Documentação e evidências distinguem a base técnica do domínio bloqueado. Não declarar a tarefa inteira concluída por este incremento.
+- Documentação e evidências distinguem base técnica, decisões aprovadas e implementação de domínio futura. Não declarar tabelas ou outras tarefas concluídas por este incremento.
 
 ## Plano de verificação
 
@@ -50,4 +50,12 @@ Verificações desta sessão (30/10/2026 no fuso local; logs UTC de 31/10):
 
 Build foi repetido após incluir PostgreSQL no grupo readiness e ajustar o helper final; resultado final aprovado. Warnings de metadados de repositórios Flyway com HTTP 401 e de repositório legado/certificado não impediram resolução pública/build; TLS não foi relaxado e nenhuma credencial foi adicionada. Java nativo Windows não foi testado. Worker não foi alterado; sua regressão será conferida no job remoto.
 
-Autorevisão da base técnica inclui limites de escrita, isolamento/cleanup dos testes, ausência de segredos, fixtures fora do JAR e proposta ADR-007 ainda sem aceite. Commit/CI remota serão vinculados à tarefa após publicação. A tarefa completa não será declarada concluída: decisões e migrations de domínio permanecem pendentes, sem aceitar predecessoras.
+No primeiro incremento, a autorevisão incluiu isolamento/cleanup, ausência de segredos e fixtures fora do JAR. Commit aecb625d059033e2b8b73175c1382d5ec59d2b36 foi publicado; Backend quality 41158892144 e Planning integrity 41158892078 passaram, com 34 testes totais na CI. A ADR-007 ainda era proposta naquele momento.
+
+## Aprovação e fechamento do bloqueio
+
+Em 30/10/2026 (Manaus; 31/10 UTC), o proprietário respondeu “pode aprovar tudo” à pergunta explícita da ADR-007. A decisão abrange a baseline como referência de desenvolvimento, os estados CRIADA/ENVIADA/RECEBIDA/CANCELADA, fornecedor N:1 e complementos incrementais com nomes SQL em inglês. Os limites da ADR permanecem válidos.
+
+O critério da PDV-009 é atendido pela fundação Flyway, V1 ordenada e ciclo/testes PostgreSQL reais já executados. Schema de cadastros, identidade e confiabilidade será implementado nas respectivas tarefas previstas na ADR; não criar tabelas vazias em massa. Com as decisões registradas e a base técnica autorevisada, a entrega fica Em validação para aceite da tarefa. A resposta aprovou a ADR, sem aceitar automaticamente esta ou outras tarefas.
+
+Esta atualização altera somente documentação/decisão: não há nova migration nem repetição de build local. Verificações desta etapa: planejamento PASS para os 60 IDs/aceites/dependências e três hashes; 107 links locais válidos em 13 documentos; whitespace sem erros; fontes originais preservadas e ausência de senhas locais no staged. CI do novo SHA será vinculada à tarefa viva após confirmação.

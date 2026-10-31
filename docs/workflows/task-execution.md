@@ -24,7 +24,7 @@ Divergência exige inspeção; não contornar com force-push. Ler README, estado
 
 ## 2. Aplicar DoR e escrever a spec
 
-Ler as dependências vivas, conferir artefatos e separar confirmado, declarado, inferido, proposto e pendente. Dependência com artefato técnico entregue pode continuar sem aceite formal; registrar isso sem encerrar a predecessora. Se o incremento depende da decisão pendente, não iniciar seu código. Exemplo: DEC-02/03/04 continuam impedindo migrations de domínio na PDV-009.
+Ler as dependências vivas, conferir artefatos e separar confirmado, declarado, inferido, proposto e pendente. Dependência com artefato técnico entregue pode continuar sem aceite formal; registrar isso sem encerrar a predecessora. Se o incremento depende da decisão pendente, não iniciar seu código. Consultar o índice de ADRs para não repetir pedidos de escolhas já aprovadas: a ADR-007 resolveu vocabulário de OC, fornecedor N:1 e inclusão dos complementos, mantendo seus detalhes nos cards próprios.
 
 Criar sdd/features/PDV-XXX-slug.md a partir do [template](../../sdd/features/TEMPLATE.md), com critério original, refinamento autorizado, escopo, contratos, dependências, plano de verificação e limitações. Preservar os 60 IDs e fontes; não criar card para ocultar bloqueio. Responsável e prazo somente quando confirmados.
 

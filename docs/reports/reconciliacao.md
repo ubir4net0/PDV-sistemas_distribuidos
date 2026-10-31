@@ -1,5 +1,7 @@
 # Reconciliação das fontes do PDV
 
+Atualização de vigência: a [ADR-007](../decisions/ADR-007-proposta-base-dominio.md) foi aprovada explicitamente pelo proprietário. Baseline textual/novos diagramas são referência de desenvolvimento; vocabulário de OC, fornecedor N:1 e inclusão incremental dos complementos foram decididos. As pendências abaixo preservam a auditoria anterior; consultar o índice de ADRs para o alcance atual. A aprovação não comprova equivalência acadêmica, campos/políticas ou implementação, nem encerra outras tarefas.
+
 Nota de vigência: este relatório preserva a auditoria inicial. O proprietário posteriormente definiu trabalho individual com commits diretos em main, sem PR/aprovação externa, conforme a [ADR-001](../decisions/ADR-001-fluxo-individual.md). Regras operacionais anteriores de Gitflow/PR são históricas; os 60 IDs, fontes originais e aceites de produto permanecem preservados.
 
 Atualização da PDV-001: o proprietário solicitou [15 diagramas novos](../diagrams/README.md), gerados a partir da baseline textual e validados por renderização/inspeção visual. Eles tornam o modelo proposto revisável, mas não comprovam equivalência aos originais ausentes. SRC-01 agora distingue ausência da fonte original de validação pendente dos novos modelos; DEC-01 a DEC-06 continuam sem aprovação silenciosa.

@@ -10,20 +10,29 @@ Este índice faz parte da [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.
 | [ADR-004](ADR-004-saga-e-consistencia.md) | Saga, compensação e resultado incerto | Invariantes do pacote; máquina de estados pendente |
 | [ADR-005](ADR-005-mensageria-e-idempotencia.md) | RabbitMQ, outbox/inbox e idempotência | Padrões do pacote; schema e contratos propostos |
 | [ADR-006](ADR-006-limites-e-laboratorios.md) | Simulação local e limites de evidência | Limites explícitos do pacote; RNFs sem prova |
-| [ADR-007](ADR-007-proposta-base-dominio.md) | Referência de domínio, OC, fornecedor e complementos técnicos | Proposta para decisão explícita; nenhuma migration de domínio autorizada |
+| [ADR-007](ADR-007-proposta-base-dominio.md) | Referência de domínio, OC, fornecedor e complementos técnicos | Aprovada explicitamente pelo proprietário; implementação incremental nas tarefas próprias |
 
-As ADRs 002–006 documentam o texto disponível para validação; não aprovam a baseline pendente da PDV-001. “Declarado no pacote” indica origem rastreável, sem equivalência comprovada aos diagramas acadêmicos ausentes.
+As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “Declarado no pacote” indica origem rastreável. O proprietário aprovou a baseline textual e os novos diagramas como referência de desenvolvimento; a equivalência aos originais acadêmicos ausentes não foi comprovada.
+
+## Decisões aprovadas na ADR-007
+
+| Referência | Decisão vigente |
+| --- | --- |
+| SRC-01 | Baseline textual v1.0 e novos diagramas adotados como referência de desenvolvimento |
+| DEC-02 | Vocabulário OC: CRIADA, ENVIADA, RECEBIDA, CANCELADA |
+| DEC-03 | Produto com no máximo um fornecedor, N:1 |
+| DEC-04 | Complementos técnicos admitidos incrementalmente; nomes SQL em inglês |
 
 ## Decisões que continuam abertas
 
 | Referência | Questão | Onde fechar antes de implementar |
 | --- | --- | --- |
-| SRC-01 | Validação da baseline e dos novos diagramas; originais ausentes | PDV-001 |
+| SRC-01 | Originais/equivalência acadêmica continuam indisponíveis; referência de desenvolvimento já aprovada | PDV-001 |
 | DEC-01 | Estados finais de venda/pagamento e transições | PDV-007 e PDV-036 |
-| DEC-02 | Estados de ordem de compra | PDV-007, PDV-009 e PDV-023 |
-| DEC-03 | Cardinalidade fornecedor-produto | PDV-007, PDV-009 e PDV-022 |
-| DEC-04 | Schema técnico de permissões, outbox/inbox, idempotência, comprovantes e projeções | Refinamento de PDV-009/011/038 |
+| DEC-02 | Regras de transição de OC, sem reabrir o vocabulário aprovado | PDV-023/024 |
+| DEC-03 | Obrigatoriedade/nullable do fornecedor, sem reabrir a cardinalidade máxima N:1 | PDV-020/022 |
+| DEC-04 | Campos/restrições/políticas dos complementos já admitidos | Specs de PDV-011/035/038/039 e projeções justificadas |
 | DEC-05 | Atomicidade de lote e recebimento parcial | PDV-024 e PDV-027 |
 | DEC-06 | RBAC exato, TTLs, descontos, estados auxiliares e carga | Specs das respectivas tarefas |
 
-As ADRs são históricas: uma decisão posterior deve citar e substituir o registro anterior, sem apagar a justificativa. Detalhar um padrão de confiabilidade não aprova as entidades propostas em DEC-04.
+As ADRs preservam histórico: decisão posterior deve citar e substituir o registro anterior, sem apagar a justificativa. A ADR-007 aprova a inclusão dos complementos, não todos os seus campos, políticas ou implementação.
