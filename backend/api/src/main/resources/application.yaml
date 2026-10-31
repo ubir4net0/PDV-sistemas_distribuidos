@@ -1,6 +1,23 @@
 spring:
   application:
     name: pdv-api
+  datasource:
+    url: ${PDV_DB_URL:jdbc:postgresql://127.0.0.1:55432/pdv}
+    username: ${PDV_DB_USER}
+    password: ${PDV_DB_PASSWORD}
+    hikari:
+      schema: pdv
+  flyway:
+    default-schema: pdv_migrations
+    schemas: pdv_migrations
+    locations: classpath:db/migration
+    placeholders:
+      applicationSchema: pdv
+    clean-disabled: true
+    baseline-on-migrate: false
+    out-of-order: false
+    validate-migration-naming: true
+    validate-on-migrate: true
   web:
     error:
       include-message: never
@@ -27,3 +44,6 @@ management:
       show-components: never
       probes:
         enabled: true
+      group:
+        readiness:
+          include: readinessState,db

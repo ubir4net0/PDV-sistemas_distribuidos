@@ -25,7 +25,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 
 Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual.
 
-O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/AMQP real com RabbitMQ temporário. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend e persistência ainda não têm código/gates.
+O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/PostgreSQL/AMQP real com bancos e broker temporários. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend ainda não tem código/gates; persistência está limitada à base técnica.
 
 ## Ambiente local
 
@@ -41,14 +41,14 @@ PostgreSQL em `127.0.0.1:55432`; RabbitMQ AMQP em `127.0.0.1:5673` e management 
 
 ## Scaffold da API
 
-Com Docker ativo, na raiz:
+Com Docker e PostgreSQL PDV saudáveis, na raiz:
 
 ```powershell
 ./scripts/api.ps1 -Action Verify
 ./scripts/api.ps1 -Action Run
 ```
 
-API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health representa somente o processo; este scaffold ainda não conecta banco/filas e bloqueia os demais caminhos até a implementação dos contratos e autenticação.
+API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health/readiness incluem PostgreSQL sem detalhes públicos; liveness mede o processo. Os demais caminhos seguem bloqueados. A [base Flyway da PDV-009](docs/workflows/database-migrations.md) cria namespace/histórico e testa rebuild/replay; tabelas de domínio e decisões de schema continuam pendentes.
 
 ## Scaffold do worker
 

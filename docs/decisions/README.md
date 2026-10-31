@@ -10,6 +10,7 @@ Este índice faz parte da [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.
 | [ADR-004](ADR-004-saga-e-consistencia.md) | Saga, compensação e resultado incerto | Invariantes do pacote; máquina de estados pendente |
 | [ADR-005](ADR-005-mensageria-e-idempotencia.md) | RabbitMQ, outbox/inbox e idempotência | Padrões do pacote; schema e contratos propostos |
 | [ADR-006](ADR-006-limites-e-laboratorios.md) | Simulação local e limites de evidência | Limites explícitos do pacote; RNFs sem prova |
+| [ADR-007](ADR-007-proposta-base-dominio.md) | Referência de domínio, OC, fornecedor e complementos técnicos | Proposta para decisão explícita; nenhuma migration de domínio autorizada |
 
 As ADRs 002–006 documentam o texto disponível para validação; não aprovam a baseline pendente da PDV-001. “Declarado no pacote” indica origem rastreável, sem equivalência comprovada aos diagramas acadêmicos ausentes.
 

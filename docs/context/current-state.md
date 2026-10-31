@@ -1,5 +1,11 @@
 # Estado observado em 30 de outubro de 2026
 
+## Base técnica Flyway na PDV-009
+
+API conecta PostgreSQL por JDBC e aplica V1 pelo Flyway 12.4.0. V1 cria somente o namespace pdv; histórico em pdv_migrations. Não há tabelas de domínio, JPA ou seeds. Health/readiness incluem banco sem detalhes públicos; liveness continua do processo. Scripts Migrate/Validate/Info operam o banco local, Verify usa banco UUID descartável, e CI da API sobe PostgreSQL temporário. Testes exercitam rebuild/replay, checksum, clean bloqueado, DDL transacional e migradores concorrentes.
+
+docs/workflows/database-migrations.md e sdd/features/PDV-009-flyway-base.md registram operação, resultados e limites. DEC-02/03/04 continuam impedindo migrations de domínio; este incremento não conclui o schema ou aceita predecessoras.
+
 ## Guia de execução na PDV-010
 
 AGENTS.md e o workflow Notion do bootstrap foram revisados e complementados com roteiro operacional, matriz de escrita, leitura de dependências, evidências e condições de transição. O roteiro em docs/workflows/task-execution.md aplica commits diretos em main conforme ADR-001 e diferencia entrega técnica de aceite. A spec sdd/features/PDV-010-guia-agentes-workflow.md registra o critério original, o refinamento de Gitflow e verificações desta entrega documental. Baseline e decisões de domínio permanecem pendentes; nenhum código ou infraestrutura foi alterado.

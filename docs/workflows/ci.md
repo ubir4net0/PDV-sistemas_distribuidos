@@ -10,15 +10,17 @@ Cada job executa `./mvnw -B -ntp clean verify` no respectivo módulo:
 | Enforcer / javac release 21 | Toolchain e verificação de tipos Java |
 | Surefire 3.5.6 | Classes Test/Tests; seis cenários unitários do publisher no worker |
 | JAR Spring Boot | Artefato empacotado de cada processo |
-| Failsafe 3.5.6 | Classes IT; dez testes HTTP reais e onze AMQP contra broker real |
+| Failsafe 3.5.6 | Classes IT; onze HTTP/startup e seis migrations PostgreSQL reais na API, onze AMQP contra broker real no worker |
 
-A API ainda não tem lógica isolada que justifique unitários; os dez testes HTTP são integração. Failsafe falha se não encontrar testes em qualquer módulo. `mvn test` não executa integração; usar `verify` para o gate completo. Relatórios locais ficam em target/surefire-reports e target/failsafe-reports, ignorados pelo Git.
+A API ainda não tem lógica isolada que justifique unitários; seus dezessete testes são integração. Failsafe falha se não encontrar testes em qualquer módulo. `mvn test` não executa integração; usar `verify` para o gate completo. Relatórios locais ficam em target/surefire-reports e target/failsafe-reports, ignorados pelo Git.
 
 O job worker inicia um RabbitMQ 4.3.7 fixado por digest, aguarda health e configura usuário/vhost próprios e senha aleatória mascarada. A senha passa por ambiente efêmero do runner; não usa segredo do desenvolvedor nem credencial GitHub. Somente AMQP é publicado em loopback. Ao final, remove o container que criou. Falha de infraestrutura ou teste falha o job; não há caminho que ignore a integração. Objetos de teste têm prefixo UUID e limpeza restrita.
 
-Para Windows/Docker, usar `scripts/api.ps1 -Action Verify` e `scripts/worker.ps1 -Action Verify` (este requer o RabbitMQ do Compose saudável). Os scripts montam apenas seu módulo e config/ em leitura: o .env da raiz não entra no build. Com JDK 21 nativo, executar o Wrapper no diretório do módulo; no worker, configurar as variáveis locais conforme seu README.
+O job API inicia PostgreSQL 16.15 temporário, com imagem por digest, senha aleatória mascarada e health obrigatório, removendo-o ao final. A base Flyway da PDV-009 é testada contra banco real; falhas não são ignoradas. Fixtures de testes não entram no JAR.
 
-Frontend/TypeScript não foi criado: lint e typecheck frontend serão adicionados quando houver código. Não há datasource nas aplicações: CI não comprova integração PostgreSQL, migrations ou invariantes transacionais. A futura tarefa de persistência deve incluir esses gates. Estes testes não comprovam pagamentos, Saga, outbox/inbox, disponibilidade RNF19 ou segurança do produto final.
+Para Windows/Docker, usar `scripts/api.ps1 -Action Verify` (PostgreSQL do Compose saudável) e `scripts/worker.ps1 -Action Verify` (RabbitMQ saudável). O verify da API cria/remove banco UUID exclusivo; não reseta o banco de trabalho. Os scripts montam seu módulo de código e config/ (esta em leitura), mantendo .env da raiz fora do build. Com JDK 21 nativo, configurar variáveis privadas conforme os READMEs.
+
+Frontend/TypeScript não foi criado: lint e typecheck serão adicionados com o código. A integração PostgreSQL cobre namespace/histórico técnico, rebuild/replay, checksum, DDL transacional e lock de migration. Não comprova schema/invariantes de domínio, backup/restore de dados, pagamentos, Saga, outbox/inbox, disponibilidade RNF19 ou segurança do produto final.
 
 [Planning integrity](../../.github/workflows/planning.yml) continua verificando fontes e rastreabilidade separadamente. [Spec e evidências](../../sdd/features/PDV-008-ci-qualidade.md).
 

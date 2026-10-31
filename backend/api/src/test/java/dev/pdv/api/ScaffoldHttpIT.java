@@ -8,12 +8,14 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -65,6 +67,19 @@ class ScaffoldHttpIT {
     @Test
     void doesNotCreateDefaultInMemoryAccounts() {
         assertThat(context.getBeansOfType(UserDetailsService.class)).isEmpty();
+    }
+
+    @Test
+    void initializesFlywayAndApplicationNamespaceOnRealPostgres() {
+        var flyway = context.getBean(Flyway.class);
+        assertThat(flyway.info().current().getVersion().toString()).isEqualTo("1");
+        assertThat(flyway.getConfiguration().isCleanDisabled()).isTrue();
+        assertThat(flyway.getConfiguration().isBaselineOnMigrate()).isFalse();
+        assertThat(flyway.getConfiguration().isOutOfOrder()).isFalse();
+        var jdbc = context.getBean(JdbcTemplate.class);
+        assertThat(jdbc.queryForObject("SELECT current_schema()", String.class)).isEqualTo("pdv");
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM information_schema.tables WHERE table_schema = 'pdv'", Integer.class))
+                .isZero();
     }
 
     private HttpResponse<String> send(String method, String path) throws Exception {

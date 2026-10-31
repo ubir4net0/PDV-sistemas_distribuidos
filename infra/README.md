@@ -1,6 +1,6 @@
 # Infraestrutura local do PDV
 
-O [Compose da raiz](../compose.yaml) inicia PostgreSQL 16.15 e RabbitMQ 4.3.7 com management, usando imagens oficiais fixadas por digest. A [PDV-004](../sdd/features/PDV-004-infra-local.md) registra escopo e evidências. Este Compose contém apenas dependências locais; os scaffolds de [API](../backend/api/README.md) e [worker](../backend/worker/README.md) são executados separadamente. Frontend e migrations ainda não existem.
+O [Compose da raiz](../compose.yaml) inicia PostgreSQL 16.15 e RabbitMQ 4.3.7 com management, usando imagens oficiais fixadas por digest. A [PDV-004](../sdd/features/PDV-004-infra-local.md) registra escopo e evidências. Este Compose contém apenas dependências locais; [API](../backend/api/README.md) e [worker](../backend/worker/README.md) executam separadamente. A API tem [base técnica Flyway](../docs/workflows/database-migrations.md), sem tabelas de domínio. Frontend não existe.
 
 ## Iniciar no Windows
 
@@ -48,6 +48,6 @@ Se o smoke test for interrompido abruptamente, podem restar uma tabela `public.p
 
 ## Limites e fontes
 
-UTC é configurado nos serviços; a sincronização NTP do host não é demonstrada. O perfil local usa HTTP/AMQP sem TLS e um nó de banco/broker. Não comprova RNF05 multi-instância, RNF07/NTP, HA, TLS, uptime, outbox/inbox, transações de estoque ou Saga. Flyway e o ciclo migrate/restore/replay serão implementados/testados na PDV-009.
+UTC é configurado nos serviços; NTP do host não é demonstrado. O perfil local usa HTTP/AMQP sem TLS e um nó de banco/broker. Não comprova RNF05 multi-instância, RNF07/NTP, HA, TLS, uptime, outbox/inbox, transações de estoque ou Saga. A PDV-009 testa Flyway com rebuild/replay restrito à base vazia; backup/restore de dados e migrations de domínio continuam pendentes.
 
 Referências consultadas: [imagem oficial PostgreSQL](https://hub.docker.com/_/postgres), [imagem oficial RabbitMQ](https://github.com/docker-library/docs/blob/master/rabbitmq/README.md), [health checks RabbitMQ](https://www.rabbitmq.com/docs/monitoring) e [prontidão no Compose](https://docs.docker.com/compose/how-tos/startup-order/). Atualização de imagem requer novo digest e repetição dos testes; não trocar o digest sem revisar a versão dos dados.

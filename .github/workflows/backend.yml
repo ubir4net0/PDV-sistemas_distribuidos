@@ -27,6 +27,35 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: backend/${{ matrix.module }}/pom.xml
+      - name: Start isolated PostgreSQL
+        if: matrix.module == 'api'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ci_postgres_password="$(openssl rand -hex 32)"
+          echo "::add-mask::$ci_postgres_password"
+          export POSTGRES_USER=pdv_ci
+          export POSTGRES_PASSWORD="$ci_postgres_password"
+          export POSTGRES_DB=pdv_ci
+          docker run --detach --name pdv-ci-postgres \
+            --env POSTGRES_USER --env POSTGRES_PASSWORD --env POSTGRES_DB \
+            --publish 127.0.0.1:5432:5432 \
+            --health-cmd 'pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
+            --health-interval 5s --health-timeout 5s --health-retries 18 \
+            postgres:16.15-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab \
+            -c timezone=UTC -c log_timezone=UTC
+          for attempt in {1..36}; do
+            health="$(docker inspect --format '{{.State.Health.Status}}' pdv-ci-postgres)"
+            if [ "$health" = healthy ]; then break; fi
+            if [ "$health" = unhealthy ]; then exit 1; fi
+            sleep 5
+          done
+          test "$health" = healthy
+          {
+            echo "PDV_DB_URL=jdbc:postgresql://127.0.0.1:5432/pdv_ci"
+            echo "PDV_DB_USER=$POSTGRES_USER"
+            echo "PDV_DB_PASSWORD=$ci_postgres_password"
+          } >> "$GITHUB_ENV"
       - name: Start isolated RabbitMQ
         if: matrix.module == 'worker'
         shell: bash
@@ -63,3 +92,6 @@ jobs:
       - name: Remove CI RabbitMQ
         if: always() && matrix.module == 'worker'
         run: docker rm --force pdv-ci-rabbit
+      - name: Remove CI PostgreSQL
+        if: always() && matrix.module == 'api'
+        run: docker rm --force pdv-ci-postgres

@@ -20,6 +20,23 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-flyway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc</artifactId>
     </dependency>
     <dependency>
@@ -42,6 +59,37 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>${flyway.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>${flyway.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <url>${env.PDV_DB_URL}</url>
+          <user>${env.PDV_DB_USER}</user>
+          <password>${env.PDV_DB_PASSWORD}</password>
+          <defaultSchema>pdv_migrations</defaultSchema>
+          <schemas><schema>pdv_migrations</schema></schemas>
+          <locations><location>filesystem:src/main/resources/db/migration</location></locations>
+          <placeholders><applicationSchema>pdv</applicationSchema></placeholders>
+          <cleanDisabled>true</cleanDisabled>
+          <baselineOnMigrate>false</baselineOnMigrate>
+          <outOfOrder>false</outOfOrder>
+          <validateMigrationNaming>true</validateMigrationNaming>
+          <validateOnMigrate>true</validateOnMigrate>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
