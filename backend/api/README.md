@@ -79,3 +79,5 @@ PDV-017 acrescenta consultas/edição/status e V5 de auditoria; [contrato e limi
 PDV-018 acrescenta V6/endereço principal transacional e consulta regional de clientes; [contrato](../../docs/workflows/customers.md). Não é relatório de vendas nem frontend.
 
 PDV-020 acrescenta V7/categorias/produtos JPA, SKU único, Decimal, estados explícitos, versões e histórico atômico; [contrato de catálogo](../../docs/workflows/catalog.md). ADMIN gerencia, OPERATOR consulta; sem saldo de estoque, compras ou frontend. As descrições anteriores de scaffold preservam o contexto histórico; customers e catalog já possuem adaptadores HTTP reais.
+
+PDV-021 acrescenta GET /products e /categories paginados e índices V8, com ensaio HTTP de carga confirmado (10.000 produtos/10 clientes/10s+60s) no Verify. [Spec e limites de medição](../../sdd/features/PDV-021-consulta-catalogo.md); meta é asserção p95<200ms, não alegação automática de produção.

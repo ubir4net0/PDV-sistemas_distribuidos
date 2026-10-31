@@ -72,6 +72,7 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/customers/regions", "/customers/{id}/addresses").authenticated()
                         .requestMatchers(HttpMethod.POST, "/customers/{id}/addresses").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/customers/{id}/addresses/{addressId}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/products").authenticated()
                         .requestMatchers(HttpMethod.POST, "/categories", "/products").authenticated()
                         .requestMatchers(HttpMethod.GET, "/categories/{id}", "/products/{id}", "/categories/{id}/history", "/products/{id}/history").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/categories/{id}", "/products/{id}").authenticated()

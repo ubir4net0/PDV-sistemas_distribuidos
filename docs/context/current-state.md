@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## Consulta do catálogo — PDV-021
+
+GET /products e /categories paginados; prefixo literal nome/SKU, filtros de categoria/estado e índices V8. Guardas catalog.read/ADMIN ou OPERATOR preservadas. Ensaio HTTP real usa carga confirmada pelo proprietário; resultados e limites na [spec](../../sdd/features/PDV-021-consulta-catalogo.md), sem inferir capacidade de produção ou aceite.
+
 ## Catálogo — PDV-020
 
 Categorias/produtos com JPA e V7, SKU único canônico e Decimal validado sem arredondamento. Refinamento confirmado: ADMIN gerencia, OPERATOR consulta; estados CADASTRADO→EM_REVISAO→ATIVO↔INATIVO, edição conserva estado. Histórico atômico, locks categoria→produto, versões e FKs preservam vínculos. Contrato em [catálogo](../workflows/catalog.md); busca paginada/fornecedores pertencem aos incrementos seguintes. Evidências na spec e tarefa viva; não implica aceite do proprietário.

@@ -166,9 +166,9 @@ class RbacHttpIT {
             }
         });
         assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me",
-                "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
+                "GET /categories", "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
                 "GET /customers/{id}", "GET /customers/{id}/addresses", "GET /customers/{id}/history",
-                "GET /products/{id}", "GET /products/{id}/history", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
+                "GET /products", "GET /products/{id}", "GET /products/{id}/history", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
                 "PATCH /products/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",
                 "POST /customers", "POST /customers/{id}/addresses", "POST /products", "PUT /categories/{id}",
                 "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}");
