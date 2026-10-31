@@ -23,7 +23,7 @@ public class CustomerEntity {
     @Column(nullable = false) private boolean active;
     @Version private long version;
     @Column(name = "created_at", insertable = false, updatable = false) private Instant createdAt;
-    @Column(name = "updated_at", insertable = false, updatable = false) private Instant updatedAt;
+    @Column(name = "updated_at", insertable = false) private Instant updatedAt;
 
     protected CustomerEntity() { }
 
@@ -41,6 +41,19 @@ public class CustomerEntity {
     public CustomerView view() {
         return new CustomerView(id, personType, document, name, phone, email, locality, active, version, createdAt, updatedAt);
     }
+
+    public void change(CustomerInput input, String canonicalDocument, Instant now) {
+        personType = input.personType();
+        document = canonicalDocument;
+        name = input.name().strip();
+        phone = optional(input.phone());
+        email = optional(input.email());
+        locality = optional(input.locality());
+        touch(now);
+    }
+
+    public void status(boolean value, Instant now) { active = value; touch(now); }
+    public void touch(Instant now) { updatedAt = now; }
 
     private static String optional(String value) {
         return value == null || value.isBlank() ? null : value.strip();

@@ -13,6 +13,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CustomerPersistenceIT {
     @Test
+    void upgradesV4PreservingCustomerAndEnforcingAuditReferences() throws Exception {
+        try (var database = new PostgresFixture()) {
+            database.configured("4").migrate();
+            var jdbc = database.jdbc();
+            var customer = jdbc.queryForObject("""
+                    INSERT INTO customers(person_type,document,name) VALUES ('PF','12345678909','Preserved') RETURNING id
+                    """, java.util.UUID.class);
+            database.flyway().migrate();
+            assertThat(jdbc.queryForObject("SELECT name FROM customers WHERE id=?", String.class, customer)).isEqualTo("Preserved");
+            assertThatThrownBy(() -> jdbc.update("""
+                    INSERT INTO customer_changes(customer_id,actor_id,action,before_data,after_data)
+                    VALUES (?,?,'UPDATED','{}','{}')
+                    """, customer, java.util.UUID.randomUUID())).isInstanceOf(DataIntegrityViolationException.class);
+        }
+    }
+
+    @Test
     void documentRaceHasOneWinnerAndCanonicalConstraint() throws Exception {
         try (var database = new PostgresFixture()) {
             database.flyway().migrate();

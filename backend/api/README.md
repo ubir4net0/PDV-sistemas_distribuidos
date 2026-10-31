@@ -40,6 +40,9 @@ Em Unix: `./mvnw -B -ntp clean verify`. O build exige Java 21 e Maven >= 3.10, <
 | POST /auth/logout | 204, revogação somente do token atual |
 | GET /access/permissions | 200 para ADMIN com access.permissions.read; anônimo 401; demais 403 |
 | POST /customers | 201 para ADMIN/OPERATOR com customer.create; 400 inválido; 409 duplicado |
+| GET /customers, /customers/{id}, /customers/{id}/history | Consulta paginada/detalhe/histórico com customer.read |
+| PUT /customers/{id} | Edição com customer.update e versão |
+| PATCH /customers/{id}/status | Ativação/inativação só ADMIN com customer.status e versão |
 | Outros caminhos/métodos | 401 anônimo, 403 autenticado; sem redirect, Basic ou sessão |
 
 Health agregado e readiness consultam PostgreSQL; liveness continua independente do banco. RabbitMQ não é consultado pela API. UP não significa fluxo de venda pronto. Somente health é exposto; componentes, detalhes, descoberta e /actuator/flyway permanecem ocultos/bloqueados. Nenhum usuário/senha em memória é gerado. Autenticação é implementada na PDV-012; outros caminhos continuam bloqueados.
@@ -68,3 +71,5 @@ Os onze testes `ScaffoldHttpIT` iniciam servidor real e verificam health/probes,
 Bootstrap obtido do [Spring Initializr](https://start.spring.io), compatibilidade conferida nos [requisitos Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html). Ver também [Maven Wrapper](https://maven.apache.org/tools/wrapper/), [Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) e [auto-configuração de contas em memória](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/security/autoconfigure/UserDetailsServiceAutoConfiguration.html). Versões selecionadas estão fixadas no POM/Wrapper/toolchain; não atualizar silenciosamente.
 
 [Cadastro de clientes — PDV-016](../../docs/workflows/customers.md): POST /customers exige customer.create mais ADMIN/OPERATOR; 201 com Location, 400 validação, 409 duplicidade. V4 versiona o schema. Sem contas/seed de clientes padrão.
+
+PDV-017 acrescenta consultas/edição/status e V5 de auditoria; [contrato e limites](../../docs/workflows/customers.md). Sem exclusão física; alterações e histórico são atômicos e testados contra PostgreSQL real.

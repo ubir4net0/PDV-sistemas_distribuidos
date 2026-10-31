@@ -1,5 +1,10 @@
 # Estado observado em 30 de outubro de 2026
 
+## Ciclo de clientes — PDV-017
+
+Consulta/edição/inativação disponíveis com filtros e paginação, JPA/@Version/lock e auditoria V5 na mesma transação. ADMIN/OPERATOR consultam/editam; só ADMIN muda status. Sem exclusão física, com ator/snapshots e rollback em falha do histórico. Regras de checkout de inativos seguem pendentes; endereços entram na PDV-018. Contrato em docs/workflows/customers.md.
+
+
 ## Cadastro de clientes — PDV-016
 
 V4 cria customers e documento canônico único. POST /customers usa JPA (schema validado, sem auto-DDL), valida CPF/CNPJ numérico/alfanumérico e exige ADMIN ou OPERATOR com customer.create, conforme recorte aprovado para o lote 016–018. Duplicidade 409, entrada inválida 400; regressões e concorrência PostgreSQL em testes próprios. Não há consultas/alterações de clientes neste incremento; entram na PDV-017.
