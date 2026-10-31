@@ -63,4 +63,4 @@ Processo independente, sem porta HTTP, com diagnóstico JSON tipado por AMQP e t
 
 Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
 
-PDV-016 oferece POST /customers com validação local CPF/CNPJ (numérico/alfanumérico), unicidade PostgreSQL e CRUD JPA. Operação e limites no [guia de clientes](docs/workflows/customers.md). Consulta/edição e endereços entram nos commits próprios 017/018.
+PDV-016 oferece POST /customers com validação local CPF/CNPJ (numérico/alfanumérico), unicidade PostgreSQL e CRUD JPA. Operação e limites no [guia de clientes](docs/workflows/customers.md). Consulta/edição/histórico (017) e endereços/regiões (018) estão disponíveis em commits próprios, com permissões aprovadas.

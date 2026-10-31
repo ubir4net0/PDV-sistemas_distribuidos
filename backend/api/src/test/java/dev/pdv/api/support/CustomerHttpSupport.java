@@ -60,6 +60,7 @@ public abstract class CustomerHttpSupport {
     void cleanupOwnObjects() {
         for (var id : customers) {
             jdbc.update("DELETE FROM customer_changes WHERE customer_id=?", id);
+            jdbc.update("DELETE FROM customer_addresses WHERE customer_id=?", id);
             jdbc.update("DELETE FROM customers WHERE id=?", id);
         }
         jdbc.update("DELETE FROM users WHERE id IN (?,?)", admin, operator);

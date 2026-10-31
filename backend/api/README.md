@@ -43,6 +43,8 @@ Em Unix: `./mvnw -B -ntp clean verify`. O build exige Java 21 e Maven >= 3.10, <
 | GET /customers, /customers/{id}, /customers/{id}/history | Consulta paginada/detalhe/histórico com customer.read |
 | PUT /customers/{id} | Edição com customer.update e versão |
 | PATCH /customers/{id}/status | Ativação/inativação só ADMIN com customer.status e versão |
+| GET /customers/{id}/addresses e /customers/regions | Endereços paginados e consulta regional com customer.read |
+| POST /customers/{id}/addresses; PUT /customers/{id}/addresses/{addressId} | Endereços com customer.address_write, versão no PUT |
 | Outros caminhos/métodos | 401 anônimo, 403 autenticado; sem redirect, Basic ou sessão |
 
 Health agregado e readiness consultam PostgreSQL; liveness continua independente do banco. RabbitMQ não é consultado pela API. UP não significa fluxo de venda pronto. Somente health é exposto; componentes, detalhes, descoberta e /actuator/flyway permanecem ocultos/bloqueados. Nenhum usuário/senha em memória é gerado. Autenticação é implementada na PDV-012; outros caminhos continuam bloqueados.
@@ -73,3 +75,5 @@ Bootstrap obtido do [Spring Initializr](https://start.spring.io), compatibilidad
 [Cadastro de clientes — PDV-016](../../docs/workflows/customers.md): POST /customers exige customer.create mais ADMIN/OPERATOR; 201 com Location, 400 validação, 409 duplicidade. V4 versiona o schema. Sem contas/seed de clientes padrão.
 
 PDV-017 acrescenta consultas/edição/status e V5 de auditoria; [contrato e limites](../../docs/workflows/customers.md). Sem exclusão física; alterações e histórico são atômicos e testados contra PostgreSQL real.
+
+PDV-018 acrescenta V6/endereço principal transacional e consulta regional de clientes; [contrato](../../docs/workflows/customers.md). Não é relatório de vendas nem frontend.

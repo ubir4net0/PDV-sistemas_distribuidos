@@ -1,4 +1,9 @@
-# Estado observado em 30 de outubro de 2026
+# Estado observado em 31 de outubro de 2026
+
+## Endereços e regiões — PDV-018
+
+V6 customer_addresses com FK 1:N, principal único parcial e versão. API JPA permite consultar/criar/editar endereços com permissões explícitas; principal alternado, versões e histórico são transacionais. Consulta regional real usa principal e conserva grupo sem localização, sem duplicar clientes. Sem frontend, exclusão física ou relatório de vendas. Contrato em docs/workflows/customers.md.
+
 
 ## Ciclo de clientes — PDV-017
 

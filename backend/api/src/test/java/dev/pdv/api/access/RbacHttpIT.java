@@ -165,9 +165,10 @@ class RbacHttpIT {
                         mapping.getPatternValues().forEach(path -> actual.add(method + " " + path)));
             }
         });
-        assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me", "GET /customers", "GET /customers/{id}",
+        assertThat(actual).containsExactly("GET /access/permissions", "GET /auth/me", "GET /customers", "GET /customers/regions", "GET /customers/{id}", "GET /customers/{id}/addresses",
                 "GET /customers/{id}/history", "PATCH /customers/{id}/status", "POST /auth/login", "POST /auth/logout",
-                "POST /customers", "PUT /customers/{id}");
+                "POST /customers", "POST /customers/{id}/addresses", "PUT /customers/{id}",
+                "PUT /customers/{id}/addresses/{addressId}");
     }
 
     private String token(String role) throws Exception {

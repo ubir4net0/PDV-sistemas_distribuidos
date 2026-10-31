@@ -34,6 +34,13 @@ public class DevelopmentIdentitySeed implements ApplicationRunner {
                 ON CONFLICT (role_id, permission_id) DO NOTHING
                 """);
         jdbc.update("INSERT INTO permissions(resource,action) VALUES ('customer','create') ON CONFLICT (resource,action) DO NOTHING");
+        jdbc.update("INSERT INTO permissions(resource,action) VALUES ('customer','address_write') ON CONFLICT (resource,action) DO NOTHING");
+        jdbc.update("""
+                INSERT INTO role_permissions(role_id,permission_id)
+                SELECT r.id,p.id FROM roles r CROSS JOIN permissions p
+                WHERE r.code IN ('ADMIN','OPERATOR') AND p.resource='customer' AND p.action='address_write'
+                ON CONFLICT (role_id,permission_id) DO NOTHING
+                """);
         jdbc.update("""
                 INSERT INTO permissions(resource,action) VALUES ('customer','read'),('customer','update'),('customer','status')
                 ON CONFLICT (resource,action) DO NOTHING
