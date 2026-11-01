@@ -64,7 +64,7 @@ Namespace `dev.pdv.api`, com entrada `PdvApiApplication` e configuração transv
 | inventory | Saldo, reservas e movimentações |
 | sales | Carrinho, venda e Saga |
 
-Cada módulo separa `domain` (regras), `application` (casos de uso) e `infrastructure` (adaptadores), com fronteiras descritas em package-info.java. access.http expõe identidade; customers, catalog e purchasing.infrastructure expõem cadastros HTTP/JPA reais. inventory e sales continuam reservados, sem regras de negócio implementadas. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e complementos; decisões dos cadastros estão nas specs próprias. Compras, estoque, eventos e Saga continuam nas tarefas seguintes.
+Cada módulo separa `domain` (regras), `application` (casos de uso) e `infrastructure` (adaptadores), com fronteiras descritas em package-info.java. access.http expõe identidade; customers, catalog e purchasing.infrastructure expõem cadastros HTTP/JPA reais. inventory implementa saldos/aberturas por SQL crítico; sales continua reservado. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e complementos; detalhes aprovados estão nas specs próprias. Movimentações/reservas, compras, eventos e Saga continuam nas tarefas seguintes.
 
 ## Verificações e fontes
 
@@ -83,3 +83,5 @@ PDV-020 acrescenta V7/categorias/produtos JPA, SKU único, Decimal, estados expl
 PDV-021 acrescenta GET /products e /categories paginados e índices V8, com ensaio HTTP de carga confirmado (10.000 produtos/10 clientes/10s+60s) no Verify. [Spec e limites de medição](../../sdd/features/PDV-021-consulta-catalogo.md); meta é asserção p95<200ms, não alegação automática de produção.
 
 PDV-022 acrescenta CRUD JPA de fornecedores, V9 e vínculo opcional N:1 de produtos. CNPJ único canônico, versão/histórico transacionais, sem exclusão física; ADMIN gerencia/OPERATOR consulta. [Contrato](../../docs/workflows/suppliers.md), com produto.supplierId preservado por edições e inativação sem remoção de vínculos. Sem ordens de compra, estoque ou frontend.
+
+PDV-026 acrescenta V10, saldo inteiro por produto e abertura técnica imutável/atômica, com GET /inventory e leitura de saldo/abertura por produto. [Contrato](../../docs/workflows/inventory.md); disponível calculado no banco, versão própria e guards inventory.read. Movimentações/reservas/ETags permanecem nos incrementos seguintes.

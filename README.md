@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo e fornecedores, e worker de diagnóstico disponíveis. Estoque, vendas e frontend ainda não foram implementados.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores e saldos de estoque, e worker de diagnóstico disponíveis. Movimentações/reservas, vendas e frontend permanecem nos incrementos seguintes.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -20,6 +20,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 - [Estado observado](docs/context/current-state.md) e [arquitetura alvo](docs/context/architecture.md).
 - [Contrato de catálogo](docs/workflows/catalog.md): categorias/produtos, estados, permissões, versões e histórico.
 - [Contrato de fornecedores](docs/workflows/suppliers.md): CNPJ, vínculo opcional de produtos e inativação com histórico.
+- [Contrato de estoque](docs/workflows/inventory.md): saldos inteiros, abertura técnica e leituras transacionais.
 - [Índice de ADRs](docs/decisions/README.md): processos, transações, Saga, mensageria, idempotência e limites acadêmicos documentados na PDV-003.
 - [15 diagramas propostos](docs/diagrams/README.md): arquitetura, casos de uso, classes, DER, sequências e estados, com fontes Mermaid editáveis e SVGs.
 - [Reconciliação das fontes](docs/reports/reconciliacao.md), [ordem proposta](docs/planning/implementation-order.md) e [rastreabilidade de 19 RF e 20 RNF](docs/planning/requirements-coverage.md).

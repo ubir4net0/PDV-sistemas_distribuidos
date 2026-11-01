@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo e fornecedores disponíveis nos incrementos documentados. Estoque, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros não comprova essas integrações.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e base de saldos de estoque disponíveis nos incrementos documentados. Movimentações/reservas, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
 
 ## Registros de decisão
 
@@ -19,6 +19,8 @@ Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessam
 Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V9, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, estoque, compras e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
+
+PDV-026: SQL crítico de saldo em inventory, V10 de saldos/aberturas, inicialização atômica por trigger de produto e versão independente do catálogo. [Contrato](../workflows/inventory.md). Leituras do estado transacional não implementam reserva/baixa/Saga ou projeção eventual. Quantidades inteiras e abertura zero confirmadas pelo proprietário.
 
 Incremento PDV-020: catalog possui CRUD JPA real de categorias/produtos e V7; histórico por JDBC compartilha a transação JPA. Locks categoria→produto e versões protegem mudanças, UNIQUE protege SKU. Refinamento de estados/permissões confirmado pelo proprietário, documentado no [contrato](../workflows/catalog.md). Isso não implementa saldo, Saga ou compras.
 

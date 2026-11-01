@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## Saldos de estoque — PDV-026
+
+V10 inicializa saldos zero e abertura técnica imutável de produtos existentes/novos na mesma transação. Leituras inventory.read para ADMIN/OPERATOR calculam disponível=físico-reservado; CHECKs/FKs e versão própria protegem invariantes. [Contrato](../workflows/inventory.md). Movimentações/ETags seguem nos incrementos seguintes; reserva/sincronização/Saga não são inferidas desta base.
+
 ## Fornecedores — PDV-022
 
 V9 suppliers/supplier_changes e vínculo opcional N:1 em products. CRUD JPA com CNPJ canônico único e validação local, versões e histórico transacional; ADMIN gerencia, OPERATOR consulta. Inativação/DELETE lógico preservam cadastro e vínculos; novos vínculos exigem fornecedor ativo, locks serializam disputa. Contratos em [fornecedores](../workflows/suppliers.md). Sem compras/recebimento/estoque/frontend; evidências reais na spec/tarefa viva, sem aceite implícito.

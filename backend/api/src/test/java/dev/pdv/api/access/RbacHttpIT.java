@@ -168,6 +168,7 @@ class RbacHttpIT {
         assertThat(actual).containsExactly("DELETE /suppliers/{id}", "GET /access/permissions", "GET /auth/me",
                 "GET /categories", "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
                 "GET /customers/{id}", "GET /customers/{id}/addresses", "GET /customers/{id}/history",
+                "GET /inventory", "GET /inventory/{productId}", "GET /inventory/{productId}/opening",
                 "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /suppliers", "GET /suppliers/{id}",
                 "GET /suppliers/{id}/history", "GET /suppliers/{id}/products", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
                 "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",

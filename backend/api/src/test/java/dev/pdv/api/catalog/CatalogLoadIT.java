@@ -57,7 +57,11 @@ class CatalogLoadIT extends CatalogHttpSupport {
             Files.createDirectories(Path.of("target")); Files.writeString(Path.of("target/catalog-load.json"), json.writeValueAsString(report));
             System.out.println("CATALOG_LOAD " + json.writeValueAsString(report));
             assertThat(durations).isNotEmpty(); assertThat(errors).isZero(); assertThat(percentile(durations, .95)).isLessThan(200.0);
-        } finally { jdbc.update("DELETE FROM products WHERE category_id=?", category); }
+        } finally {
+            dev.pdv.api.support.InventoryFixtureCleanup.clean(jdbc,
+                    jdbc.queryForList("SELECT id FROM products WHERE category_id=?", java.util.UUID.class, category), List.of(admin, operator));
+            jdbc.update("DELETE FROM products WHERE category_id=?", category);
+        }
     }
     private List<Sample> phase(String token, String[] paths, int seconds) throws Exception {
         var samples = new ConcurrentLinkedQueue<Sample>(); var start = new CountDownLatch(1); var deadline = new AtomicLong();

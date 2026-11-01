@@ -24,6 +24,7 @@ public abstract class CatalogHttpSupport extends CustomerHttpSupport {
     }
     @AfterEach
     void cleanupCatalog() {
+        InventoryFixtureCleanup.clean(jdbc, products, List.of(admin, operator));
         for (var id : products) { jdbc.update("DELETE FROM catalog_changes WHERE product_id=?", id); jdbc.update("DELETE FROM products WHERE id=?", id); }
         for (var id : categories) { jdbc.update("DELETE FROM catalog_changes WHERE category_id=?", id); jdbc.update("DELETE FROM categories WHERE id=?", id); }
         for (var id : catalogPermissions) { jdbc.update("DELETE FROM permissions WHERE id=?", id); }
