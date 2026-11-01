@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores e saldos de estoque, e worker de diagnóstico disponíveis. Movimentações/reservas, vendas e frontend permanecem nos incrementos seguintes.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações de estoque e worker de diagnóstico disponíveis. Reservas, compras, vendas e frontend permanecem nos incrementos seguintes.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)

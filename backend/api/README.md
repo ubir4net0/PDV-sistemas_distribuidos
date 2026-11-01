@@ -85,3 +85,5 @@ PDV-021 acrescenta GET /products e /categories paginados e índices V8, com ensa
 PDV-022 acrescenta CRUD JPA de fornecedores, V9 e vínculo opcional N:1 de produtos. CNPJ único canônico, versão/histórico transacionais, sem exclusão física; ADMIN gerencia/OPERATOR consulta. [Contrato](../../docs/workflows/suppliers.md), com produto.supplierId preservado por edições e inativação sem remoção de vínculos. Sem ordens de compra, estoque ou frontend.
 
 PDV-026 acrescenta V10, saldo inteiro por produto e abertura técnica imutável/atômica, com GET /inventory e leitura de saldo/abertura por produto. [Contrato](../../docs/workflows/inventory.md); disponível calculado no banco, versão própria e guards inventory.read. Movimentações/reservas/ETags permanecem nos incrementos seguintes.
+
+PDV-027 acrescenta V11, entradas/saídas/ajustes inteiros via SQL condicional, lote tudo-ou-nada, motivo/ator e histórico imutável. RequestId/ator e resultado persistido permitem replay sem novo efeito; somente ADMIN/inventory.write movimenta. [Contrato](../../docs/workflows/inventory.md). If-Match/ETags entram na PDV-028, reservas/compras/venda/Saga ficam nas tarefas próprias.

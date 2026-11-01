@@ -27,7 +27,7 @@ public class InventoryStore {
         var rows = jdbc.query("SELECT *,physical-reserved AS available FROM inventory_balances ORDER BY product_id LIMIT ? OFFSET ?", InventoryStore::balance, size, (long) page * size);
         return new Page<>(rows, jdbc.queryForObject("SELECT count(*) FROM inventory_balances", Long.class), page, size);
     }
-    private static Balance balance(ResultSet row, int index) throws SQLException {
+    static Balance balance(ResultSet row, int index) throws SQLException {
         return new Balance(row.getObject("product_id", UUID.class), row.getLong("physical"), row.getLong("reserved"), row.getLong("available"),
                 row.getLong("version"), row.getTimestamp("created_at").toInstant(), row.getTimestamp("updated_at").toInstant());
     }

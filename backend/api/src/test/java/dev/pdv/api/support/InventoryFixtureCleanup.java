@@ -21,6 +21,8 @@ public final class InventoryFixtureCleanup {
             try {
                 connection.setAutoCommit(false);
                 try (var statement = connection.createStatement()) { statement.execute("SET LOCAL session_replication_role = replica"); }
+                delete(connection, "DELETE FROM inventory_movements WHERE product_id=ANY(?)", products);
+                delete(connection, "DELETE FROM inventory_operations o WHERE actor_id=ANY(?) AND NOT EXISTS (SELECT 1 FROM inventory_movements m WHERE m.operation_id=o.id)", actors);
                 delete(connection, "DELETE FROM inventory_openings WHERE product_id=ANY(?)", products);
                 delete(connection, "DELETE FROM inventory_balances WHERE product_id=ANY(?)", products);
                 connection.commit();

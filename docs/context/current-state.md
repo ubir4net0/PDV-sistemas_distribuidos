@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## Movimentos de estoque — PDV-027
+
+V11 e SQL condicional implementam entrada/saída/ajuste absoluto de inteiros, ADMIN/inventory.write, motivo/ator e trilha imutável. Lote tudo-ou-nada e identidade requestId/ator evitam efeitos parciais ou repetidos; versões, reservado e overflow são protegidos. [Contrato](../workflows/inventory.md). If-Match/ETags seguem na PDV-028; reservas/compras/vendas/eventos não são inferidos deste incremento.
+
 ## Saldos de estoque — PDV-026
 
 V10 inicializa saldos zero e abertura técnica imutável de produtos existentes/novos na mesma transação. Leituras inventory.read para ADMIN/OPERATOR calculam disponível=físico-reservado; CHECKs/FKs e versão própria protegem invariantes. [Contrato](../workflows/inventory.md). Movimentações/ETags seguem nos incrementos seguintes; reserva/sincronização/Saga não são inferidas desta base.
