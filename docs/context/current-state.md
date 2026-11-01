@@ -1,5 +1,9 @@
 # Estado observado em 31 de outubro de 2026
 
+## ETags e concorrência de estoque — PDV-028
+
+GET do saldo entrega ETag forte; PATCH da mesma URI usa If-Match/version com revisão explícita e UPDATE condicional. Conflitos412/409 não escrevem; corpo sem revisão428, listas/weak/wildcard com regras documentadas, replay conhecido sem duplicar efeito e sem ETag atual inventada. Contrato legado de movimentos/lote preservado. [Contrato](../workflows/inventory.md), sem novo DDL ou reservas/Saga inferidas.
+
 ## Movimentos de estoque — PDV-027
 
 V11 e SQL condicional implementam entrada/saída/ajuste absoluto de inteiros, ADMIN/inventory.write, motivo/ator e trilha imutável. Lote tudo-ou-nada e identidade requestId/ator evitam efeitos parciais ou repetidos; versões, reservado e overflow são protegidos. [Contrato](../workflows/inventory.md). If-Match/ETags seguem na PDV-028; reservas/compras/vendas/eventos não são inferidos deste incremento.

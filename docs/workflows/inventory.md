@@ -1,4 +1,4 @@
-# Estoque — PDV-026/027
+# Estoque — PDV-026/027/028
 
 Refinamento explicitamente confirmado pelo proprietário em 31/10/2026: quantidades inteiras, saldos iniciais zero, ADMIN movimenta e ADMIN/OPERATOR consultam. Na PDV-026 só há leitura e abertura técnica. Lote tudo-ou-nada, movimentos/ajuste absoluto e ETags pertencem aos dois incrementos seguintes. Reserva/expiração/baixa de venda são tarefas próprias, sem implementação presumida.
 
@@ -25,6 +25,16 @@ POST retorna201 com {id,requestId,items,createdAt}; itens contêm ID de moviment
 requestId é escopado por ator. Advisory lock transacional PostgreSQL serializa essa identidade, e UNIQUE reforça a proteção. SHA256 do JSON canônico dos itens (campos productId,type,quantity,reason,version, ordem de UUID) detecta uso da chave com conteúdo diferente:409 request_conflict. Repetição com o mesmo conteúdo retorna o corpo original/201 e Idempotent-Replay:true, inclusive após movimentos posteriores; o balance retornado é snapshot do resultado original, não leitura atual. Novas operações retornam Idempotent-Replay:false. Falha não consome a chave; retry depois da falha pode executar. Sem TTL/exclusão automática da trilha ou framework genérico de checkout.
 
 V11 cria inventory_operations/inventory_movements com resultados/snapshots, FKs e constraints de ator consistente, delta/tipo e uma versão por produto. Header e movimentos são inseridos uma vez e imutáveis por triggers de UPDATE/DELETE. Não há rotas para editar/apagar histórico. [Spec PDV-027](../../sdd/features/PDV-027-movimentos-atomicos.md). ETags são o incremento seguinte; reservas, recebimento de compra, baixa de venda, eventos e Saga permanecem nas tarefas próprias.
+
+## Revisões HTTP — PDV-028
+
+GET /inventory/{productId} entrega ETag forte "inventory-UUID-vVERSION", Cache-Control:no-store e Balance. PATCH na mesma URI aceita {requestId,type,quantity,reason,version?}; exige ADMIN/inventory.write e revisão explícita do corpo ou tag concreta em If-Match. PATCH retorna200/Balance e nova ETag. Versão pertence ao saldo; edição de metadados do produto não a altera.
+
+If-Match é comparado fortemente, com suporte a listas, tags opacas com vírgulas e wildcard. Tags fracas não correspondem; nenhuma tag atual resulta412 precondition_failed. Sintaxe inválida ou mais de4096 caracteres/32 tags resulta400. Wildcard significa existência, sem fixar revisão: PATCH exige version no corpo nesse caso; sem revisão explícita428 version_required. Com header e corpo, precondição vem primeiro: header obsoleto412, corpo version obsoleto409. GET também respeita If-Match; ausência de saldo continua404. UPDATE condicional revalida a versão diante de disputa; não há retry automático.
+
+POSTs legados de movimentos/lote preservam201, versões por item e fingerprint da PDV-027; enviar If-Match nesses endpoints resulta400, pois a ETag representa o saldo, não a coleção de movimentos. No lote, qualquer versão inválida reverte tudo. Não usar wildcard para substituir controle de revisão.
+
+PATCH tem fingerprint próprio incluindo condição canônica e versão de corpo original nullable, sem alterar chaves legadas. Repetição comprovada por requestId/ator/conteúdo retorna o balance original/200 e Idempotent-Replay:true, mesmo com tag antiga, sem reaplicar. Não envia ETag nesse replay: consultar GET para obter estado atual. Chave com conteúdo diferente409 request_conflict. Nunca inferir duplicidade pela simples igualdade do saldo. [Spec/metodologia e RFC](../../sdd/features/PDV-028-concorrencia-etags.md). Sem novo DDL, reservas, sincronização, frontend ou Saga neste incremento.
 
 V10 cria inventory_balances e inventory_openings. BIGINT/Long inteiros, physical>=0, reserved>=0 e reserved<=physical, versão não negativa, FK RESTRICT. available é calculado no SELECT, nunca armazenado como cópia. Mesmo no limite BIGINT, físico-reservado permanece não negativo e representável. Não existe arredondamento ou quantidade fracionária no domínio aprovado.
 

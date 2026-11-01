@@ -171,7 +171,7 @@ class RbacHttpIT {
                 "GET /inventory", "GET /inventory/{productId}", "GET /inventory/{productId}/movements", "GET /inventory/{productId}/opening",
                 "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /suppliers", "GET /suppliers/{id}",
                 "GET /suppliers/{id}/history", "GET /suppliers/{id}/products", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
-                "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",
+                "PATCH /inventory/{productId}", "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",
                 "POST /customers", "POST /customers/{id}/addresses", "POST /inventory/movements/batches", "POST /inventory/{productId}/movements",
                 "POST /products", "POST /suppliers", "PUT /categories/{id}",
                 "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}", "PUT /products/{id}/supplier", "PUT /suppliers/{id}");

@@ -20,6 +20,8 @@ Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features
 
 ## Fronteiras de consistência
 
+PDV-028 adiciona controle HTTP forte de revisões do saldo (ETag/If-Match na mesma URI GET/PATCH), preservando CAS/409 e fingerprint legado. Precondição falsa412 não modifica dados; repetição conhecida não duplica movimento. Sem novo DDL ou atomicidade distribuída; [spec](../../sdd/features/PDV-028-concorrencia-etags.md).
+
 PDV-027: UPDATE de saldo condicionado a versão/disponibilidade/reservado, ordem determinística no lote e trilha imutável na mesma transação PostgreSQL. Identidade requestId/ator, lock transacional da chave e resposta original persistida evitam repetir efeito após retry; não é idempotência genérica de checkout. V11, [contrato](../workflows/inventory.md). Lote tudo-ou-nada/inteiros/ajuste absoluto e permissões confirmados pelo proprietário.
 
 PDV-026: SQL crítico de saldo em inventory, V10 de saldos/aberturas, inicialização atômica por trigger de produto e versão independente do catálogo. [Contrato](../workflows/inventory.md). Leituras do estado transacional não implementam reserva/baixa/Saga ou projeção eventual. Quantidades inteiras e abertura zero confirmadas pelo proprietário.

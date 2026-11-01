@@ -87,3 +87,5 @@ PDV-022 acrescenta CRUD JPA de fornecedores, V9 e vínculo opcional N:1 de produ
 PDV-026 acrescenta V10, saldo inteiro por produto e abertura técnica imutável/atômica, com GET /inventory e leitura de saldo/abertura por produto. [Contrato](../../docs/workflows/inventory.md); disponível calculado no banco, versão própria e guards inventory.read. Movimentações/reservas/ETags permanecem nos incrementos seguintes.
 
 PDV-027 acrescenta V11, entradas/saídas/ajustes inteiros via SQL condicional, lote tudo-ou-nada, motivo/ator e histórico imutável. RequestId/ator e resultado persistido permitem replay sem novo efeito; somente ADMIN/inventory.write movimenta. [Contrato](../../docs/workflows/inventory.md). If-Match/ETags entram na PDV-028, reservas/compras/venda/Saga ficam nas tarefas próprias.
+
+PDV-028 acrescenta ETag forte em GET /inventory/{productId}, PATCH condicional na mesma URI, If-Match/version e conflitos412/409 sem perda de atualização. Revisão ausente428; replay preserva resultado sem inventar estado atual. Sem novo schema; V11 e contratos legados mantidos. [Spec/RFC e verificações](../../sdd/features/PDV-028-concorrencia-etags.md).

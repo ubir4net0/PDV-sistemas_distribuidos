@@ -23,6 +23,11 @@ public final class MovementModels {
         @Override public String toString() { return "MovementInput[REDACTED]"; }
     }
     public record Batch(@NotNull UUID requestId, @NotNull @Size(min = 1, max = 100) List<@NotNull @Valid Item> items) { }
+    public record Conditional(@NotNull UUID requestId, @NotNull @Pattern(regexp = "ENTRY|EXIT|ADJUST") String type,
+            @NotNull @PositiveOrZero Long quantity, @NotBlank @Size(max = 500) String reason, @PositiveOrZero Long version) {
+        public Item item(UUID id) { return new Item(id, type, quantity, reason, version); }
+        @Override public String toString() { return "ConditionalMovement[REDACTED]"; }
+    }
     public record Movement(UUID id, UUID operationId, UUID productId, String type, long quantity, long delta, String reason,
             UUID actorId, long physicalBefore, long reservedBefore, long versionBefore, Balance balance, Instant createdAt) {
         @Override public String toString() { return "InventoryMovement[id=" + id + ", data=REDACTED]"; }
