@@ -32,7 +32,7 @@ As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “De
 | Referência | Questão | Onde fechar antes de implementar |
 | --- | --- | --- |
 | SRC-01 | Originais/equivalência acadêmica continuam indisponíveis; referência de desenvolvimento já aprovada | PDV-001 |
-| DEC-01 — evolução | Estados canônicos/recorte inicial resolvidos na ADR-008; políticas de reconciliação/cancelamento e contratos futuros ainda próprios | PDV-007/040/041 |
+| DEC-01 — evolução | Estados canônicos resolvidos na ADR-008 e reconciliação inicial na ADR-009; cancelamento/nova tentativa e contratos futuros ainda próprios | PDV-007/041 |
 | DEC-02 | Regras de transição de OC, sem reabrir o vocabulário aprovado | PDV-023/024 |
 | DEC-03 | Obrigatoriedade/nullable do fornecedor, sem reabrir a cardinalidade máxima N:1 | PDV-020/022 |
 | DEC-04 | Campos/restrições/políticas dos complementos já admitidos | Specs de PDV-011/035/038/039 e projeções justificadas |
@@ -42,3 +42,7 @@ As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “De
 As ADRs preservam histórico: decisão posterior deve citar e substituir o registro anterior, sem apagar a justificativa. A ADR-007 aprova a inclusão dos complementos, não todos os seus campos, políticas ou implementação.
 
 O proprietário aprovou a matriz inicial de endpoints da [PDV-013](../../sdd/features/PDV-013-rbac-endpoints.md): health/login públicos, perfil/logout próprios autenticados, catálogo administrativo e denyAll para o restante. Isso não aprova os demais itens da DEC-06.
+
+## Recusa e reconciliação aprovadas
+
+[ADR-009](ADR-009-reconciliacao-simulada.md), confirmação explícita do proprietário em02/11/2026: recusa libera reservado uma vez; TIMEOUT mantém proteção; ADMIN registra prova fictícia com motivo/histórico sem ampliar leitura; reconciliação própria aplica prova ou permanece pendente. Substitui a indicação histórica de pendência da040 neste recorte. Políticas de cancelamento/nova tentativa/estorno continuam próprias.

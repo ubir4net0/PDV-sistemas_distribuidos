@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Recusa e reconciliação — PDV-040
+
+[ADR-009 aprovada](../decisions/ADR-009-reconciliacao-simulada.md), V18 e etapas de outbox/inbox tratam recusa e decisão tardia. Sem prova, TIMEOUT mantém reserva protegida; prova administrativa fictícia separada não amplia leitura. Reconciliação própria com idempotência/202, confirmação039 ou liberação única de reservado. [Contrato](../workflows/payment-reconciliation.md). Cancelamento/estorno continuam041.
+
 ## Conclusão e comprovante — PDV-039
 
 V17 e etapa pdv.sale.confirm.v1 concluem aprovação comprovada com baixa única de físico/reservado, reserva CONFIRMED, ledger e comprovante imutável. GET próprio com sale.read, sem acesso público. [Contrato](../workflows/sale-confirmation.md). Recusa/reconciliação e cancelamento continuam próprios.

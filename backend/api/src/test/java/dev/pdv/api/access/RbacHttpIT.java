@@ -173,7 +173,7 @@ class RbacHttpIT {
                 "GET /suppliers/{id}/history", "GET /suppliers/{id}/products", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
                 "PATCH /inventory/{productId}", "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /carts", "POST /carts/{id}/checkout", "POST /categories",
                 "POST /customers", "POST /customers/{id}/addresses", "POST /inventory/movements/batches", "POST /inventory/{productId}/movements",
-                "POST /products", "POST /reservations", "POST /reservations/{id}/renew", "POST /suppliers", "PUT /carts/{id}/items/{productId}", "PUT /categories/{id}",
+                "POST /products", "POST /reservations", "POST /reservations/{id}/renew", "POST /sales/{id}/reconcile", "POST /simulator/payments/{id}/resolution", "POST /suppliers", "PUT /carts/{id}/items/{productId}", "PUT /categories/{id}",
                 "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}", "PUT /products/{id}/supplier", "PUT /suppliers/{id}");
     }
 

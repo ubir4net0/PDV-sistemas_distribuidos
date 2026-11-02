@@ -21,10 +21,12 @@ public class DevelopmentIdentitySeed implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments arguments) {
         jdbc.update("INSERT INTO permissions(resource,action) VALUES ('catalog','read'),('catalog','write') ON CONFLICT (resource,action) DO NOTHING");
+        jdbc.update("INSERT INTO permissions(resource,action) VALUES ('simulation','resolve') ON CONFLICT (resource,action) DO NOTHING");
         // Grants are applied after the roles have been created below.
         jdbc.update("INSERT INTO roles(code, name) VALUES ('ADMIN', 'Administrador') ON CONFLICT (code) DO NOTHING");
         jdbc.update("INSERT INTO roles(code, name) VALUES ('OPERATOR', 'Operador') ON CONFLICT (code) DO NOTHING");
-        jdbc.update("INSERT INTO permissions(resource,action) VALUES ('sale','read'),('sale','checkout') ON CONFLICT (resource,action) DO NOTHING");
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) SELECT r.id,p.id FROM roles r CROSS JOIN permissions p WHERE r.code='ADMIN' AND p.resource='simulation' AND p.action='resolve' ON CONFLICT (role_id,permission_id) DO NOTHING");
+        jdbc.update("INSERT INTO permissions(resource,action) VALUES ('sale','read'),('sale','checkout'),('sale','reconcile') ON CONFLICT (resource,action) DO NOTHING");
         jdbc.update("""
                 INSERT INTO role_permissions(role_id,permission_id)
                 SELECT r.id,p.id FROM roles r CROSS JOIN permissions p WHERE p.resource='sale' AND r.code IN ('ADMIN','OPERATOR')

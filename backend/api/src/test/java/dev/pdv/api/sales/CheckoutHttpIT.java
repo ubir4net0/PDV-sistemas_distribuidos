@@ -25,11 +25,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CheckoutHttpIT extends CartHttpSupport {
     private final List<UUID> grants = new ArrayList<>();
     @BeforeEach void checkoutPermissions() {
-        for (var action : List.of("checkout", "read")) {
+        for (var action : List.of("checkout", "read", "reconcile")) {
             UUID id = UUID.randomUUID(); grants.add(id);
             jdbc.update("INSERT INTO permissions(id,resource,action) VALUES (?,'sale',?)", id, action);
             jdbc.update("INSERT INTO role_permissions(role_id,permission_id) SELECT id,? FROM roles WHERE code IN ('ADMIN','OPERATOR')", id);
         }
+    }
+    @BeforeEach void simulationPermissions() {
+        UUID id=UUID.randomUUID(); grants.add(id);
+        jdbc.update("INSERT INTO permissions(id,resource,action) VALUES (?,'simulation','resolve')",id);
+        // Both grants deliberately present: the role guard must still deny OPERATOR.
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) SELECT id,? FROM roles WHERE code IN ('ADMIN','OPERATOR')",id);
     }
     @AfterEach void cleanupSales() {
         jdbc.execute((ConnectionCallback<Void>) connection -> {
@@ -43,6 +49,10 @@ class CheckoutHttpIT extends CartHttpSupport {
                         "DELETE FROM outbox_events WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM inbox_messages WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM simulation_decisions WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM payment_command_operations WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM provider_resolutions WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM reservation_release_items WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                        "DELETE FROM reservation_releases WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM sale_sagas WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM sale_stock_movements WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM sale_confirmations WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
@@ -73,6 +83,15 @@ class CheckoutHttpIT extends CartHttpSupport {
         if (key != null) { b.header("Idempotency-Key", key); }
         return HttpClient.newHttpClient().send(b.POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(input))).build(), HttpResponse.BodyHandlers.ofString());
     }
+    private tools.jackson.databind.JsonNode uncertain(String owner, String administrator) throws Exception {
+        UUID product=stocked(administrator,category(administrator),10); UUID cart=filled(owner,product,2);
+        var response=checkout(cart,owner,UUID.randomUUID().toString(),Map.of("version",1,"method","PIX","scenario","TIMEOUT")); assertThat(response.statusCode()).isEqualTo(201);
+        var sale=json.readTree(response.body()); UUID payment=UUID.fromString(sale.get("paymentId").asString());
+        jdbc.queryForObject("SELECT prepare_business_payment(?)",String.class,payment); jdbc.queryForObject("SELECT apply_business_payment_result(?,'INDETERMINADO')",String.class,payment); return sale;
+    }
+    private String resolutionPath(tools.jackson.databind.JsonNode sale) { return "/simulator/payments/"+sale.get("paymentId").asString()+"/resolution"; }
+    private String reconcilePath(tools.jackson.databind.JsonNode sale) { return "/sales/"+sale.get("id").asString()+"/reconcile"; }
+    private Map<String,Object> resolveInput(UUID request, String outcome) { return Map.of("requestId",request,"outcome",outcome,"reason","Synthetic decision"); }
     @Test void createsOneAtomicSnapshotAndFreezesCartWithoutDebitingPhysicalOrStartingPayment() throws Exception {
         var token = token("OPERATOR"); var adminToken = token("ADMIN"); var product = stocked(adminToken, category(adminToken), 10); var cart = filled(token, product, 3);
         var response = checkout(cart, token, UUID.randomUUID().toString(), command(1)); assertThat(response.statusCode()).isEqualTo(201); var sale = json.readTree(response.body());
@@ -195,5 +214,76 @@ class CheckoutHttpIT extends CartHttpSupport {
         var history=send("GET","/inventory/"+product+"/movements",operatorToken,null); assertThat(history.statusCode()).isEqualTo(200); assertThat(history.body()).contains("SALE", "-2");
         jdbc.update("DELETE FROM role_permissions WHERE permission_id IN (SELECT id FROM permissions WHERE resource='sale' AND action='read')");
         assertThat(send("GET",path,operatorToken,null).statusCode()).isEqualTo(403);
+    }
+    @Test void uncertainReconciliationStaysPendingThenAdminCanResolveOtherPaymentWithoutReadingSale() throws Exception {
+        var owner=token("OPERATOR"); var administrator=token("ADMIN"); var sale=uncertain(owner,administrator); UUID request=UUID.randomUUID(); String path=reconcilePath(sale);
+        var pending=send("POST",path,owner,Map.of("requestId",request)); assertThat(pending.statusCode()).isEqualTo(202); assertThat(pending.body()).contains("INDETERMINADO","ACTIVE");
+        assertThat(send("POST",resolutionPath(sale),owner,resolveInput(UUID.randomUUID(),"APROVADO")).statusCode()).isEqualTo(403);
+        UUID resolutionRequest=UUID.randomUUID(); var decision=send("POST",resolutionPath(sale),administrator,resolveInput(resolutionRequest,"APROVADO")); assertThat(decision.statusCode()).isEqualTo(200);
+        assertThat(json.readTree(decision.body()).propertyNames()).containsExactlyInAnyOrder("paymentId","outcome","recordedAt");
+        var replay=send("POST",resolutionPath(sale),administrator,resolveInput(resolutionRequest,"APROVADO")); assertThat(replay.body()).isEqualTo(decision.body()); assertThat(replay.headers().firstValue("Idempotent-Replay")).contains("true");
+        assertThat(send("POST",resolutionPath(sale),administrator,resolveInput(resolutionRequest,"RECUSADO")).statusCode()).isEqualTo(409);
+        assertThat(send("POST",resolutionPath(sale),administrator,resolveInput(UUID.randomUUID(),"RECUSADO")).statusCode()).isEqualTo(409);
+        assertThat(send("POST",path,administrator,Map.of("requestId",UUID.randomUUID())).statusCode()).isEqualTo(404);
+        String salePath="/sales/"+sale.get("id").asString(); assertThat(send("GET",salePath,administrator,null).statusCode()).isEqualTo(404);
+        var completed=send("POST",path,owner,Map.of("requestId",UUID.randomUUID())); assertThat(completed.statusCode()).isEqualTo(200); assertThat(completed.body()).contains("CONCLUIDA","CONFIRMED");
+        assertThat(send("GET",salePath+"/receipt",owner,null).statusCode()).isEqualTo(200); assertThat(send("GET",salePath+"/receipt",administrator,null).statusCode()).isEqualTo(404);
+        var old=send("POST",path,owner,Map.of("requestId",request)); assertThat(old.statusCode()).isEqualTo(202); assertThat(old.body()).isEqualTo(pending.body());
+        assertThat(send("POST",path,null,Map.of("requestId",UUID.randomUUID())).statusCode()).isEqualTo(401);
+        assertThat(jdbc.queryForObject("SELECT outcome FROM payment_results WHERE payment_id=?",String.class,UUID.fromString(sale.get("paymentId").asString()))).isEqualTo("INDETERMINADO");
+    }
+    @Test void lateRefusalReleasesOnlyReservedAndReconcilesIdempotently() throws Exception {
+        var owner=token("OPERATOR"); var administrator=token("ADMIN"); var sale=uncertain(owner,administrator); UUID payment=UUID.fromString(sale.get("paymentId").asString());
+        assertThat(send("POST",resolutionPath(sale),administrator,resolveInput(UUID.randomUUID(),"RECUSADO")).statusCode()).isEqualTo(200);
+        UUID request=UUID.randomUUID(); var first=send("POST",reconcilePath(sale),owner,Map.of("requestId",request)); assertThat(first.statusCode()).isEqualTo(200); assertThat(first.body()).contains("RELEASED","PAGAMENTO_RECUSADO");
+        assertThat(send("POST",reconcilePath(sale),owner,Map.of("requestId",request)).body()).isEqualTo(first.body());
+        assertThat(send("POST",reconcilePath(sale),owner,Map.of("requestId",UUID.randomUUID())).statusCode()).isEqualTo(200);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM reservation_releases WHERE payment_id=?",Long.class,payment)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT physical FROM inventory_balances WHERE product_id=?",Long.class,UUID.fromString(sale.get("items").get(0).get("productId").asString()))).isEqualTo(10);
+        assertThat(send("GET","/sales/"+sale.get("id").asString()+"/receipt",owner,null).statusCode()).isEqualTo(404);
+        jdbc.update("DELETE FROM role_permissions WHERE permission_id IN (SELECT id FROM permissions WHERE resource='sale' AND action='reconcile')");
+        assertThat(send("POST",reconcilePath(sale),owner,Map.of("requestId",request)).statusCode()).isEqualTo(403);
+    }
+    @Test void resolutionAndReconciliationValidateContractsAndCurrentPermissions() throws Exception {
+        var administrator=token("ADMIN"); var sale=uncertain(administrator,administrator); String path=resolutionPath(sale);
+        for(var body:List.of(Map.of("outcome","APROVADO","reason","Synthetic"),Map.of("requestId",UUID.randomUUID(),"outcome","INDETERMINADO","reason","Synthetic"),
+                Map.of("requestId",UUID.randomUUID(),"outcome","APROVADO","reason"," "),Map.of("requestId",UUID.randomUUID(),"outcome","APROVADO","reason","x".repeat(501)),
+                Map.of("requestId",UUID.randomUUID(),"outcome","APROVADO","reason","Synthetic","saleId",UUID.randomUUID()))) {
+            assertThat(send("POST",path,administrator,body).statusCode()).isEqualTo(400);
+        }
+        assertThat(send("POST",reconcilePath(sale),administrator,Map.of("requestId",UUID.randomUUID(),"outcome","APROVADO")).statusCode()).isEqualTo(400);
+        assertThat(send("POST",reconcilePath(sale),administrator,Map.of()).statusCode()).isEqualTo(400);
+        assertThat(send("POST",path,null,resolveInput(UUID.randomUUID(),"APROVADO")).statusCode()).isEqualTo(401);
+        jdbc.update("DELETE FROM role_permissions WHERE permission_id IN (SELECT id FROM permissions WHERE resource='simulation')");
+        assertThat(send("POST",path,administrator,resolveInput(UUID.randomUUID(),"APROVADO")).statusCode()).isEqualTo(403);
+    }
+    @Test void commandAuditFailureRollsBackResolutionAndAtomicReconciliation() throws Exception {
+        var administrator=token("ADMIN"); var sale=uncertain(administrator,administrator); UUID payment=UUID.fromString(sale.get("paymentId").asString()); UUID request=UUID.randomUUID();
+        jdbc.execute("ALTER TABLE payment_command_operations ADD CONSTRAINT fixture_command_fail CHECK(FALSE) NOT VALID");
+        try { assertThat(send("POST",resolutionPath(sale),administrator,resolveInput(request,"APROVADO")).statusCode()).isEqualTo(503);
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM provider_resolutions WHERE payment_id=?",Long.class,payment)).isZero();
+        } finally { jdbc.execute("ALTER TABLE payment_command_operations DROP CONSTRAINT fixture_command_fail"); }
+        assertThat(send("POST",resolutionPath(sale),administrator,resolveInput(request,"APROVADO")).statusCode()).isEqualTo(200);
+        UUID reconcileRequest=UUID.randomUUID(); jdbc.execute("ALTER TABLE payment_command_operations ADD CONSTRAINT fixture_command_fail CHECK(FALSE) NOT VALID");
+        try { assertThat(send("POST",reconcilePath(sale),administrator,Map.of("requestId",reconcileRequest)).statusCode()).isEqualTo(503);
+            assertThat(jdbc.queryForObject("SELECT status FROM payments WHERE id=?",String.class,payment)).isEqualTo("INDETERMINADO");
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM receipts WHERE sale_id=?",Long.class,UUID.fromString(sale.get("id").asString()))).isZero();
+        } finally { jdbc.execute("ALTER TABLE payment_command_operations DROP CONSTRAINT fixture_command_fail"); }
+        assertThat(send("POST",reconcilePath(sale),administrator,Map.of("requestId",reconcileRequest)).statusCode()).isEqualTo(200);
+    }
+    @Test void concurrentOppositeResolutionsChooseOneProofAndDuplicateReconcileCannotRepeatEffect() throws Exception {
+        var administrator=token("ADMIN"); var sale=uncertain(administrator,administrator); var gate=new CountDownLatch(1);
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            var a=pool.submit(()->{gate.await(5,TimeUnit.SECONDS);return send("POST",resolutionPath(sale),administrator,resolveInput(UUID.randomUUID(),"APROVADO")).statusCode();});
+            var b=pool.submit(()->{gate.await(5,TimeUnit.SECONDS);return send("POST",resolutionPath(sale),administrator,resolveInput(UUID.randomUUID(),"RECUSADO")).statusCode();});gate.countDown();
+            assertThat(List.of(a.get(30,TimeUnit.SECONDS),b.get(30,TimeUnit.SECONDS))).containsExactlyInAnyOrder(200,409);
+        }
+        var start=new CountDownLatch(1); UUID request=UUID.randomUUID();
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            java.util.concurrent.Callable<HttpResponse<String>> call=()->{start.await(5,TimeUnit.SECONDS);return send("POST",reconcilePath(sale),administrator,Map.of("requestId",request));};
+            var a=pool.submit(call); var b=pool.submit(call);start.countDown();var one=a.get(30,TimeUnit.SECONDS);var two=b.get(30,TimeUnit.SECONDS);
+            assertThat(one.statusCode()).isEqualTo(200);assertThat(two.statusCode()).isEqualTo(200);assertThat(one.body()).isEqualTo(two.body());
+        }
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM provider_resolutions WHERE payment_id=?",Long.class,UUID.fromString(sale.get("paymentId").asString()))).isEqualTo(1);
     }
 }

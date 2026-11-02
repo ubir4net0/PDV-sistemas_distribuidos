@@ -44,7 +44,7 @@ A matriz de falhas da ADR-004 orienta os testes futuros. Os contratos finais de 
 
 ## Decisões pendentes
 
-Consultar o índice de decisões: DEC-01 foi resolvida no recorte da ADR-008; políticas de reconciliação/cancelamento permanecem nas PDV-040/041. Recebimento parcial (DEC-05), TTLs/descontos/carga e RBAC de negócios futuros (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
+Consultar o índice de decisões: DEC-01 foi resolvida no recorte da ADR-008; a reconciliação inicial está aprovada na ADR-009; cancelamento/nova tentativa continuam nas tarefas próprias, inclusive PDV-041. Recebimento parcial (DEC-05), TTLs/descontos/carga e RBAC de negócios futuros (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
 
 ## Validação alvo
 
@@ -67,3 +67,5 @@ PDV-037: [processador local](../workflows/simulated-payments.md) no worker, desl
 PDV-038: [transporte de negócio](../workflows/business-messaging.md) por outbox/inbox V16, publisher confirms/returns, ack após commit, retry limitado e DLQ. API grava intenção; worker publica/consome solicitação e aplica resposta pelo coordenador SQL compartilhado. Simulação local e modo AMQP são exclusivos; stock/comprovante/liberação seguem próprios.
 
 PDV-039: [confirmação transacional](../workflows/sale-confirmation.md) por etapa outbox/inbox própria. V17 acrescenta ledger automático unido ao histórico, comprovante imutável e avanço da Saga, preservando snapshots e a identidade do pagamento.
+
+PDV-040: [ADR-009](../decisions/ADR-009-reconciliacao-simulada.md) aprova prova administrativa local separada do TIMEOUT, sem ampliar leitura de vendas. V18 e [contrato](../workflows/payment-reconciliation.md) coordenam decisão tardia/liberação com outbox/inbox e comandos idempotentes próprios. Cancelamento/estorno seguem041.

@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Compras, frontend, recusa/reconciliação e cancelamento permanecem nas tarefas próprias.
+Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Compras, frontend e cancelamento permanecem nas tarefas próprias.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)

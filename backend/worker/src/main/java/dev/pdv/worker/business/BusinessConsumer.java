@@ -25,7 +25,7 @@ public class BusinessConsumer {
         try {
             if (message.getBody().length>4096 || !MessageProperties.CONTENT_TYPE_JSON.equals(message.getMessageProperties().getContentType())) { throw new BusinessEnvelope.Rejected("Invalid encoding"); }
             envelope = json.readValue(message.getBody(), BusinessEnvelope.class);
-            if (envelope==null || !(expected.equals(envelope.type()) || (BusinessEnvelope.RESULT.equals(expected) && BusinessEnvelope.CONFIRM.equals(envelope.type())))
+            if (envelope==null || !(expected.equals(envelope.type()) || (BusinessEnvelope.RESULT.equals(expected) && BusinessEnvelope.coordinator(envelope.type())))
                     || !envelope.eventId().toString().equals(message.getMessageProperties().getMessageId())) { throw new BusinessEnvelope.Rejected("Invalid envelope identity"); }
         } catch (RuntimeException invalid) { LOG.warn("Invalid business message sent to DLQ"); channel.basicReject(tag, false); return; }
         for (int attempt = 1; attempt<=3; attempt++) {

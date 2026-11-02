@@ -15,3 +15,7 @@ O simulador executará início e resultado em duas transações locais (PDV-037)
 Guards impedem alterar identidade/valor/cenário, pular etapas, sobrescrever resultado conhecido, regredir a Saga, excluir histórico ou concluir com reserva ACTIVE/EXPIRED/RELEASED. sale_events registra snapshots de venda/pagamento/reserva/Saga; payment_results preserva resposta da simulação por identidade, sem credenciais. Nada é publicado diretamente no broker; transporte Outbox/Inbox, deduplicação/retry/DLQ de negócio entram na PDV-038.
 
 Comandos: scripts/api.ps1 -Action Verify/Migrate/Validate. Verify cobre PostgreSQL real, matriz de 980 combinações, três desfechos/replay, falsificação/conflito/fora de ordem, expiração versus início, reinício após TTL, falhas de auditoria nas duas etapas, concorrência, upgrade com dados/rebuild/replay. Não limpar banco de trabalho nem editar migrations aplicadas. Nenhuma cobrança, estoque físico, comprovante ou liberação é produzido por registrar resultado neste recorte.
+
+## Evoluções039/040
+
+A [conclusão039](sale-confirmation.md) e a [reconciliação040](payment-reconciliation.md) acrescentam provas e efeitos finais nas migrations próprias. ADR-009 aprova política de decisão tardia; resultado INDETERMINADO original permanece. O texto do incremento036 acima preserva sua fronteira histórica.

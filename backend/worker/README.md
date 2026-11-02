@@ -77,3 +77,7 @@ Com migrations V15 aplicadas, `./scripts/worker.ps1 -Action Run -SimulatePayment
 ## Confirmação de venda — PDV-039
 
 Modo BusinessMessaging também consome pdv.sale.confirm.v1 na fila results. Inbox, baixa, comprovante e conclusão confirmam na mesma transação PostgreSQL; falha vai ao retry/DLQ sem efeito parcial. [Contrato](../../docs/workflows/sale-confirmation.md).
+
+## Recusa/reconciliação — PDV-040
+
+BusinessMessaging também consome pdv.payment.reconciled.v1 e pdv.sale.release.v1, com prova durável, inbox e efeitos locais atômicos. TIMEOUT permanece protegido sem decisão; mensagem antiga não regride estado reconciliado. [Contrato](../../docs/workflows/payment-reconciliation.md).

@@ -13,7 +13,7 @@ public class BusinessInbox {
     public Receipt process(String consumer, BusinessEnvelope envelope) {
         boolean request = SIMULATOR.equals(consumer);
         if ((!request && !COORDINATOR.equals(consumer)) || (request ? !BusinessEnvelope.REQUEST.equals(envelope.type())
-                : !java.util.List.of(BusinessEnvelope.RESULT, BusinessEnvelope.CONFIRM).contains(envelope.type()))) { throw new BusinessEnvelope.Rejected("Invalid consumer contract"); }
+                : !BusinessEnvelope.coordinator(envelope.type()))) { throw new BusinessEnvelope.Rejected("Invalid consumer contract"); }
         return transaction.execute(status -> {
             jdbc.execute("SET LOCAL lock_timeout='2s'"); jdbc.execute("SET LOCAL statement_timeout='4s'");
             jdbc.query("SELECT pg_advisory_xact_lock(hashtextextended(?,0))", (r, i) -> 0, "inbox:"+consumer+":"+envelope.eventId());
@@ -22,9 +22,14 @@ public class BusinessInbox {
                 return new Receipt(true, r.getString(2));
             }, consumer, envelope.eventId());
             if (!known.isEmpty()) { return known.getFirst(); }
-            String result = request ? jdbc.queryForObject("SELECT prepare_business_payment(?)", String.class, envelope.paymentId())
-                : BusinessEnvelope.CONFIRM.equals(envelope.type()) ? jdbc.queryForObject("SELECT confirm_business_sale(?)", String.class, envelope.paymentId())
-                : jdbc.queryForObject("SELECT apply_business_payment_result(?,?)", String.class, envelope.paymentId(), envelope.outcome());
+            String result = switch(envelope.type()) {
+                case BusinessEnvelope.REQUEST -> jdbc.queryForObject("SELECT prepare_business_payment(?)", String.class, envelope.paymentId());
+                case BusinessEnvelope.CONFIRM -> jdbc.queryForObject("SELECT confirm_business_sale(?)", String.class, envelope.paymentId());
+                case BusinessEnvelope.RELEASE -> jdbc.queryForObject("SELECT release_business_sale(?)", String.class, envelope.paymentId());
+                case BusinessEnvelope.RECONCILED -> jdbc.queryForObject("SELECT apply_business_reconciliation(?,?)", String.class, envelope.paymentId(), envelope.outcome());
+                case BusinessEnvelope.RESULT -> jdbc.queryForObject("SELECT apply_business_payment_result(?,?)", String.class, envelope.paymentId(), envelope.outcome());
+                default -> throw new BusinessEnvelope.Rejected("Unknown business step");
+            };
             if ("BUSY".equals(result) || "NOT_STARTED".equals(result)) { throw new TransientDataAccessResourceException("Saga temporarily unavailable"); }
             if (result==null || "NOT_FOUND".equals(result)) { throw new BusinessEnvelope.Rejected("Unknown payment operation"); }
             jdbc.update("INSERT INTO inbox_messages(consumer,event_id,payment_id,fingerprint,disposition) VALUES (?,?,?,?,?)", consumer, envelope.eventId(), envelope.paymentId(), envelope.fingerprint(), result);

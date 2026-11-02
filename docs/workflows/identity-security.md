@@ -49,3 +49,7 @@ Somente development semeia de forma idempotente a permissão access.permissions.
 Fontes: [autorização de requisições](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html) e [segurança de método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
 
 Desde PDV-029, startup/verify também exigem PDV_RESERVATION_TTL_SECONDS positivo; Run aceita -ReservationTtlSeconds. Demo confirmada900s, independente do TTL do token. Migrate/Validate/Info continuam sem exigir esses TTLs.
+
+## Matriz da PDV-040
+
+POST /simulator/payments/{id}/resolution: somente ADMIN/simulation.resolve, inclusive pagamento alheio sem leitura da venda. POST /sales/{id}/reconcile: ADMIN/OPERATOR com sale.reconcile e proprietário. GET venda/comprovante continua próprio/sale.read. Novos grants somente no seed development,34concessões totais/0contas. [Contrato](payment-reconciliation.md).

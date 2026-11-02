@@ -101,3 +101,7 @@ PDV-034: [carrinho/itens](../../docs/workflows/carts.md) próprios com JPA, @Ver
 ## Conclusão/comprovante — PDV-039
 
 V17 coordena baixa física/reservada única, reserva CONFIRMED, venda CONCLUIDA e comprovante imutável. GET /sales/{id}/receipt exige sale.read e proprietário; [contrato](../../docs/workflows/sale-confirmation.md). Etapa assíncrona usa worker BusinessMessaging.
+
+## Recusa/reconciliação — PDV-040
+
+POST /simulator/payments/{id}/resolution exige ADMIN/simulation.resolve e prova de TIMEOUT; POST /sales/{id}/reconcile exige sale.reconcile/proprietário. Decisão adicional e operações idempotentes imutáveis,202 pendente, aprovação conclui039 e recusa libera só reservado. [Contrato](../../docs/workflows/payment-reconciliation.md), V18.

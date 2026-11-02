@@ -41,3 +41,7 @@ O incremento038 registra aprovação/recusa/desconhecido na Saga, sem baixa, lib
 ## Evolução PDV-039
 
 Aprovação também grava pdv.sale.confirm.v1 (outcome APROVADO) na outbox. A fila results aceita essa etapa; o coordenador confirma estoque/comprovante/inbox juntos. [Contrato de conclusão](sale-confirmation.md). A descrição do incremento038 acima permanece como histórico do seu escopo.
+
+## Evolução PDV-040
+
+Fila results aceita pdv.payment.reconciled.v1 (APROVADO/RECUSADO) e pdv.sale.release.v1 (RECUSADO). Provas duráveis são obrigatórias; resultado desconhecido antigo não regride o reconciliado. Liberação/inbox/ledger/evento confirmam juntos e só alteram reservado. [Contrato](payment-reconciliation.md).

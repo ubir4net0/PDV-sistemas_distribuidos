@@ -226,6 +226,41 @@ class BusinessMessagingIT {
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(5)); assertThat(count("inbox_messages")).isEqualTo(1);
     }
     private static String required(String name) { var v=System.getenv(name); if(v==null || v.isBlank()) { throw new IllegalStateException("Real infrastructure required"); } return v; }
+    @Test void refusalUsesSeparateBrokerStepAndReleasesOnlyOnce() {
+        var o=operation("RECUSADO"); startRequests(); startResults(); outbox.runRound(); awaitCount("simulation_decisions",1); outbox.runRound(); awaitCount("payment_results",1);
+        assertThat(count("reservation_releases")).isZero(); outbox.runRound(); awaitCount("reservation_releases",1); awaitCount("inbox_messages",3);
+        sender.send(new BusinessEnvelope(BusinessEnvelope.RELEASE,UUID.randomUUID(),o.payment(),"RECUSADO")); awaitCount("inbox_messages",4);
+        assertThat(jdbc.queryForObject("SELECT physical FROM inventory_balances WHERE product_id=?",Long.class,o.product())).isEqualTo(10);
+        assertThat(jdbc.queryForObject("SELECT reserved FROM inventory_balances WHERE product_id=?",Long.class,o.product())).isZero(); assertThat(count("receipts")).isZero();
+    }
+    @Test void uncertainPaymentRejectsForgedResolutionAndReleaseMessages() {
+        var o=operation("TIMEOUT"); startRequests(); startResults(); outbox.runRound(); awaitCount("simulation_decisions",1); outbox.runRound(); awaitCount("payment_results",1); awaitCount("inbox_messages",2);
+        sender.send(new BusinessEnvelope(BusinessEnvelope.RECONCILED,UUID.randomUUID(),o.payment(),"RECUSADO")); sender.send(new BusinessEnvelope(BusinessEnvelope.RELEASE,UUID.randomUUID(),o.payment(),"RECUSADO"));
+        await().atMost(Duration.ofSeconds(15)).untilAsserted(()->assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(2));
+        assertThat(count("inbox_messages")).isEqualTo(2); assertThat(count("reservation_releases")).isZero();
+        assertThat(jdbc.queryForObject("SELECT status FROM payments WHERE id=?",String.class,o.payment())).isEqualTo("INDETERMINADO");
+        assertThat(jdbc.queryForObject("SELECT expire_inventory_reservation(?)",Boolean.class,o.reservation())).isFalse();
+    }
+    @Test void bothDurableLateDecisionsTraverseBrokerAndOldUnknownCannotRegressThem() {
+        var approved=operation("TIMEOUT"); var refused=operation("TIMEOUT"); startRequests(); startResults(); outbox.runRound(); awaitCount("simulation_decisions",2); outbox.runRound(); awaitCount("payment_results",2); awaitCount("inbox_messages",4);
+        jdbc.update("INSERT INTO provider_resolutions(payment_id,outcome,reason,actor_id) VALUES (?,'APROVADO','Synthetic decision',?),(?,'RECUSADO','Synthetic decision',?)",approved.payment(),actor,refused.payment(),actor);
+        outbox.runRound(); await().atMost(Duration.ofSeconds(15)).untilAsserted(()->assertThat(jdbc.queryForObject("SELECT count(*) FROM payments WHERE status IN ('APROVADO','RECUSADO')",Long.class)).isEqualTo(2));
+        outbox.runRound(); awaitCount("receipts",1); awaitCount("reservation_releases",1); awaitCount("inbox_messages",8);
+        sender.send(new BusinessEnvelope(BusinessEnvelope.RESULT,UUID.randomUUID(),approved.payment(),"INDETERMINADO")); sender.send(new BusinessEnvelope(BusinessEnvelope.RESULT,UUID.randomUUID(),refused.payment(),"INDETERMINADO")); awaitCount("inbox_messages",10);
+        sender.send(new BusinessEnvelope(BusinessEnvelope.RECONCILED,UUID.randomUUID(),approved.payment(),"APROVADO")); awaitCount("inbox_messages",11);
+        assertThat(count("receipts")).isEqualTo(1); assertThat(count("reservation_releases")).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM payment_results WHERE outcome='INDETERMINADO'",Long.class)).isEqualTo(2);
+        assertThat(jdbc.queryForObject("SELECT sum(physical) FROM inventory_balances",Long.class)).isEqualTo(18); assertThat(jdbc.queryForObject("SELECT sum(reserved) FROM inventory_balances",Long.class)).isZero();
+    }
+    @Test void releaseFailureRollsBackInboxAndBalancesUntilOriginalDlqReplay() {
+        var o=operation("RECUSADO"); inbox.process(BusinessInbox.SIMULATOR,request(o));
+        inbox.process(BusinessInbox.COORDINATOR,json.readValue(jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE event_type='pdv.payment.result.v1'",String.class),BusinessEnvelope.class));
+        var release=json.readValue(jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE event_type='pdv.sale.release.v1'",String.class),BusinessEnvelope.class);
+        jdbc.execute("ALTER TABLE inventory_reservation_events ADD CONSTRAINT fixture_no_release CHECK(kind<>'RELEASED') NOT VALID"); startResults(); sender.send(release);
+        await().atMost(Duration.ofSeconds(15)).untilAsserted(()->assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(1));
+        assertThat(count("reservation_releases")).isZero(); assertThat(count("inbox_messages")).isEqualTo(2); assertThat(jdbc.queryForObject("SELECT reserved FROM inventory_balances WHERE product_id=?",Long.class,o.product())).isEqualTo(2);
+        jdbc.execute("ALTER TABLE inventory_reservation_events DROP CONSTRAINT fixture_no_release"); var dead=rabbit.receive(names.dead(),5000); assertThat(dead).isNotNull(); rabbit.send(names.exchange(),"payment.result",dead); awaitCount("reservation_releases",1); awaitCount("inbox_messages",3);
+    }
     @Test void approvalConfirmationTraversesBrokerAndDuplicateEventsKeepOneReceiptAndDebit() {
         var o=operation("APROVADO"); startRequests(); startResults(); outbox.runRound(); awaitCount("simulation_decisions",1); outbox.runRound(); awaitCount("payment_results",1);
         assertThat(count("receipts")).isZero(); outbox.runRound(); awaitCount("receipts",1); awaitCount("inbox_messages",3);

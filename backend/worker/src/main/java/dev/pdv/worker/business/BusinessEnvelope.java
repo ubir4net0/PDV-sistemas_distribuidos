@@ -11,13 +11,18 @@ public record BusinessEnvelope(String type, UUID eventId, UUID paymentId, String
     public static final String REQUEST = "pdv.payment.requested.v1";
     public static final String RESULT = "pdv.payment.result.v1";
     public static final String CONFIRM = "pdv.sale.confirm.v1";
+    public static final String RECONCILED = "pdv.payment.reconciled.v1";
+    public static final String RELEASE = "pdv.sale.release.v1";
     public BusinessEnvelope {
-        if (eventId==null || paymentId==null || (!REQUEST.equals(type) && !RESULT.equals(type) && !CONFIRM.equals(type))
+        if (eventId==null || paymentId==null || (!REQUEST.equals(type) && !coordinator(type))
                 || (REQUEST.equals(type) && outcome!=null) || (CONFIRM.equals(type) && !"APROVADO".equals(outcome))
+                || (RELEASE.equals(type) && !"RECUSADO".equals(outcome))
+                || (RECONCILED.equals(type) && !List.of("APROVADO", "RECUSADO").contains(outcome==null ? "" : outcome))
                 || (RESULT.equals(type) && !List.of("APROVADO", "RECUSADO", "INDETERMINADO").contains(outcome==null ? "" : outcome))) {
             throw new Rejected("Invalid business envelope");
         }
     }
+    public static boolean coordinator(String type) { return List.of(RESULT, CONFIRM, RECONCILED, RELEASE).contains(type==null ? "" : type); }
     public String fingerprint() {
         try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest((type+":"+eventId+":"+paymentId+":"+outcome).getBytes(StandardCharsets.UTF_8))); }
         catch (NoSuchAlgorithmException e) { throw new IllegalStateException("SHA-256 unavailable", e); }

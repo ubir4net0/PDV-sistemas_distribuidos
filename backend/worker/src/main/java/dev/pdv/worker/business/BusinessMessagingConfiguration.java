@@ -54,7 +54,7 @@ public class BusinessMessagingConfiguration {
     }
     @Bean
     public BusinessInbox businessInbox(JdbcTemplate jdbc, DataSource source) {
-        if (!Boolean.TRUE.equals(jdbc.queryForObject("SELECT to_regprocedure('prepare_business_payment(uuid)') IS NOT NULL AND to_regprocedure('apply_business_payment_result(uuid,text)') IS NOT NULL", Boolean.class))) { throw new IllegalStateException("Run API outbox migrations first"); }
+        if (!Boolean.TRUE.equals(jdbc.queryForObject("SELECT to_regprocedure('prepare_business_payment(uuid)') IS NOT NULL AND to_regprocedure('apply_business_payment_result(uuid,text)') IS NOT NULL AND to_regprocedure('confirm_business_sale(uuid)') IS NOT NULL AND to_regprocedure('release_business_sale(uuid)') IS NOT NULL AND to_regprocedure('apply_business_reconciliation(uuid,text)') IS NOT NULL", Boolean.class))) { throw new IllegalStateException("Run API outbox migrations first"); }
         return new BusinessInbox(jdbc, new TransactionTemplate(new DataSourceTransactionManager(source)));
     }
     @Bean public BusinessConsumer businessConsumer(BusinessInbox inbox, JsonMapper json) { return new BusinessConsumer(inbox, json); }
