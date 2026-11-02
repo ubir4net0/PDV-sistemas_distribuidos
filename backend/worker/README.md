@@ -14,7 +14,7 @@ docker compose up -d --wait --wait-timeout 180
 ./scripts/worker.ps1 -Action Run
 ```
 
-Verify executa clean verify e testes AMQP contra o RabbitMQ real da PDV-004. A ausência de broker saudável falha a verificação; não há fallback para driver fake nem teste de integração ignorado. O teste usa prefixo UUID próprio e remove apenas seus objetos. Cache Maven: volume pdv-worker-maven-cache; builds em backend/worker/target, ignorado.
+Verify executa clean verify e testes PostgreSQL/AMQP reais, com ambos os serviços PDV saudáveis. A ausência de broker saudável falha a verificação; não há fallback para driver fake nem teste de integração ignorado. O teste usa prefixo UUID próprio e remove apenas seus objetos. Cache Maven: volume pdv-worker-maven-cache; builds em backend/worker/target, ignorado.
 
 Run inicia o JAR no container pdv-worker-local, em primeiro plano, na mesma rede do broker. Ctrl+C ou docker stop pdv-worker-local encerra esse processo, preservando broker, API e filas. Nenhuma porta é publicada. O nome de container existente não é sobrescrito. O parâmetro -ProbePrefix permite namespace próprio pdv.smoke.<id> para ensaio controlado, sem mudar filas do diagnóstico padrão.
 
@@ -52,10 +52,16 @@ Publicação da resposta usa mandatory, publisher confirms correlacionados e ver
 
 A confirmação espera até 5000 ms, configurável por pdv.probe.publish-timeout-ms. Timeout pode deixar resultado incerto. Uma queda entre publish e ack pode gerar respostas repetidas; não há inbox/outbox, deduplicação ou exactly-once. Dead lettering deste perfil não comprova ausência de perda em falhas de broker. Inspecione requestId, resposta existente e motivo antes de replay. PDV-038 tratará confiabilidade e recuperação de negócio.
 
-Não há API produtora integrada, pagamento, Saga, banco, migration, health HTTP ou RNF06 completo comprovado. O processo independente demonstra AMQP real; não substitui a definição dos contratos finais e dos efeitos transacionais.
+Não há API produtora integrada, pagamento, Saga, migrations em runtime, health HTTP ou RNF06 completo comprovado; o modo de expiração abaixo usa banco compartilhado. O processo independente demonstra AMQP real; não substitui a definição dos contratos finais e dos efeitos transacionais.
 
 ## Evidências e fontes
 
 Os onze testes `WorkerAmqpIT` cobrem contrato/correlação, headers externos, JSON/versionamento/UUID/limites/content-type inválidos, DLQ, sanitização de logs e resposta sem rota contra broker real. Seis unitários `ProbePublisherTest` cobrem confirmação positiva/negativa, retorno, falha, timeout e interrupção; mocks nesses unitários não substituem integração. Checkstyle inclui fontes e testes. Surefire executa unitários em `test`; Failsafe executa integração em `verify`. A spec da PDV-006 preserva evidências daquele build e smoke do JAR. A [CI da PDV-008](../../docs/workflows/ci.md) executa o build completo com RabbitMQ temporário próprio.
 
 Referências: [Spring AMQP — confirms e returns](https://docs.spring.io/spring-amqp/reference/amqp/template.html), [exceções e rejeição](https://docs.spring.io/spring-amqp/reference/amqp/exception-handling.html) e [AMQP no Spring Boot](https://docs.spring.io/spring-boot/reference/messaging/amqp.html). A arquitetura e pendências de domínio continuam no [contexto](../../docs/context/architecture.md).
+
+## Expiração de reservas — PDV-030
+
+Com PostgreSQL/RabbitMQ PDV saudáveis e API migrations V12 aplicadas, `./scripts/worker.ps1 -Action Verify` agora verifica ambos os serviços em banco UUID descartável próprio. SQL das migrations API é montado somente para testes, sem DDL no JAR. `./scripts/worker.ps1 -Action Run -ExpireReservations` habilita expiração; Run sem essa opção mantém diagnóstico sem acesso ao banco. Alternativa nativa: PDV_RESERVATION_EXPIRY_ENABLED=true e PDV_DB_URL/USER/PASSWORD privados, schema pdv por padrão. Worker valida contrato existente e nunca migra.
+
+Rodada a cada5s/até100 reservas, seleção indexada por prazo/id, transação por agregado e função comum V12. SKIP LOCKED evita aguardar outra coordenação; status EXPIRED/trilha/saldos mudam juntos uma vez. Reservas protegidas antes de pagamento seguem retidas mesmo vencidas. Falha de saldo/auditoria reverte tudo e rodada posterior tenta de novo; logs só contagens/erros constantes. Timeouts: conexão5s/socket10s/query5s, transação lock2s/statement4s. Fixed delay não sobrepõe a rodada anterior. Não implementa checkout/pagamento/Saga/reconciliação. [Spec](../../sdd/features/PDV-030-expiracao-worker.md), [contrato das reservas](../../docs/workflows/reservations.md).

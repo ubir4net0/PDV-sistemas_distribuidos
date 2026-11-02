@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações e reservas de estoque com TTL, além do worker de diagnóstico disponíveis. Agendamento de expiração, compras, vendas e frontend permanecem nos incrementos seguintes.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações e reservas de estoque com TTL, além do worker de diagnóstico disponíveis. Expiração pelo worker tem modo explícito; compras, vendas e frontend permanecem nos incrementos seguintes.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -55,7 +55,7 @@ API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java
 
 ## Scaffold do worker
 
-Com RabbitMQ local saudável:
+Com PostgreSQL e RabbitMQ locais saudáveis:
 
 ```powershell
 ./scripts/worker.ps1 -Action Verify
@@ -69,3 +69,5 @@ Diagramas originais e decisões bloqueantes constam no relatório. A main permit
 PDV-016 oferece POST /customers com validação local CPF/CNPJ (numérico/alfanumérico), unicidade PostgreSQL e CRUD JPA. Operação e limites no [guia de clientes](docs/workflows/customers.md). Consulta/edição/histórico (017) e endereços/regiões (018) estão disponíveis em commits próprios, com permissões aprovadas.
 
 Reservas com TTL/renovação e barreira transacional estão documentadas em [reservas](docs/workflows/reservations.md). Run da API requer também -ReservationTtlSeconds 900 na demo; integração checkout/Saga e agendamento do worker são incrementos próprios.
+
+Expiração: com migrations aplicadas, `./scripts/worker.ps1 -Action Run -ExpireReservations`; [operação e limites](backend/worker/README.md).

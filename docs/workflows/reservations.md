@@ -18,3 +18,9 @@ V12 mantém itens/operações/eventos imutáveis e funções comuns a API/worker
 Sem venda_id fictício: checkout deverá vincular o agregado à venda em migration própria e na mesma transação que cria os itens/reserva/intenção. Worker automático é PDV-030; Saga, eventos e fechamento são tarefas próprias. Esta base não comprova sua integração.
 
 400 validação/duplicata/frações,401/403 autenticação/permissão,404 inexistente/alheio,409 conflito/estado/saldo/renovação,503 falha de persistência com rollback. Nenhuma conta padrão. [Spec](../../sdd/features/PDV-029-reservas-ttl.md), [estoque](inventory.md), [Flyway/verificação](database-migrations.md).
+
+## Worker — PDV-030
+
+Modo explícito `scripts/worker.ps1 -Action Run -ExpireReservations` (ou configuração equivalente no JAR) executa a cada5s, até100 reservas por rodada. Banco deve ter V12 aplicada; worker não migra. Cada agregado tem transação própria, bloqueios/tempos limitados e status EXPIRED/evento/saldos atômicos. Barreira e renovação são reavaliadas sob lock; candidato antigo não autoriza liberação. Dois workers/repetição não duplicam o efeito. Diagnóstico AMQP é preservado.
+
+Ativar proteção de pagamento e registrar/publicar sua intenção futura deverá ocorrer na mesma transação antes de qualquer processamento. Os testes desta etapa exercitam concorrência com essa barreira em outra conexão real; não simulam uma Saga completa ou uma aprovação financeira externa. Reservas protegidas são excluídas do polling e exigem reconciliação nas tarefas próprias. [Spec](../../sdd/features/PDV-030-expiracao-worker.md).

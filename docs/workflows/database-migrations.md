@@ -1,6 +1,6 @@
 # Flyway e PostgreSQL — base técnica PDV-009
 
-A [spec](../../sdd/features/PDV-009-flyway-base.md) delimita esta entrega. Flyway 12.4.0 e PostgreSQL JDBC 42.7.14 são gerenciados pelo Spring Boot 4.1.2 existente; runtime e plugin Maven usam a mesma versão. API agora exige PostgreSQL real para iniciar. Worker ainda não usa banco.
+A [spec](../../sdd/features/PDV-009-flyway-base.md) delimita esta entrega. Flyway 12.4.0 e PostgreSQL JDBC 42.7.14 são gerenciados pelo Spring Boot 4.1.2 existente; runtime e plugin Maven usam a mesma versão. API agora exige PostgreSQL real para iniciar. Worker possui modo explícito de expiração (PDV-030), que exige contrato V12 aplicado pela API e não executa migrations.
 
 ## O que foi versionado
 

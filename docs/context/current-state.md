@@ -1,5 +1,9 @@
 # Estado observado em 1 de novembro de 2026
 
+## Expiração pelo worker — PDV-030
+
+Modo explícito expira reservas vencidas/desprotegidas a cada5s/até100, com função V12/transação por agregado, SKIP LOCKED e status/evento únicos. Pagamento protegido/renovação impedem liberação indevida; falhas revertem e permitem retry. [Operação](../../backend/worker/README.md), sem checkout/Saga/reconciliação inferidos.
+
 ## Reservas com TTL — PDV-029
 
 Reserva atômica por proprietário, itens inteiros/produtos ATIVOS, versão e prazo PostgreSQL; renovação antes de vencer e replay persistido. V12 mantém físico, incrementa reservado/versão e trilha imutável. Barreira interna retém pagamentos iniciados/aprovados/incertos; expiração segura tem primitiva comum, agendamento é PDV-030. [Contrato](../workflows/reservations.md). Sem checkout/venda/Saga ou aceite inferido.

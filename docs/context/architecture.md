@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Agendamento de expiração, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Expiração pelo worker tem modo explícito; compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
 
 ## Registros de decisão
 
@@ -53,3 +53,5 @@ JUnit/Spring Boot Test/Testcontainers, PostgreSQL/RabbitMQ reais, Vitest/Testing
 A PDV-013 implementa a matriz inicial explicitamente aprovada pelo proprietário, com guardas Spring Security de rota/método e catálogo administrativo. Permissões das funcionalidades futuras continuam pendentes; consultar docs/workflows/identity-security.md e a spec PDV-013.
 
 PDV-029: reserva técnica com itens, proprietário, TTL obrigatório e trilha imutável V12. UPDATE condicional protege disponível; funções PostgreSQL comuns serializam renovação/proteção/expiração, sem baixar físico ou liberar resultado incerto. [Contrato](../workflows/reservations.md). Vínculo com venda/checkout e reconciliação permanecem nas tarefas próprias.
+
+PDV-030: worker independente usa PostgreSQL compartilhado para expiração via função transacional V12, sem DDL em runtime, opt-in5s/100. Isso não adiciona mensagens de negócio, outbox/inbox ou integração de pagamento. [Spec](../../sdd/features/PDV-030-expiracao-worker.md).

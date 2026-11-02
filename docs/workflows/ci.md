@@ -29,3 +29,5 @@ Referências primárias usadas para configuração: [Maven Checkstyle](https://m
 O job API e Verify definem TTL de 900 segundos apenas para testes; Run exige configuração operacional explícita.
 
 RbacHttpIT testa matriz anônimo/operador/admin, guardas, métodos não liberados, revogação de autoridades e cobertura de mappings dos controllers existentes.
+
+PDV-030: job worker também inicia PostgreSQL isolado e executa testes reais de expiração/concorrência, além de RabbitMQ. Migrations API entram só no classpath de teste do worker; não há aplicação de DDL em runtime. Runner local usa banco Verify próprio e restaura ambiente/limpa somente seu banco.
