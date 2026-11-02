@@ -10,7 +10,7 @@ O startup padrão não faz seed. Para habilitar explicitamente os papéis ADMIN 
 
 ```powershell
 ./scripts/api.ps1 -Action Migrate
-./scripts/api.ps1 -Action Run -Development -TokenTtlSeconds 900
+./scripts/api.ps1 -Action Run -Development -TokenTtlSeconds 900 -ReservationTtlSeconds 900
 ```
 
 Na PDV-011 o profile development inseria somente os dois papéis. A PDV-013 acrescenta a concessão de catálogo a ADMIN descrita abaixo; sem usuários ou senhas no seed de papéis. Não usar esse profile em produção. O script restaura o ambiente anterior ao encerrar. Seeds de teste usam namespaces/banco exclusivos e não entram no JAR.
@@ -47,3 +47,5 @@ O catálogo retorna id/resource/action persistidos, sem mutações. Fallback den
 Somente development semeia de forma idempotente a permissão access.permissions.read e sua concessão a ADMIN. OPERATOR não recebe concessão padrão. O startup development reaplica essa associação; não é profile de produção. Profile padrão não cria papéis, permissões, grants ou contas. Sem nova migration na PDV-013: V1–V3 continuam imutáveis. A aprovação inicial não fecha os demais itens da DEC-06.
 
 Fontes: [autorização de requisições](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html) e [segurança de método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html).
+
+Desde PDV-029, startup/verify também exigem PDV_RESERVATION_TTL_SECONDS positivo; Run aceita -ReservationTtlSeconds. Demo confirmada900s, independente do TTL do token. Migrate/Validate/Info continuam sem exigir esses TTLs.

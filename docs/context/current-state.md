@@ -1,4 +1,8 @@
-# Estado observado em 31 de outubro de 2026
+# Estado observado em 1 de novembro de 2026
+
+## Reservas com TTL — PDV-029
+
+Reserva atômica por proprietário, itens inteiros/produtos ATIVOS, versão e prazo PostgreSQL; renovação antes de vencer e replay persistido. V12 mantém físico, incrementa reservado/versão e trilha imutável. Barreira interna retém pagamentos iniciados/aprovados/incertos; expiração segura tem primitiva comum, agendamento é PDV-030. [Contrato](../workflows/reservations.md). Sem checkout/venda/Saga ou aceite inferido.
 
 ## ETags e concorrência de estoque — PDV-028
 

@@ -86,6 +86,8 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/inventory/{productId}/movements", "/inventory/movements/batches").authenticated()
                         .requestMatchers(HttpMethod.GET, "/inventory/{productId}/movements").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/inventory/{productId}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/reservations", "/reservations/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/reservations", "/reservations/{id}/renew").authenticated()
                         .anyRequest().denyAll())
                 .addFilterBefore(new BearerTokenFilter(auth), AnonymousAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -12,7 +12,7 @@ Com Docker ativo e PostgreSQL PDV saudável, executar na raiz do repositório:
 ./scripts/api.ps1 -Action Migrate
 ./scripts/api.ps1 -Action Validate
 ./scripts/api.ps1 -Action Info
-./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900 -ReservationTtlSeconds 900
 ```
 
 A toolchain oficial Java 21 é fixada por digest em [infra/java-toolchain.json](../../infra/java-toolchain.json). A versão Maven executada é controlada pelo Wrapper, independentemente do Maven pré-instalado na imagem. O cache fica no volume local `pdv-api-maven-cache`; classes, relatórios e JAR ficam em `backend/api/target`, ignorado pelo Git. O primeiro build requer acesso aos repositórios oficiais. Nenhum Java global ou serviço do Amor e Vida é alterado.
@@ -89,3 +89,5 @@ PDV-026 acrescenta V10, saldo inteiro por produto e abertura técnica imutável/
 PDV-027 acrescenta V11, entradas/saídas/ajustes inteiros via SQL condicional, lote tudo-ou-nada, motivo/ator e histórico imutável. RequestId/ator e resultado persistido permitem replay sem novo efeito; somente ADMIN/inventory.write movimenta. [Contrato](../../docs/workflows/inventory.md). If-Match/ETags entram na PDV-028, reservas/compras/venda/Saga ficam nas tarefas próprias.
 
 PDV-028 acrescenta ETag forte em GET /inventory/{productId}, PATCH condicional na mesma URI, If-Match/version e conflitos412/409 sem perda de atualização. Revisão ausente428; replay preserva resultado sem inventar estado atual. Sem novo schema; V11 e contratos legados mantidos. [Spec/RFC e verificações](../../sdd/features/PDV-028-concorrencia-etags.md).
+
+PDV-029: [reservas](../../docs/workflows/reservations.md) atômicas/TTL/barreira de pagamento. Run agora exige -ReservationTtlSeconds 900 (demo) ou PDV_RESERVATION_TTL_SECONDS positivo privado; Verify usa900s. Isso é separado do TTL de autenticação. V12, sem checkout/Saga ou worker de expiração presumidos.

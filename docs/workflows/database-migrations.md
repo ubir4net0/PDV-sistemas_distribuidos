@@ -18,7 +18,7 @@ docker compose up -d --wait --wait-timeout 180 postgres
 ./scripts/api.ps1 -Action Migrate
 ./scripts/api.ps1 -Action Validate
 ./scripts/api.ps1 -Action Info
-./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900 -ReservationTtlSeconds 900
 ```
 
 Migrate aplica somente as migrations versionadas ao banco PDV local existente. Validate confere histórico/checksums; Info lista estado e versões. Run executa o JAR já verificado e também migra/valida no startup. Os comandos não fazem clean, repair, baseline automático ou reversão. Schema preexistente sem histórico compatível exige investigação; não acrescentar IF NOT EXISTS, baseline ou repair para esconder divergência.

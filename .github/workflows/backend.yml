@@ -55,6 +55,7 @@ jobs:
             echo "PDV_DB_URL=jdbc:postgresql://127.0.0.1:5432/pdv_ci"
             echo "PDV_DB_USER=$POSTGRES_USER"
             echo "PDV_AUTH_TOKEN_TTL_SECONDS=900"
+            echo "PDV_RESERVATION_TTL_SECONDS=900"
             echo "PDV_DB_PASSWORD=$ci_postgres_password"
           } >> "$GITHUB_ENV"
       - name: Start isolated RabbitMQ

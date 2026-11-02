@@ -169,11 +169,11 @@ class RbacHttpIT {
                 "GET /categories", "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
                 "GET /customers/{id}", "GET /customers/{id}/addresses", "GET /customers/{id}/history",
                 "GET /inventory", "GET /inventory/{productId}", "GET /inventory/{productId}/movements", "GET /inventory/{productId}/opening",
-                "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /suppliers", "GET /suppliers/{id}",
+                "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /reservations", "GET /reservations/{id}", "GET /suppliers", "GET /suppliers/{id}",
                 "GET /suppliers/{id}/history", "GET /suppliers/{id}/products", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
                 "PATCH /inventory/{productId}", "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /categories",
                 "POST /customers", "POST /customers/{id}/addresses", "POST /inventory/movements/batches", "POST /inventory/{productId}/movements",
-                "POST /products", "POST /suppliers", "PUT /categories/{id}",
+                "POST /products", "POST /reservations", "POST /reservations/{id}/renew", "POST /suppliers", "PUT /categories/{id}",
                 "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}", "PUT /products/{id}/supplier", "PUT /suppliers/{id}");
     }
 

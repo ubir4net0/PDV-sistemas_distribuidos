@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações de estoque e worker de diagnóstico disponíveis. Reservas, compras, vendas e frontend permanecem nos incrementos seguintes.
+Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações e reservas de estoque com TTL, além do worker de diagnóstico disponíveis. Agendamento de expiração, compras, vendas e frontend permanecem nos incrementos seguintes.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -48,7 +48,7 @@ Com Docker e PostgreSQL PDV saudáveis, na raiz:
 
 ```powershell
 ./scripts/api.ps1 -Action Verify
-./scripts/api.ps1 -Action Run -TokenTtlSeconds 900
+./scripts/api.ps1 -Action Run -TokenTtlSeconds 900 -ReservationTtlSeconds 900
 ```
 
 API em `http://127.0.0.1:8081/actuator/health`. O build usa Maven Wrapper e Java 21 isolado, sem alterar o Java 17 do Windows. [Instruções e limites da API](backend/api/README.md). Health/readiness incluem PostgreSQL sem detalhes públicos; liveness mede o processo. Login, perfil próprio, logout e catálogo de permissões restrito a ADMIN estão disponíveis por Bearer opaco; [contrato de autenticação](docs/workflows/identity-security.md). Os demais caminhos seguem bloqueados. A [base Flyway da PDV-009](docs/workflows/database-migrations.md) cria namespace/histórico e testa rebuild/replay; V2/V3 adicionam identidade e tokens, sem implementar os cadastros comerciais.
@@ -67,3 +67,5 @@ Processo independente, sem porta HTTP, com diagnóstico JSON tipado por AMQP e t
 Diagramas originais e decisões bloqueantes constam no relatório. A main permite commits diretos e mantém bloqueados force-push e exclusão.
 
 PDV-016 oferece POST /customers com validação local CPF/CNPJ (numérico/alfanumérico), unicidade PostgreSQL e CRUD JPA. Operação e limites no [guia de clientes](docs/workflows/customers.md). Consulta/edição/histórico (017) e endereços/regiões (018) estão disponíveis em commits próprios, com permissões aprovadas.
+
+Reservas com TTL/renovação e barreira transacional estão documentadas em [reservas](docs/workflows/reservations.md). Run da API requer também -ReservationTtlSeconds 900 na demo; integração checkout/Saga e agendamento do worker são incrementos próprios.

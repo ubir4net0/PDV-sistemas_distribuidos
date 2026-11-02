@@ -5,6 +5,7 @@ param(
     [string]$Action = 'Verify',
     [switch]$Development,
     [Nullable[int]]$TokenTtlSeconds,
+    [Nullable[int]]$ReservationTtlSeconds,
     [switch]$BootstrapDevelopment
 )
 
@@ -50,8 +51,14 @@ try {
             PDV_DB_USER = $credentials[1]; PDV_DB_PASSWORD = $credentials[2]
         }
         if ($Development) { $values['SPRING_PROFILES_ACTIVE'] = 'development' }
-        if ($Action -eq 'Verify') { $values['PDV_AUTH_TOKEN_TTL_SECONDS'] = '900' }
+        if ($Action -eq 'Verify') { $values['PDV_AUTH_TOKEN_TTL_SECONDS'] = '900'; $values['PDV_RESERVATION_TTL_SECONDS'] = '900' }
         if ($Action -eq 'Run') {
+            $reservationTtl = if ($null -ne $ReservationTtlSeconds) { $ReservationTtlSeconds } else { $env:PDV_RESERVATION_TTL_SECONDS }
+            $parsedReservationTtl = 0
+            if (-not [int]::TryParse([string]$reservationTtl, [ref]$parsedReservationTtl) -or $parsedReservationTtl -le 0) {
+                throw 'Run requer ReservationTtlSeconds positivo ou PDV_RESERVATION_TTL_SECONDS privado.'
+            }
+            $values['PDV_RESERVATION_TTL_SECONDS'] = [string]$parsedReservationTtl
             $ttl = if ($null -ne $TokenTtlSeconds) { $TokenTtlSeconds } else { $env:PDV_AUTH_TOKEN_TTL_SECONDS }
             $parsedTtl = 0
             if (-not [int]::TryParse([string]$ttl, [ref]$parsedTtl) -or $parsedTtl -le 0) {

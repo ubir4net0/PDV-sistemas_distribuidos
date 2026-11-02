@@ -41,6 +41,8 @@ logging:
     org.hibernate.engine.jdbc.spi.SqlExceptionHelper: "OFF"
 
 pdv:
+  reservations:
+    ttl-seconds: ${PDV_RESERVATION_TTL_SECONDS}
   auth:
     token-ttl-seconds: ${PDV_AUTH_TOKEN_TTL_SECONDS}
 

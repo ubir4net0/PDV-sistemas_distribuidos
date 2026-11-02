@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos de estoque disponíveis nos incrementos documentados. Reservas, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Agendamento de expiração, compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
 
 ## Registros de decisão
 
@@ -51,3 +51,5 @@ Consultar o índice de decisões: estados de venda/pagamento (DEC-01), lote/rece
 JUnit/Spring Boot Test/Testcontainers, PostgreSQL/RabbitMQ reais, Vitest/Testing Library/Playwright e carga declarada. RNF04/12/13/15/19 dependem de implantação/ensaio real; nenhum é comprovado pela arquitetura desenhada.
 
 A PDV-013 implementa a matriz inicial explicitamente aprovada pelo proprietário, com guardas Spring Security de rota/método e catálogo administrativo. Permissões das funcionalidades futuras continuam pendentes; consultar docs/workflows/identity-security.md e a spec PDV-013.
+
+PDV-029: reserva técnica com itens, proprietário, TTL obrigatório e trilha imutável V12. UPDATE condicional protege disponível; funções PostgreSQL comuns serializam renovação/proteção/expiração, sem baixar físico ou liberar resultado incerto. [Contrato](../workflows/reservations.md). Vínculo com venda/checkout e reconciliação permanecem nas tarefas próprias.
