@@ -18,8 +18,10 @@ PostgreSQL real: upgrade V18→V19 preservando operação, constraints, replay e
 
 ## Evidências
 
-CI do primeiro SHA6a2fca0: frontend16/17 passou; asserção antiga de loading dependia de600ms e perdeu a janela no runner. Correção de teste usa barreira explícita da resposta até observar loading, sem alteração de comportamento da aplicação. Repetição completa de browser/CI requerida para o SHA corrigido.
+CI do primeiro SHA6a2fca0: frontend16/17 passou; asserção antiga de loading dependia de600ms e perdeu a janela no runner. Primeira barreira ainda bloqueava apenas a primeira leitura; StrictMode pode cancelá-la e iniciar outra. A barreira final segura todas as leituras até observar loading, sem alteração de comportamento da aplicação. Repetição completa de browser/CI requerida para o SHA corrigido.
 
 Implementação concluída e autorevisada. Frontend typecheck/23 unit/build PASS;17 Playwright PASS1m42, stack API/PG/Rabbit/worker própria, correlação raiz→publicação→consumo, filtro/erro/reconsulta e regressões. Desktop/celular inspecionados sem overflow. Worker Verify completo55/0 (6unit+49IT), incluindo19 cenários AMQP;83 linhas JSON sintéticas parseadas com service/event permitidos. Migrate/Validate V19 PASS; upgrade/rebuild/replay fazem parte da suíte API ainda em execução no momento do commit (21unit/0 e integrações já executadas sem falha até aqui). O resultado completo local e a CI do SHA final serão registrados na tarefa viva antes de Em validação.
 
 Contratos61rotas/58DTO/71schemas/15 exemplos válidos e11 inválidos, planejamento/fontes,348links/UTF-8/diff PASS. Banco/recursos E2E removidos. Sem nova dependência, fornecedor ou serviço externo. Logs gerais de framework continuam separados; a centralização trata spans técnicos permitidos. Observação pós-commit pode faltar em queda do processo e não é ledger. Commit próprio main sem PR; aceite explícito pendente.
+
+Resultado final local: API Verify completo SUCCESS15m00,21unit+281IT=302, zero falhas/erros/skips; upgrade V18→V19/constraints/rebuild/replay aprovados. Repetição final de browser17/17 PASS1m24 depois de bloquear todas as leituras StrictMode no cenário de loading. As duas rodadas intermediárias registraram16/17; código da aplicação não precisou mudar. CI Backend dos SHAs6a2fca0/95bd710 aprovou302+55. A CI do último commit de teste será registrada no Notion.
