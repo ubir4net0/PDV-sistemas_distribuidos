@@ -45,3 +45,5 @@ Aprovação também grava pdv.sale.confirm.v1 (outcome APROVADO) na outbox. A fi
 ## Evolução PDV-040
 
 Fila results aceita pdv.payment.reconciled.v1 (APROVADO/RECUSADO) e pdv.sale.release.v1 (RECUSADO). Provas duráveis são obrigatórias; resultado desconhecido antigo não regride o reconciliado. Liberação/inbox/ledger/evento confirmam juntos e só alteram reservado. [Contrato](payment-reconciliation.md).
+
+A PDV-050 acrescenta [painel administrativo e replay auditado](messaging-operations.md). O procedimento SQL/manual acima preserva a história do incremento038; o painel não remove mensagens da DLQ nem aceita conteúdo arbitrário.

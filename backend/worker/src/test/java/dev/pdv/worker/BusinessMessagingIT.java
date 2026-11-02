@@ -61,6 +61,7 @@ class BusinessMessagingIT {
         migrate(); registry.add("pdv.business.enabled", () -> "true"); registry.add("pdv.business.prefix", () -> PREFIX);
         registry.add("pdv.database.schema", () -> SCHEMA); registry.add("pdv.business.interval-ms", () -> "3600000");
         registry.add("pdv.business.consumers-auto-startup", () -> "false"); registry.add("pdv.simulated-payments.enabled", () -> "false"); registry.add("pdv.probe.prefix", () -> PROBE);
+        registry.add("pdv.operations.interval-ms", () -> "3600000");
     }
     private static Flyway flyway() { return Flyway.configure().dataSource(required("PDV_DB_URL"), required("PDV_DB_USER"), required("PDV_DB_PASSWORD"))
         .defaultSchema(HISTORY).schemas(HISTORY).locations("classpath:db/migration").placeholders(Map.of("applicationSchema", SCHEMA)).cleanDisabled(true).baselineOnMigrate(false).outOfOrder(false).load(); }
@@ -111,6 +112,18 @@ class BusinessMessagingIT {
         UUID event = jdbc.queryForObject("SELECT id FROM outbox_events WHERE payment_id=?", UUID.class, payment); return new Operation(sale, payment, reservation, product, event);
     }
     private long count(String table) { return jdbc.queryForObject("SELECT count(*) FROM "+table, Long.class); }
+    @Test void observesActualDlqAndMarksUnavailableBrokerWithoutInventingZero() {
+        var properties=new MessageProperties(); properties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+        rabbit.send(names.exchange(),"payment.request",new Message("invalid synthetic fixture".getBytes(StandardCharsets.UTF_8),properties)); startRequests();
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(()->assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(1));
+        new dev.pdv.worker.business.QueueMonitor(jdbc,admin,names).sample();
+        assertThat(jdbc.queryForObject("SELECT ready FROM messaging_queue_samples WHERE namespace=? AND kind='DEAD' AND available",Long.class,names.prefix())).isEqualTo(1);
+        assertThat(count("messaging_queue_samples")).isEqualTo(3);
+        var offline=new CachingConnectionFactory("127.0.0.1",1); offline.setConnectionTimeout(200);
+        try { new dev.pdv.worker.business.QueueMonitor(jdbc,new RabbitAdmin(offline),names).sample();
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM messaging_queue_samples WHERE NOT available AND ready IS NULL AND consumers IS NULL",Long.class)).isEqualTo(3);
+        } finally { offline.destroy(); }
+    }
     @Test void tracesCrossRealBrokerAndCentralizeParentChildSpansWithoutPayload() {
         var operation=operation("APROVADO"); outbox.runRound(); var message=rabbit.receive(names.requests(),5000); assertThat(message).isNotNull();
         String trace=operation.payment().toString().replace("-",""); String header=(String)message.getMessageProperties().getHeaders().get("traceparent");

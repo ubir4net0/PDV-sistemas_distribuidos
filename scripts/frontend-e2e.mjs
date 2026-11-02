@@ -98,7 +98,7 @@ async function main() {
   if(!ready)throw new Error('Isolated worker not ready; private logs suppressed');
   console.log('Isolated RabbitMQ/worker ready: real business Outbox/Inbox enabled, no financial service.');
   const port = await freePort();
-  const env = { ...process.env, PDV_API_TARGET: apiUrl, PDV_E2E_API: apiUrl, PDV_FRONTEND_PORT: String(port), PDV_E2E_EMAIL: email, PDV_E2E_ADMIN_EMAIL: adminEmail, PDV_E2E_PASSWORD: password };
+  const env = { ...process.env, PDV_API_TARGET: apiUrl, PDV_E2E_API: apiUrl, PDV_E2E_DATABASE_CONTAINER: postgres, PDV_FRONTEND_PORT: String(port), PDV_E2E_EMAIL: email, PDV_E2E_ADMIN_EMAIL: adminEmail, PDV_E2E_PASSWORD: password };
   const code = await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [process.env.npm_execpath, 'exec', '--', 'playwright', 'test'], { cwd: front, env, stdio: ['ignore','pipe','pipe'] });
     const redact=line=>[email,adminEmail,password,privateEnv.POSTGRES_PASSWORD,privateEnv.RABBITMQ_DEFAULT_PASS].reduce((s,v)=>s.replaceAll(v,'[REDACTED]'),line)

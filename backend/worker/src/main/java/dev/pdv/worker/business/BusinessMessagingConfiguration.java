@@ -13,6 +13,7 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,4 +61,8 @@ public class BusinessMessagingConfiguration {
     @Bean public BusinessConsumer businessConsumer(BusinessInbox inbox, JsonMapper json) { return new BusinessConsumer(inbox, json); }
     @Bean public ConfirmedBusinessPublisher confirmedBusinessPublisher(RabbitTemplate template, BusinessTopology names, JsonMapper json, @Value("${pdv.business.publish-timeout-ms:5000}") long timeout) { return new ConfirmedBusinessPublisher(template, names, json, timeout); }
     @Bean public BusinessOutbox businessOutbox(JdbcTemplate jdbc, DataSource source, ConfirmedBusinessPublisher sender, JsonMapper json, @Value("${pdv.business.batch-size:10}") int batch) { return new BusinessOutbox(jdbc, new TransactionTemplate(new DataSourceTransactionManager(source)), sender, json, batch); }
+    @Bean public QueueMonitor queueMonitor(JdbcTemplate jdbc,ConnectionFactory connection,BusinessTopology names) {
+        if(jdbc.queryForObject("SELECT to_regclass('messaging_queue_samples')::text",String.class)==null) { throw new IllegalStateException("Run API operations migrations first"); }
+        return new QueueMonitor(jdbc,new RabbitAdmin(connection),names);
+    }
 }

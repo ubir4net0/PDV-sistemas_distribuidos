@@ -178,11 +178,11 @@ class RbacHttpIT {
                 "GET /categories", "GET /categories/{id}", "GET /categories/{id}/history", "GET /customers", "GET /customers/regions",
                 "GET /customers/{id}", "GET /customers/{id}/addresses", "GET /customers/{id}/history",
                 "GET /inventory", "GET /inventory/{productId}", "GET /inventory/{productId}/movements", "GET /inventory/{productId}/opening",
-                "GET /operations/telemetry", "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /reservations", "GET /reservations/{id}", "GET /sales/{id}", "GET /sales/{id}/receipt", "GET /sales/{id}/timeline", "GET /suppliers", "GET /suppliers/{id}",
+                "GET /operations/messaging", "GET /operations/telemetry", "GET /products", "GET /products/{id}", "GET /products/{id}/history", "GET /reservations", "GET /reservations/{id}", "GET /sales/{id}", "GET /sales/{id}/receipt", "GET /sales/{id}/timeline", "GET /suppliers", "GET /suppliers/{id}",
                 "GET /suppliers/{id}/history", "GET /suppliers/{id}/products", "PATCH /categories/{id}/status", "PATCH /customers/{id}/status",
                 "PATCH /inventory/{productId}", "PATCH /products/{id}/status", "PATCH /suppliers/{id}/status", "POST /auth/login", "POST /auth/logout", "POST /carts", "POST /carts/{id}/checkout", "POST /categories",
                 "POST /customers", "POST /customers/{id}/addresses", "POST /inventory/movements/batches", "POST /inventory/{productId}/movements",
-                "POST /products", "POST /reservations", "POST /reservations/{id}/renew", "POST /sales/{id}/reconcile", "POST /simulator/payments/{id}/resolution", "POST /suppliers", "PUT /carts/{id}/items/{productId}", "PUT /categories/{id}",
+                "POST /operations/messaging/{eventId}/retry", "POST /products", "POST /reservations", "POST /reservations/{id}/renew", "POST /sales/{id}/reconcile", "POST /simulator/payments/{id}/resolution", "POST /suppliers", "PUT /carts/{id}/items/{productId}", "PUT /categories/{id}",
                 "PUT /customers/{id}", "PUT /customers/{id}/addresses/{addressId}", "PUT /products/{id}", "PUT /products/{id}/supplier", "PUT /suppliers/{id}");
     }
 

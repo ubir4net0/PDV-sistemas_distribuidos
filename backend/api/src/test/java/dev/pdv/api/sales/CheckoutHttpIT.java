@@ -45,7 +45,8 @@ class CheckoutHttpIT extends CartHttpSupport {
             try {
                 connection.setAutoCommit(false);
                 try (var s = connection.createStatement()) { s.execute("SET LOCAL session_replication_role=replica"); }
-                for (var sql : List.of("DELETE FROM outbox_deliveries WHERE event_id IN (SELECT e.id FROM outbox_events e JOIN payments p ON p.id=e.payment_id JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                for (var sql : List.of("DELETE FROM messaging_retry_operations WHERE actor_id IN (?,?)",
+                        "DELETE FROM outbox_deliveries WHERE event_id IN (SELECT e.id FROM outbox_events e JOIN payments p ON p.id=e.payment_id JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM outbox_events WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM inbox_messages WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM simulation_decisions WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
@@ -92,6 +93,70 @@ class CheckoutHttpIT extends CartHttpSupport {
     private String resolutionPath(tools.jackson.databind.JsonNode sale) { return "/simulator/payments/"+sale.get("paymentId").asString()+"/resolution"; }
     private String reconcilePath(tools.jackson.databind.JsonNode sale) { return "/sales/"+sale.get("id").asString()+"/reconcile"; }
     private Map<String,Object> resolveInput(UUID request, String outcome) { return Map.of("requestId",request,"outcome",outcome,"reason","Synthetic decision"); }
+    private UUID deadDelivery(String owner) throws Exception {
+        var cart=filled(owner,stocked(owner,category(owner),10),1); var sale=json.readTree(checkout(cart,owner,UUID.randomUUID().toString(),command(1)).body());
+        var event=jdbc.queryForObject("SELECT id FROM outbox_events WHERE payment_id=?",UUID.class,UUID.fromString(sale.get("paymentId").asString()));
+        jdbc.update("UPDATE outbox_deliveries SET status='DEAD',attempts=5,last_error='UNCONFIRMED',version=version+1 WHERE event_id=?",event); return event;
+    }
+    private String retryPath(UUID event) { return "/operations/messaging/"+event+"/retry"; }
+    private Map<String,Object> retryInput(UUID request,long version) { return Map.of("requestId",request,"version",version,"reason","Synthetic broker route corrected"); }
+    @Test void messagingDashboardIsAdminOnlyPagedSafeAndDistinguishesStaleUnknownQueueCounts() throws Exception {
+        var owner=token("ADMIN"); var event=deadDelivery(owner); String namespace="pdv.test.operations."+UUID.randomUUID();
+        jdbc.update("INSERT INTO messaging_queue_samples(namespace,kind,available,observed_at) VALUES (?,'DEAD',false,clock_timestamp()-interval '1 minute')",namespace);
+        try {
+            var response=send("GET","/operations/messaging?status=DEAD&size=1",owner,null); assertThat(response.statusCode()).isEqualTo(200);
+            assertThat(response.headers().firstValue("Cache-Control")).contains("no-store"); var body=json.readTree(response.body());
+            assertThat(body.get("deliveries").get("items").size()).isEqualTo(1); assertThat(body.get("dead").asLong()).isEqualTo(1);
+            assertThat(body.get("queues").get(0).get("ready").isNull()).isTrue(); assertThat(body.get("queues").get(0).get("stale").asBoolean()).isTrue();
+            assertThat(response.body()).doesNotContain("payload","customerId","amount","email","password","reason");
+            assertThat(send("GET","/operations/messaging",null,null).statusCode()).isEqualTo(401);
+            var operatorToken=token("OPERATOR"); assertThat(send("GET","/operations/messaging",operatorToken,null).statusCode()).isEqualTo(403);
+            assertThat(send("POST",retryPath(event),operatorToken,retryInput(UUID.randomUUID(),1)).statusCode()).isEqualTo(403);
+            for(var query:List.of("status=UNKNOWN","size=0","page=-1")) { assertThat(send("GET","/operations/messaging?"+query,owner,null).statusCode()).isEqualTo(400); }
+        } finally { jdbc.update("DELETE FROM messaging_queue_samples WHERE namespace=?",namespace); }
+    }
+    @Test void retryIsAuditedIdempotentAndPreservesCanonicalEnvelopeAfterDeliveryChanges() throws Exception {
+        var owner=token("ADMIN"); var event=deadDelivery(owner); var input=retryInput(UUID.randomUUID(),1);
+        String original=jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE id=?",String.class,event);
+        var first=send("POST",retryPath(event),owner,input); assertThat(first.statusCode()).isEqualTo(200); assertThat(first.headers().firstValue("Idempotent-Replay")).contains("false");
+        assertThat(json.readTree(first.body()).get("version").asLong()).isEqualTo(2);
+        jdbc.update("UPDATE outbox_deliveries SET status='PUBLISHED',version=version+1 WHERE event_id=?",event);
+        var replay=send("POST",retryPath(event),owner,input); assertThat(replay.statusCode()).isEqualTo(200); assertThat(replay.body()).isEqualTo(first.body()); assertThat(replay.headers().firstValue("Idempotent-Replay")).contains("true");
+        assertThat(send("POST",retryPath(event),owner,Map.of("requestId",input.get("requestId"),"version",1,"reason","Different reason")).statusCode()).isEqualTo(409);
+        assertThat(jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE id=?",String.class,event)).isEqualTo(original);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM messaging_retry_operations WHERE event_id=?",Long.class,event)).isEqualTo(1);
+        assertThatThrownBy(()->jdbc.update("UPDATE messaging_retry_operations SET reason='changed' WHERE event_id=?",event)).isInstanceOf(DataAccessException.class);
+    }
+    @Test void retryRollsBackOnAuditFailureAndRejectsAlreadyConsumedOrStaleCommands() throws Exception {
+        var owner=token("ADMIN"); var event=deadDelivery(owner); var input=retryInput(UUID.randomUUID(),1);
+        assertThat(send("POST",retryPath(event),owner,retryInput(UUID.randomUUID(),0)).statusCode()).isEqualTo(409);
+        assertThat(send("POST",retryPath(event),owner,Map.of("requestId",UUID.randomUUID(),"version",1,"reason"," ")).statusCode()).isEqualTo(400);
+        jdbc.execute("ALTER TABLE messaging_retry_operations ADD CONSTRAINT fixture_retry_failure CHECK(FALSE) NOT VALID");
+        try { assertThat(send("POST",retryPath(event),owner,input).statusCode()).isEqualTo(503);
+            assertThat(jdbc.queryForObject("SELECT status FROM outbox_deliveries WHERE event_id=?",String.class,event)).isEqualTo("DEAD");
+            assertThat(jdbc.queryForObject("SELECT version FROM outbox_deliveries WHERE event_id=?",Long.class,event)).isEqualTo(1);
+        } finally { jdbc.execute("ALTER TABLE messaging_retry_operations DROP CONSTRAINT fixture_retry_failure"); }
+        assertThat(send("POST",retryPath(event),owner,input).statusCode()).isEqualTo(200);
+        jdbc.update("UPDATE outbox_deliveries SET status='PUBLISHED',version=version+1 WHERE event_id=?",event);
+        jdbc.update("INSERT INTO inbox_messages(consumer,event_id,payment_id,fingerprint,disposition) SELECT 'payment-simulator-v1',id,payment_id,?,'APROVADO' FROM outbox_events WHERE id=?","a".repeat(64),event);
+        assertThat(send("POST",retryPath(event),owner,retryInput(UUID.randomUUID(),3)).statusCode()).isEqualTo(409);
+        assertThat(send("POST",retryPath(UUID.randomUUID()),owner,retryInput(UUID.randomUUID(),0)).statusCode()).isEqualTo(404);
+    }
+    @Test void concurrentRetryCommandsChooseOneRevisionAndIdenticalRequestReplays() throws Exception {
+        var owner=token("ADMIN"); var event=deadDelivery(owner); var gate=new CountDownLatch(1);
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            var a=pool.submit(()->{gate.await(5,TimeUnit.SECONDS);return send("POST",retryPath(event),owner,retryInput(UUID.randomUUID(),1)).statusCode();});
+            var b=pool.submit(()->{gate.await(5,TimeUnit.SECONDS);return send("POST",retryPath(event),owner,retryInput(UUID.randomUUID(),1)).statusCode();});gate.countDown();
+            assertThat(List.of(a.get(30,TimeUnit.SECONDS),b.get(30,TimeUnit.SECONDS))).containsExactlyInAnyOrder(200,409);
+        }
+        var other=deadDelivery(owner); var same=retryInput(UUID.randomUUID(),1); var start=new CountDownLatch(1);
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            java.util.concurrent.Callable<HttpResponse<String>> call=()->{start.await(5,TimeUnit.SECONDS);return send("POST",retryPath(other),owner,same);};
+            var a=pool.submit(call);var b=pool.submit(call);start.countDown();var first=a.get(30,TimeUnit.SECONDS);var second=b.get(30,TimeUnit.SECONDS);
+            assertThat(first.statusCode()).isEqualTo(200);assertThat(second.statusCode()).isEqualTo(200);assertThat(first.body()).isEqualTo(second.body());
+        }
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM messaging_retry_operations",Long.class)).isEqualTo(2);
+    }
     @Test void telemetryConnectsCheckoutToItsOperationAndOnlyAdminCanReadIt() throws Exception {
         var owner=token("ADMIN"); var cart=filled(owner,stocked(owner,category(owner),10),1); String key=UUID.randomUUID().toString();
         var created=checkout(cart,owner,key,command(1)); assertThat(created.statusCode()).isEqualTo(201); var sale=json.readTree(created.body());

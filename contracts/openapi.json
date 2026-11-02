@@ -3675,6 +3675,160 @@
         "x-authorization": "ADMIN; logs seguros limitados100 e métricas24h"
       }
     },
+    "/operations/messaging": {
+      "get": {
+        "operationId": "get__operations_messaging",
+        "summary": "GET /operations/messaging",
+        "tags": [
+          "operations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagingDashboard"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PUBLISHED",
+                "DEAD"
+              ]
+            }
+          }
+        ],
+        "x-authorization": "ADMIN; sem payload; observação AMQP pronta/antiga/indisponível"
+      }
+    },
+    "/operations/messaging/{eventId}/retry": {
+      "post": {
+        "operationId": "post__operations_messaging_eventId_retry",
+        "summary": "POST /operations/messaging/{eventId}/retry",
+        "tags": [
+          "operations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagingRetry"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN; evento canônico, CAS/inbox/auditoria; replay original; nenhuma remoção de DLQ",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessagingCommand"
+              }
+            }
+          }
+        }
+      }
+    },
     "/sales/{id}/reconcile": {
       "post": {
         "operationId": "post__sales_id_reconcile",
@@ -6430,6 +6584,303 @@
         "x-java-record": {
           "file": "backend/api/src/main/java/dev/pdv/api/configuration/OperationTelemetry.java",
           "record": "Dashboard"
+        }
+      },
+      "MessagingCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "requestId",
+          "version",
+          "reason"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Command"
+        }
+      },
+      "MessagingDelivery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PUBLISHED",
+              "DEAD"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "processed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "eventId",
+          "type",
+          "status",
+          "attempts",
+          "version",
+          "error",
+          "updatedAt",
+          "processed"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Delivery"
+        }
+      },
+      "QueueObservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "REQUESTS",
+              "RESULTS",
+              "DEAD"
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "ready": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "consumers": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stale": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "namespace",
+          "kind",
+          "available",
+          "ready",
+          "consumers",
+          "observedAt",
+          "stale"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Queue"
+        }
+      },
+      "DeliveryPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessagingDelivery"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Page"
+        }
+      },
+      "MessagingDashboard": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pending": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "dead": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "published": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "lastSynchronizedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "queues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueueObservation"
+            }
+          },
+          "deliveries": {
+            "$ref": "#/components/schemas/DeliveryPage"
+          }
+        },
+        "required": [
+          "generatedAt",
+          "pending",
+          "dead",
+          "published",
+          "lastSynchronizedAt",
+          "queues",
+          "deliveries"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Dashboard"
+        }
+      },
+      "MessagingRetry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "requestId",
+          "eventId",
+          "status",
+          "version",
+          "recordedAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/operations/MessagingModels.java",
+          "record": "Retry"
         }
       },
       "Resolve": {

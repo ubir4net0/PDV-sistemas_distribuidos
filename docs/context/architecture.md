@@ -1,5 +1,7 @@
 # Arquitetura alvo do PDV
 
+PDV-050 entrega [painel de filas e reprocessamento](../workflows/messaging-operations.md): ADMIN consulta amostras AMQP, pendências/inbox e rearma envelope canônico com CAS, idempotência e auditoria V20.
+
 PDV-049 adiciona [observabilidade local](../workflows/observability.md): spans seguros de checkout/AMQP, logs JSON centralizados V19 e painel ADMIN. Cobertura e limitações no contrato.
 
 Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Worker tem modos explícitos de expiração e simulação de pagamento sobre checkout/Saga persistidos; mensageria de negócio Outbox/Inbox foi adicionada na038; compras, frontend e efeitos finais de venda permanecem nas tarefas próprias.

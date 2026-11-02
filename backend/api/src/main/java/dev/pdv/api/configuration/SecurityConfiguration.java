@@ -66,6 +66,8 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
                         .requestMatchers(HttpMethod.GET, "/access/permissions").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/operations/telemetry").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/operations/messaging").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/operations/messaging/{eventId}/retry").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/customers").authenticated()
                         .requestMatchers(HttpMethod.GET, "/customers", "/customers/{id}", "/customers/{id}/history").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/customers/{id}").authenticated()
