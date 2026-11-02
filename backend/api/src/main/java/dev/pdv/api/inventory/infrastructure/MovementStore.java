@@ -60,13 +60,13 @@ public class MovementStore {
         }
     }
     public Page<Movement> history(UUID id, int page, int size) {
-        var rows = jdbc.query("SELECT * FROM inventory_movements WHERE product_id=? ORDER BY version_after,id LIMIT ? OFFSET ?", (row, index) -> {
+        var rows = jdbc.query("SELECT * FROM inventory_movement_history WHERE product_id=? ORDER BY version_after,id LIMIT ? OFFSET ?", (row, index) -> {
             var balance = new Balance(id, row.getLong("physical_after"), row.getLong("reserved_after"), row.getLong("physical_after") - row.getLong("reserved_after"),
                     row.getLong("version_after"), row.getTimestamp("balance_created_at").toInstant(), row.getTimestamp("balance_updated_at").toInstant());
             return new Movement(row.getObject("id", UUID.class), row.getObject("operation_id", UUID.class), id, row.getString("type"), row.getLong("quantity"), row.getLong("delta"),
                     row.getString("reason"), row.getObject("actor_id", UUID.class), row.getLong("physical_before"), row.getLong("reserved_before"), row.getLong("version_before"),
                     balance, row.getTimestamp("created_at").toInstant());
         }, id, size, (long) page * size);
-        return new Page<>(rows, jdbc.queryForObject("SELECT count(*) FROM inventory_movements WHERE product_id=?", Long.class, id), page, size);
+        return new Page<>(rows, jdbc.queryForObject("SELECT count(*) FROM inventory_movement_history WHERE product_id=?", Long.class, id), page, size);
     }
 }

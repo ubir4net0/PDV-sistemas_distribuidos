@@ -73,3 +73,7 @@ Com migrations V15 aplicadas, `./scripts/worker.ps1 -Action Run -SimulatePayment
 ## Transporte de negócio — PDV-038
 
 `./scripts/worker.ps1 -Action Run -BusinessMessaging -ExpireReservations` usa outbox/inbox V16 e RabbitMQ real para solicitações/resultados. [Contrato, retry/DLQ/replay e limites](../../docs/workflows/business-messaging.md). Não combinar com SimulatePayments; diagnóstico permanece separado. Worker não migra banco e não publica diretamente como parte do commit SQL.
+
+## Confirmação de venda — PDV-039
+
+Modo BusinessMessaging também consome pdv.sale.confirm.v1 na fila results. Inbox, baixa, comprovante e conclusão confirmam na mesma transação PostgreSQL; falha vai ao retry/DLQ sem efeito parcial. [Contrato](../../docs/workflows/sale-confirmation.md).

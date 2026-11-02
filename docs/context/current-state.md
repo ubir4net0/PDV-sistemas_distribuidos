@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Conclusão e comprovante — PDV-039
+
+V17 e etapa pdv.sale.confirm.v1 concluem aprovação comprovada com baixa única de físico/reservado, reserva CONFIRMED, ledger e comprovante imutável. GET próprio com sale.read, sem acesso público. [Contrato](../workflows/sale-confirmation.md). Recusa/reconciliação e cancelamento continuam próprios.
+
 ## Outbox/Inbox e consumo confiável — PDV-038
 
 V16 liga intenção do checkout, publicação confirmada, solicitação/decisão/resposta e inbox transacional no RabbitMQ real. Publicador retry limitado/DEAD, consumidor retry3/DLQ e replay preservam identidades. [Contrato](../workflows/business-messaging.md). BusinessMessaging é opt-in, separado de polling local; sem efeitos finais da039/040 neste incremento.

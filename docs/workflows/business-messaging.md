@@ -37,3 +37,7 @@ Verificar entrega, inbox, estado/decisão do pagamento e causa antes de replay. 
 Filas clássicas duráveis e mensagens persistentes são verificadas no broker local. Replicação/HA e falha física do nó não foram ensaiadas; DLX neste laboratório não promete ausência de perda em toda falha do broker. As [garantias de confirms/ack](https://www.rabbitmq.com/docs/confirms) são distintas; o [tratamento de falhas Spring AMQP](https://docs.spring.io/spring-amqp/reference/amqp/receiving-messages/async-annotation-driven/error-handling.html) depende do modo manual configurado. Sem promessa de exactly-once.
 
 O incremento038 registra aprovação/recusa/desconhecido na Saga, sem baixa, liberação ou comprovante. Confirmação039 e recusa/reconciliação040 evoluem etapas em migrations próprias; cancelamento/estorno041 permanece separado.
+
+## Evolução PDV-039
+
+Aprovação também grava pdv.sale.confirm.v1 (outcome APROVADO) na outbox. A fila results aceita essa etapa; o coordenador confirma estoque/comprovante/inbox juntos. [Contrato de conclusão](sale-confirmation.md). A descrição do incremento038 acima permanece como histórico do seu escopo.

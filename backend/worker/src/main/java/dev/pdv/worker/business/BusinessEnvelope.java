@@ -10,9 +10,11 @@ import java.util.UUID;
 public record BusinessEnvelope(String type, UUID eventId, UUID paymentId, String outcome) {
     public static final String REQUEST = "pdv.payment.requested.v1";
     public static final String RESULT = "pdv.payment.result.v1";
+    public static final String CONFIRM = "pdv.sale.confirm.v1";
     public BusinessEnvelope {
-        if (eventId==null || paymentId==null || (!REQUEST.equals(type) && !RESULT.equals(type))
-                || (REQUEST.equals(type) && outcome!=null) || (RESULT.equals(type) && !List.of("APROVADO", "RECUSADO", "INDETERMINADO").contains(outcome==null ? "" : outcome))) {
+        if (eventId==null || paymentId==null || (!REQUEST.equals(type) && !RESULT.equals(type) && !CONFIRM.equals(type))
+                || (REQUEST.equals(type) && outcome!=null) || (CONFIRM.equals(type) && !"APROVADO".equals(outcome))
+                || (RESULT.equals(type) && !List.of("APROVADO", "RECUSADO", "INDETERMINADO").contains(outcome==null ? "" : outcome))) {
             throw new Rejected("Invalid business envelope");
         }
     }

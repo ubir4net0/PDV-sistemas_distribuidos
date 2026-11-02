@@ -2,6 +2,7 @@ package dev.pdv.api.sales.infrastructure;
 
 import dev.pdv.api.configuration.ApiFailure;
 import dev.pdv.api.sales.application.CartModels;
+import dev.pdv.api.sales.application.Receipt;
 import dev.pdv.api.sales.application.CheckoutModels.Checkout;
 import dev.pdv.api.sales.application.CheckoutModels.Method;
 import dev.pdv.api.sales.application.CheckoutModels.Sale;
@@ -56,5 +57,9 @@ public class CheckoutStore {
         String snapshot = json.writeValueAsString(result);
         jdbc.update("INSERT INTO sale_events(sale_id,version,kind,snapshot) VALUES (?,0,'CHECKOUT',?::jsonb)", result.id(), snapshot);
         jdbc.update("INSERT INTO checkout_operations(actor_id,idempotency_key,sale_id,fingerprint,http_status,response) VALUES (?,?,?,?,201,?::jsonb)", actor, key, result.id(), fingerprint, snapshot);
+    }
+    public Receipt receipt(UUID id, UUID actor) {
+        return jdbc.query("SELECT r.snapshot::text FROM receipts r JOIN sales s ON s.id=r.sale_id WHERE s.id=? AND s.actor_id=? AND s.status='CONCLUIDA'",
+                (r, i) -> json.readValue(r.getString(1), Receipt.class), id, actor).stream().findFirst().orElseThrow(() -> new ApiFailure(404, "receipt_not_found"));
     }
 }

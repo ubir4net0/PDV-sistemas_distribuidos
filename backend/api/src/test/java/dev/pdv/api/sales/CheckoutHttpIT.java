@@ -44,6 +44,9 @@ class CheckoutHttpIT extends CartHttpSupport {
                         "DELETE FROM inbox_messages WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM simulation_decisions WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM sale_sagas WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                        "DELETE FROM sale_stock_movements WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                        "DELETE FROM sale_confirmations WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                        "DELETE FROM receipts WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM payment_results WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM payment_intents WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM payments WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))", "DELETE FROM sale_events WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
@@ -169,5 +172,28 @@ class CheckoutHttpIT extends CartHttpSupport {
         var id = UUID.fromString(json.readTree(response.body()).get("id").asString());
         assertThat(jdbc.queryForObject("SELECT total FROM sales WHERE id=?", java.math.BigDecimal.class, id)).isEqualByComparingTo(price.multiply(java.math.BigDecimal.valueOf(Long.MAX_VALUE)));
         assertThat(jdbc.queryForObject("SELECT amount FROM payments WHERE sale_id=?", java.math.BigDecimal.class, id)).isEqualByComparingTo(price.multiply(java.math.BigDecimal.valueOf(Long.MAX_VALUE)));
+        UUID payment=UUID.fromString(json.readTree(response.body()).get("paymentId").asString());
+        jdbc.queryForObject("SELECT start_sale_payment(?)",String.class,payment); jdbc.queryForObject("SELECT record_simulated_payment(?,'APROVADO')",String.class,payment);
+        assertThat(jdbc.queryForObject("SELECT confirm_business_sale(?)",String.class,payment)).isEqualTo("CONCLUIDA");
+        var receipt=send("GET","/sales/"+id+"/receipt",token,null); assertThat(receipt.statusCode()).isEqualTo(200);
+        assertThat(json.readValue(receipt.body(),dev.pdv.api.sales.application.Receipt.class).total()).isEqualByComparingTo(price.multiply(java.math.BigDecimal.valueOf(Long.MAX_VALUE)));
+        assertThat(jdbc.queryForObject("SELECT physical FROM inventory_balances WHERE product_id=?",Long.class,product)).isZero();
+    }
+    @Test void ownReceiptIsStableAfterConclusionWithPrivateAccessAndAutomaticHistory() throws Exception {
+        UUID inventoryRead=UUID.randomUUID(); grants.add(inventoryRead);
+        jdbc.update("INSERT INTO permissions(id,resource,action) VALUES (?,'inventory','read')",inventoryRead);
+        jdbc.update("INSERT INTO role_permissions(role_id,permission_id) SELECT id,? FROM roles WHERE code IN ('ADMIN','OPERATOR')",inventoryRead);
+        var operatorToken=token("OPERATOR"); var adminToken=token("ADMIN"); var product=stocked(adminToken,category(adminToken),10); var cart=filled(operatorToken,product,2);
+        var sale=json.readTree(checkout(cart,operatorToken,"receipt",command(1)).body()); UUID payment=UUID.fromString(sale.get("paymentId").asString()); String path="/sales/"+sale.get("id").asString()+"/receipt";
+        assertThat(send("GET",path,operatorToken,null).statusCode()).isEqualTo(404);
+        jdbc.queryForObject("SELECT prepare_business_payment(?)",String.class,payment); jdbc.queryForObject("SELECT apply_business_payment_result(?,'APROVADO')",String.class,payment);
+        assertThat(send("GET",path,operatorToken,null).statusCode()).isEqualTo(404); jdbc.queryForObject("SELECT confirm_business_sale(?)",String.class,payment);
+        var receipt=send("GET",path,operatorToken,null); assertThat(receipt.statusCode()).isEqualTo(200); assertThat(receipt.headers().firstValue("Cache-Control")).contains("no-store");
+        assertThat(json.readTree(receipt.body()).get("total").decimalValue()).isEqualByComparingTo("24.68");
+        jdbc.update("UPDATE products SET sale_price=99,status='INATIVO' WHERE id=?",product); jdbc.queryForObject("SELECT confirm_business_sale(?)",String.class,payment);
+        assertThat(send("GET",path,operatorToken,null).body()).isEqualTo(receipt.body()); assertThat(send("GET",path,adminToken,null).statusCode()).isEqualTo(404); assertThat(send("GET",path,null,null).statusCode()).isEqualTo(401);
+        var history=send("GET","/inventory/"+product+"/movements",operatorToken,null); assertThat(history.statusCode()).isEqualTo(200); assertThat(history.body()).contains("SALE", "-2");
+        jdbc.update("DELETE FROM role_permissions WHERE permission_id IN (SELECT id FROM permissions WHERE resource='sale' AND action='read')");
+        assertThat(send("GET",path,operatorToken,null).statusCode()).isEqualTo(403);
     }
 }

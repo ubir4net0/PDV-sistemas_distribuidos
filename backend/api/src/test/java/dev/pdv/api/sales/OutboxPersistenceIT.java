@@ -30,7 +30,8 @@ class OutboxPersistenceIT {
             assertThat(f.jdbc.queryForObject("SELECT status FROM payments WHERE id=?", String.class, o.payment())).isEqualTo("EM_PROCESSAMENTO");
             assertThat(f.jdbc.queryForObject("SELECT apply_business_payment_result(?,'APROVADO')", String.class, o.payment())).isEqualTo("APROVADO");
             assertThat(f.jdbc.queryForObject("SELECT prepare_business_payment(?)", String.class, o.payment())).isEqualTo("APROVADO");
-            assertThat(f.count("outbox_events")).isEqualTo(2); assertThat(f.count("payment_results")).isEqualTo(1); assertThat(f.count("sale_events")).isEqualTo(3);
+            assertThat(f.jdbc.queryForObject("SELECT count(*) FROM outbox_events WHERE event_type IN ('pdv.payment.requested.v1','pdv.payment.result.v1')", Long.class)).isEqualTo(2);
+            assertThat(f.count("outbox_events")).isEqualTo(3); assertThat(f.count("payment_results")).isEqualTo(1); assertThat(f.count("sale_events")).isEqualTo(3);
             assertThat(f.jdbc.queryForObject("SELECT physical FROM inventory_balances WHERE product_id=?", Long.class, o.product())).isEqualTo(10);
         }
     }

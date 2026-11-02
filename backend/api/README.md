@@ -97,3 +97,7 @@ PDV-034: [carrinho/itens](../../docs/workflows/carts.md) próprios com JPA, @Ver
 [Checkout PDV-035](../../docs/workflows/checkout.md), V14: POST /carts/{id}/checkout e GET /sales/{id}, permissões sale.checkout/read.
 
 [Coordenação PDV-036](../../docs/workflows/sale-saga.md), V15: funções internas transacionais; nenhuma rota pública para impor estado/resultado.
+
+## Conclusão/comprovante — PDV-039
+
+V17 coordena baixa física/reservada única, reserva CONFIRMED, venda CONCLUIDA e comprovante imutável. GET /sales/{id}/receipt exige sale.read e proprietário; [contrato](../../docs/workflows/sale-confirmation.md). Etapa assíncrona usa worker BusinessMessaging.

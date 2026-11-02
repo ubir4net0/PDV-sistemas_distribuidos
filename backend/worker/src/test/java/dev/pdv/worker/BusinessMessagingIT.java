@@ -226,5 +226,22 @@ class BusinessMessagingIT {
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(5)); assertThat(count("inbox_messages")).isEqualTo(1);
     }
     private static String required(String name) { var v=System.getenv(name); if(v==null || v.isBlank()) { throw new IllegalStateException("Real infrastructure required"); } return v; }
+    @Test void approvalConfirmationTraversesBrokerAndDuplicateEventsKeepOneReceiptAndDebit() {
+        var o=operation("APROVADO"); startRequests(); startResults(); outbox.runRound(); awaitCount("simulation_decisions",1); outbox.runRound(); awaitCount("payment_results",1);
+        assertThat(count("receipts")).isZero(); outbox.runRound(); awaitCount("receipts",1); awaitCount("inbox_messages",3);
+        sender.send(new BusinessEnvelope(BusinessEnvelope.CONFIRM,UUID.randomUUID(),o.payment(),"APROVADO")); awaitCount("inbox_messages",4);
+        assertThat(count("receipts")).isEqualTo(1); assertThat(count("sale_stock_movements")).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT physical FROM inventory_balances WHERE product_id=?",Long.class,o.product())).isEqualTo(8);
+        assertThat(jdbc.queryForObject("SELECT reserved FROM inventory_balances WHERE product_id=?",Long.class,o.product())).isZero();
+    }
+    @Test void confirmationFailureRollsBackInboxReceiptAndStockAndDlqCanBeReplayed() {
+        var o=operation("APROVADO"); inbox.process(BusinessInbox.SIMULATOR,request(o));
+        var result=json.readValue(jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE event_type='pdv.payment.result.v1'",String.class),BusinessEnvelope.class); inbox.process(BusinessInbox.COORDINATOR,result);
+        var confirm=json.readValue(jdbc.queryForObject("SELECT payload::text FROM outbox_events WHERE event_type='pdv.sale.confirm.v1'",String.class),BusinessEnvelope.class);
+        jdbc.execute("ALTER TABLE sale_events ADD CONSTRAINT fixture_no_confirm CHECK(kind<>'CONCLUDED') NOT VALID"); startResults(); sender.send(confirm);
+        await().atMost(Duration.ofSeconds(15)).untilAsserted(()->assertThat(admin.getQueueInfo(names.dead()).getMessageCount()).isEqualTo(1));
+        assertThat(count("receipts")).isZero(); assertThat(count("sale_stock_movements")).isZero(); assertThat(count("inbox_messages")).isEqualTo(2);
+        jdbc.execute("ALTER TABLE sale_events DROP CONSTRAINT fixture_no_confirm"); var dead=rabbit.receive(names.dead(),5000); assertThat(dead).isNotNull(); rabbit.send(names.exchange(),"payment.result",dead); awaitCount("receipts",1); awaitCount("inbox_messages",3);
+    }
     private record Operation(UUID sale, UUID payment, UUID reservation, UUID product, UUID event) { }
 }

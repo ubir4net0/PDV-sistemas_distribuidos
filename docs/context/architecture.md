@@ -65,3 +65,5 @@ PDV-036: funções transacionais compartilhadas e guardas V15 coordenam estados 
 PDV-037: [processador local](../workflows/simulated-payments.md) no worker, desligado por padrão, retoma etapas iniciadas e grava decisão determinística. Poll de laboratório não substitui o transporte Outbox/Inbox da038.
 
 PDV-038: [transporte de negócio](../workflows/business-messaging.md) por outbox/inbox V16, publisher confirms/returns, ack após commit, retry limitado e DLQ. API grava intenção; worker publica/consome solicitação e aplica resposta pelo coordenador SQL compartilhado. Simulação local e modo AMQP são exclusivos; stock/comprovante/liberação seguem próprios.
+
+PDV-039: [confirmação transacional](../workflows/sale-confirmation.md) por etapa outbox/inbox própria. V17 acrescenta ledger automático unido ao histórico, comprovante imutável e avanço da Saga, preservando snapshots e a identidade do pagamento.
