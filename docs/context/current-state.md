@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Pagamento simulado frontend — PDV-044
+
+Consulta própria por código/link do checkout, loading e estados persistidos distintos, polling limitado/reconsulta e reconciliação própria com requestId conservado após resultado desconhecido. TIMEOUT permanece pendente e protegido sem prova, sem nova tentativa financeira. Erro/404 não conserva dados antigos. [Operação e limites](../workflows/frontend-payments.md). E2E usa API/PG/Rabbit/worker UUID reais com BusinessMessaging; sem novo Java/DDL ou integração financeira.
+
 ## PDV e checkout frontend — PDV-043
 
 Busca cliente/produto ativo, carrinho próprio com quantidades/versão e totais exatos do servidor, teclado e responsividade. Checkout com método/cenário fictícios explícitos e chave/corpo conservados após resposta perdida, inclusive ao navegar dentro da sessão. Conflito exige revisão/reconsulta, sem duplicar intenção ou reprecificar automaticamente. [Contrato e limites de recuperação](../workflows/frontend-pos.md). Progresso de pagamento é044; sem Java/DDL neste incremento.

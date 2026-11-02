@@ -1,5 +1,13 @@
 @import "tailwindcss";
 /* Shared application modules. All server text wraps within the viewport. */
+.payment-module { max-width:980px; }.payment-card { border:1px solid #cbdcd1; border-radius:12px; padding:32px; background:white; }
+.payment-state { text-align:center; padding:20px 10px 30px; }.payment-state h2 { font-size:29px; font-weight:550; letter-spacing:-.5px; margin-top:20px; }.payment-state p { margin-top:13px; color:#687b7e; font-size:13px; line-height:1.8; }
+.payment-icon { width:72px; height:72px; border-radius:50%; display:grid; place-items:center; margin:auto; font-size:40px; line-height:1; color:#386d54; background:#edf5e9; }
+.declined .payment-icon { color:#a24b37; background:#fff0e8; }.pending .payment-icon { color:#9b772e; background:#fff5d9; }.processing .payment-icon { color:#326e83; background:#eaf3f5; }
+.payment-details dd { font-weight:550; }.payment-actions { display:flex; gap:16px; align-items:center; margin-top:24px; flex-wrap:wrap; }.payment-module a { text-decoration:none; }
+.mobile-order-summary { display:none; }
+@media(max-width:950px) { .mobile-order-summary { position:fixed; bottom:16px; left:20px; right:20px; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:14px; background:#122e36; padding:17px; border-radius:10px; box-shadow:0 6px 22px #122e3640; color:white; }.mobile-order-summary span { font-weight:600; overflow-wrap:anywhere; }.mobile-order-summary a { color:#b7e3c6; font-size:11px; text-decoration:underline; }.pos { padding-bottom:110px; } }
+@media(max-width:650px) { .payment-card { padding:22px; }.payment-state h2 { font-size:25px; }.payment-state { padding:12px 0 20px; }.payment-module .module-title { margin-bottom:22px; }.payment-actions { flex-direction:column; align-items:stretch; } }
 .button-row { display:flex; gap:10px; flex-wrap:wrap; }
 .customer-choice,.saved-carts { border:1px solid #d4ddda; border-radius:10px; background:#fff; padding:24px; margin-bottom:25px; }
 .customer-choice { max-width:650px; }.customer-choice h2,.saved-carts h2 { font-size:19px; font-weight:550; }.customer-choice .action { margin-top:20px; }.saved-carts>.light-button { margin:12px 8px 0 0; }

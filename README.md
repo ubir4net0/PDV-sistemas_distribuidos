@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Frontend oferece login, clientes e PDV/carrinho/checkout; demais telas, compras e cancelamento permanecem nas tarefas próprias.
+Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Frontend oferece login, clientes, PDV/carrinho/checkout e acompanhamento de pagamento simulado; demais telas, compras e cancelamento permanecem nas tarefas próprias.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -22,6 +22,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 - [Contrato de catálogo](docs/workflows/catalog.md): categorias/produtos, estados, permissões, versões e histórico.
 - [Telas de clientes](docs/workflows/frontend-customers.md): lista, busca, formulário, conflitos e permissões.
 - [PDV e checkout na interface](docs/workflows/frontend-pos.md): carrinho, totais exatos e recuperação da mesma operação.
+- [Pagamento simulado na interface](docs/workflows/frontend-payments.md): estados, consulta própria e reconciliação.
 - [Contrato de fornecedores](docs/workflows/suppliers.md): CNPJ, vínculo opcional de produtos e inativação com histórico.
 - [Contrato de estoque](docs/workflows/inventory.md): saldos inteiros, abertura técnica e leituras transacionais.
 - [Índice de ADRs](docs/decisions/README.md): processos, transações, Saga, mensageria, idempotência e limites acadêmicos documentados na PDV-003.

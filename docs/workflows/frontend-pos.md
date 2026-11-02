@@ -10,6 +10,6 @@ Método fictício e cenário APROVADO/RECUSADO/TIMEOUT são escolhas explícitas
 
 409 de preço exige reconsulta e remoção/reinclusão explícita do item. Não se reprecifica automaticamente. Carrinho convertido não pode ser editado; o DTO Cart atual não informa conversão, então retomada pode receber409 ao tentar mutar. Servidor impede segunda venda. Após recarga durante resultado desconhecido, sem código da venda, não há endpoint atual para recuperar venda pelo carrinho; não prometer essa recuperação. Preserve o código recebido. Nenhum token/dado de cliente é salvo em URL/storage/log.
 
-Venda criada exibe snapshot/código e não significa pagamento aprovado. Progresso/reconciliação pertencem à044; comprovante/cancelamento continuam próprios. [API de checkout](checkout.md), [spec](../../sdd/features/PDV-043-pdv-checkout-frontend.md), [frontend](../../frontend/README.md).
+Venda criada exibe snapshot/código e não significa pagamento aprovado. A [interface044](frontend-payments.md) consulta progresso/reconciliação; comprovante/cancelamento continuam próprios. [API de checkout](checkout.md), [spec](../../sdd/features/PDV-043-pdv-checkout-frontend.md), [frontend](../../frontend/README.md).
 
 E2E usa produtos/categoria/saldos sintéticos SQL somente no PostgreSQL UUID. Fixtures não comprovam operação de entrada de estoque; HTTP real verifica carrinho/checkout/replay/conflito. Comandos typecheck/test/build/e2e no frontend; CI repete os gates e a suíte backend independente.

@@ -8,7 +8,7 @@ A [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md) detalha as escolhas 
 
 ## Componentes e fluxo alvo
 
-PDV-019/043 evoluem o frontend com lista/formulário de clientes e PDV/carrinho/checkout reais. Estado de operação fica em memória no shell autenticado; JSON exato/BigInt preserva dinheiro/int64. Replay conserva a mesma chave/corpo após resposta perdida. [Contrato do PDV e limites de recuperação](../workflows/frontend-pos.md). Progresso de pagamento será044, sem nova regra financeira, DDL ou API neste incremento.
+PDV-019/043 evoluem o frontend com lista/formulário de clientes e PDV/carrinho/checkout reais. Estado de operação fica em memória no shell autenticado; JSON exato/BigInt preserva dinheiro/int64. Replay conserva a mesma chave/corpo após resposta perdida. [Contrato do PDV e limites de recuperação](../workflows/frontend-pos.md). A PDV-044 acrescenta [pagamento simulado e reconciliação própria](../workflows/frontend-payments.md), distinguindo aprovação, conclusão, recusa e resultado desconhecido. E2E usa API/PG/Rabbit/worker UUID reais; sem regra financeira, DDL ou API novos.
 
 Frontend atual da PDV-015: React/TypeScript/Vite/Tailwind com login e área própria de sessão, consumindo somente `/auth`. Token opaco mantido em memória, API responsável pela autorização. Vite local encaminha `/auth` na mesma origem; build de distribuição exige hospedagem/proxy/fallback próprios, ainda não publicados. CI usa Chromium com API Java 21 e PostgreSQL descartáveis. [Operação e limites](../../frontend/README.md). Referências anteriores a frontend pendente descrevem telas comerciais e o histórico anterior a esse incremento.
 

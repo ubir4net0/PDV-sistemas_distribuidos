@@ -6,13 +6,17 @@ Incremento PDV-019: [clientes](../docs/workflows/frontend-customers.md) em `/app
 
 Incremento PDV-043: [PDV/carrinho/checkout](../docs/workflows/frontend-pos.md) em `/app/pos`, com proxy local também para `/products`, `/carts` e `/sales`. Totais exatos do servidor, cliente ativo, teclas e checkout com retry da mesma operação. Sem rede financeira ou telas de gestão de catálogo/estoque.
 
+Incremento PDV-044: [pagamentos simulados](../docs/workflows/frontend-payments.md) em `/app/payments` e `/app/sales/{id}`, consulta própria, estados, rede/retry e reconciliação. E2E agora inclui RabbitMQ e worker BusinessMessaging reais em recursos UUID; sem SimulatePayments simultâneo. API/worker são recompilados com cache Maven offline quando disponível e fallback online fixado. Não há endpoint de cobrança externa ou decisão forçada na UI.
+
 ## Desenvolvimento
 
-Node 22.12+ (linha 22), npm 10+, Docker e API local. Na raiz:
+Node 22.12+ (linha 22), npm 10+, Docker e API local. Pagamentos simulados precisam do worker de negócio ativo; sem ele, a intenção aguarda processamento. Na raiz, em terminais separados:
 
 ```powershell
 npm --prefix frontend ci --ignore-scripts --no-audit --no-fund
 ./scripts/api.ps1 -Action Run -TokenTtlSeconds 900 -ReservationTtlSeconds 900
+# Em outro terminal:
+./scripts/worker.ps1 -Action Run -BusinessMessaging -ExpireReservations
 # Em outro terminal:
 npm --prefix frontend run dev
 ```

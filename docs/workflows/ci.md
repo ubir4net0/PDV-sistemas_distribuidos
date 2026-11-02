@@ -2,7 +2,7 @@
 
 ## Frontend quality — PDV-015
 
-[Workflow frontend](../../.github/workflows/frontend.yml): Node 22, lockfile próprio, TypeScript, testes unitários, build Vite e Chromium. E2E recompila API com Java 21 fixado, sobe PostgreSQL/API UUID próprios e executa autenticação HTTP real, perfil, guarda de navegação, revogação/expiração e falhas de rede controladas. Tokens e credenciais sintéticas ficam somente na memória do processo; trace/vídeo desabilitados. Containers/rede próprios removidos no finally, sem volumes existentes ou deploy. [Comandos e limites](../../frontend/README.md). A suíte backend abaixo continua independente.
+[Workflow frontend](../../.github/workflows/frontend.yml): Node 22, lockfile próprio, TypeScript, testes unitários, build Vite e Chromium. E2E recompila API/worker com Java 21 fixado, sobe PostgreSQL/RabbitMQ/API/worker UUID próprios e executa autenticação HTTP real, clientes, carrinho/checkout e pagamento/reconciliação com AMQP de negócio real. Simulador é local, sem serviço financeiro. Tokens e credenciais sintéticas ficam somente na memória do processo, saída do filho filtrada; trace/vídeo desabilitados. Containers/rede próprios removidos no finally, sem volumes existentes ou deploy. [Comandos e limites](../../frontend/README.md). A suíte backend abaixo continua independente.
 
 [Backend quality](../../.github/workflows/backend.yml) roda em pushes de main e por workflow_dispatch. Matriz independente para API e worker; permissões contents:read, checkout sem credencial persistida, actions fixadas por SHA, Temurin 21 e Maven Wrapper com checksum. Não faz deploy e não exige PR.
 
