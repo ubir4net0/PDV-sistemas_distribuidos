@@ -1,5 +1,19 @@
 # PDV-002 bootstrap documental do repositório vazio
 
+## Revalidação técnica — 02/11/2026 (Manaus)
+
+Execução solicitada no lote PDV-002 → PDV-007 → PDV-015. A tarefa viva foi relida integralmente; permanecia Backlog apesar do bootstrap e refinamento já entregues. Não há novo bootstrap ou alteração de proteção neste incremento: conferir evidência atual, documentar o fluxo vigente e disponibilizar o aceite técnico da tarefa. Responsável/prazo não foram inferidos.
+
+DoR: PDV-001 e página de decisões relidas ao vivo. ADR-007 já aprovou baseline textual/novos diagramas como referência de desenvolvimento; os originais acadêmicos continuam ausentes, sem equivalência presumida ou aceite da predecessora. ADR-001 contém a instrução explícita de commits diretos em main e substitui Gitflow/PR. As indicações históricas abaixo não são gates atuais.
+
+Pre-flight: árvore limpa, main sincronizada com origin/main em 1f21482968b7d10c01823019be416b73163a87f5, PostgreSQL/RabbitMQ healthy; Migrate V18 sem pendências (10,827s). main/develop e feature/PDV-002-bootstrap-planejamento existem local/remoto; nenhuma branch excluída ou reescrita.
+
+API GitHub consultada nesta sessão: required_pull_request_reviews=null, required_status_checks=null, enforce_admins.enabled=true, allow_force_pushes.enabled=false e allow_deletions.enabled=false. Confirma o fluxo individual autorizado, sem mutação das configurações. [Guia operacional vigente](../../docs/workflows/bootstrap-verification.md).
+
+Verificações documentais deste incremento: planejamento/60 IDs/aceites/dependências/39 requisitos e três hashes, whitespace, links locais/UTF8 e inspeção de caminhos/credenciais privadas do diff. Não há mudança de aplicação ou schema que justifique repetir testes de produto locais. CI do SHA desta revalidação e commit serão registrados na própria tarefa viva. Os resultados históricos abaixo permanecem identificados por data/hash.
+
+Estado de entrega: Em validação após verificações/autorrevisão/CI, aguardando aceite explícito. Nenhuma outra tarefa será aceita ou normalizada por esta revalidação. Conteúdo abaixo preserva o registro de 30/10/2026.
+
 ## Refinamento autorizado para trabalho individual
 
 Em 30/10/2026 o proprietário informou que trabalhará sozinho e pediu remover a exigência de PR, usando commits diretos. Este refinamento substitui o fluxo Gitflow/PR anterior; o restante desta spec preserva a baseline histórica.
