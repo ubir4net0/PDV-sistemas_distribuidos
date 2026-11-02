@@ -1,5 +1,9 @@
 # Estado observado em 1 de novembro de 2026
 
+## Processador de pagamento simulado — PDV-037
+
+Worker opt-in consulta intenções elegíveis e executa início/resultado em transações separadas sobre V15. APROVADO/RECUSADO/TIMEOUT são determinísticos e persistidos; queda retoma EM_PROCESSAMENTO protegido. [Operação](../workflows/simulated-payments.md). Sem cobrança real, transporte Outbox/Inbox, baixa, liberação ou conclusão automática.
+
 ## Coordenação persistida — PDV-036
 
 V15 adiciona progresso da Saga e resultado por operação. Início protege reserva antes de EM_PROCESSAMENTO; resultado determinístico e auditoria confirmam juntos e repetição recupera efeito conhecido. TIMEOUT→INDETERMINADO conserva proteção. [Contrato](../workflows/sale-saga.md). Sem worker de pagamento, transporte confiável ou efeitos finais neste incremento.

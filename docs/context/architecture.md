@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Expiração pelo worker tem modo explícito; compras, vendas/Saga e frontend permanecem pendentes; a existência dos cadastros/saldos não comprova essas integrações.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Worker tem modos explícitos de expiração e simulação de pagamento sobre checkout/Saga persistidos; compras, frontend, transporte confiável e efeitos finais de venda permanecem nas tarefas próprias.
 
 ## Registros de decisão
 
@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V15, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, checkout idempotente disponível em sales/V14; compras, processamento de pagamento e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V15, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Checkout idempotente sales/V14, coordenação V15 e processador local opt-in estão implementados; compras e mensageria de negócio pela API permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
 
@@ -30,7 +30,7 @@ Incremento PDV-020: catalog possui CRUD JPA real de categorias/produtos e V7; hi
 
 PDV-021 adiciona leitura paginada/índices V8 e ensaio de carga confirmado. PDV-022 implementa fornecedores JPA/V9 e relação opcional N:1, com locks fornecedor→produto e histórico transacional; [contrato](../workflows/suppliers.md). Obrigatoriedade e RBAC desse cadastro foram confirmados pelo proprietário; compras e outros itens da DEC-06 permanecem nas tarefas próprias.
 
-O [worker](../../backend/worker/README.md) tem build/processo próprios e um diagnóstico AMQP real com contrato JSON fixo, confirms/returns e DLQ. Não recebe comandos da API nem processa pagamentos. Esse scaffold não implementa a outbox/inbox ou garantias transacionais da arquitetura alvo abaixo.
+O [worker](../../backend/worker/README.md) tem build/processo próprios e um diagnóstico AMQP real com contrato JSON fixo, confirms/returns e DLQ. Diagnóstico AMQP não recebe comandos de pagamento da API. O modo explícito de simulação consulta intenções duráveis no banco compartilhado e usa coordenação V15; Outbox/Inbox de negócio permanece pendente.
 
 | Fronteira | Garantia alvo | Limitação |
 | --- | --- | --- |
@@ -44,7 +44,7 @@ A matriz de falhas da ADR-004 orienta os testes futuros. Os contratos finais de 
 
 ## Decisões pendentes
 
-Consultar o índice de decisões: estados de venda/pagamento (DEC-01), lote/recebimento parcial (DEC-05), TTLs/descontos/carga e RBAC de negócios futuros (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
+Consultar o índice de decisões: DEC-01 foi resolvida no recorte da ADR-008; políticas de reconciliação/cancelamento permanecem nas PDV-040/041. Recebimento parcial (DEC-05), TTLs/descontos/carga e RBAC de negócios futuros (DEC-06), transições de OC, obrigatoriedade do fornecedor e campos/políticas dos complementos continuam pendentes. Vocabulário de OC, cardinalidade máxima N:1 e inclusão dos complementos já foram aprovados na ADR-007; não reabrir essas escolhas sem novo requisito.
 
 ## Validação alvo
 
@@ -56,8 +56,10 @@ PDV-029: reserva técnica com itens, proprietário, TTL obrigatório e trilha im
 
 PDV-030: worker independente usa PostgreSQL compartilhado para expiração via função transacional V12, sem DDL em runtime, opt-in5s/100. Isso não adiciona mensagens de negócio, outbox/inbox ou integração de pagamento. [Spec](../../sdd/features/PDV-030-expiracao-worker.md).
 
-PDV-034: carrinho usa CRUD JPA/@Version com lock do agregado, leitura REPEATABLE_READ e auditoria JDBC na mesma transação. Dinheiro BigDecimal/preço capturado sem descontos; itens não reservam estoque. V13, [contrato](../workflows/carts.md). Checkout futuro vincula/congela carrinho/venda/reserva/intenção de evento em unidade transacional própria.
+PDV-034: carrinho usa CRUD JPA/@Version com lock do agregado, leitura REPEATABLE_READ e auditoria JDBC na mesma transação. Dinheiro BigDecimal/preço capturado sem descontos; itens não reservam estoque. V13, [contrato](../workflows/carts.md). Checkout PDV-035 vincula/congela carrinho/venda/reserva/intenção em transação própria.
 
 PDV-035: [checkout](../workflows/checkout.md) usa transação JPA/JDBC compartilhada, locks ordenados e resposta imutável. [ADR-008 aprovada](../decisions/ADR-008-estados-venda-pagamento.md) resolve DEC-01 no recorte explícito, sem antecipar as implementações 036–041.
 
 PDV-036: funções transacionais compartilhadas e guardas V15 coordenam estados conforme ADR-008; [contrato](../workflows/sale-saga.md). Pagamento/Saga têm progresso durável, resultado e eventos, sem implementar transporte confiável ou efeitos finais.
+
+PDV-037: [processador local](../workflows/simulated-payments.md) no worker, desligado por padrão, retoma etapas iniciadas e grava decisão determinística. Poll de laboratório não substitui o transporte Outbox/Inbox da038.

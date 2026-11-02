@@ -32,7 +32,7 @@ As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “De
 | Referência | Questão | Onde fechar antes de implementar |
 | --- | --- | --- |
 | SRC-01 | Originais/equivalência acadêmica continuam indisponíveis; referência de desenvolvimento já aprovada | PDV-001 |
-| DEC-01 | Estados finais de venda/pagamento e transições | PDV-007 e PDV-036 |
+| DEC-01 — evolução | Estados canônicos/recorte inicial resolvidos na ADR-008; políticas de reconciliação/cancelamento e contratos futuros ainda próprios | PDV-007/040/041 |
 | DEC-02 | Regras de transição de OC, sem reabrir o vocabulário aprovado | PDV-023/024 |
 | DEC-03 | Obrigatoriedade/nullable do fornecedor, sem reabrir a cardinalidade máxima N:1 | PDV-020/022 |
 | DEC-04 | Campos/restrições/políticas dos complementos já admitidos | Specs de PDV-011/035/038/039 e projeções justificadas |

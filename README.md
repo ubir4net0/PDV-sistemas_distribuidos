@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio. Infraestrutura PostgreSQL/RabbitMQ, API Java 21 com autenticação, clientes, catálogo, fornecedores, saldos/movimentações e reservas de estoque com TTL, além do worker de diagnóstico disponíveis. Expiração pelo worker tem modo explícito e carrinhos/itens estão disponíveis; checkout idempotente disponível; coordenação persistida da Saga disponível; compras, processador de pagamento e frontend permanecem nos incrementos seguintes.
+Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Compras, frontend, transporte confiável e efeitos finais da venda permanecem nas tarefas próprias.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -77,3 +77,5 @@ Expiração: com migrations aplicadas, `./scripts/worker.ps1 -Action Run -Expire
 [Checkout idempotente](docs/workflows/checkout.md): snapshot/reserva/intenção atômicos, replay e carrinho congelado, sem pagamento/baixa automática.
 
 [Saga persistida](docs/workflows/sale-saga.md), V15: início protegido, progresso e resultados reentrantes; sem baixa/liberação/conclusão automática.
+
+[Pagamento simulado local](docs/workflows/simulated-payments.md): worker.ps1 -Action Run -SimulatePayments, combinado com -ExpireReservations quando desejado.

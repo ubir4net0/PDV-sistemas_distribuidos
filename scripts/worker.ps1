@@ -4,12 +4,13 @@ param(
     [ValidateSet('Verify', 'Run', 'Version')]
     [string]$Action = 'Verify',
     [string]$ProbePrefix = 'pdv.scaffold.probe',
-    [switch]$ExpireReservations
+    [switch]$ExpireReservations,
+    [switch]$SimulatePayments
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-if ($ExpireReservations -and $Action -ne 'Run') { throw '-ExpireReservations requer -Action Run.' }
+if (($ExpireReservations -or $SimulatePayments) -and $Action -ne 'Run') { throw 'Modos de estoque/pagamento requerem -Action Run.' }
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $workerRoot = Join-Path $repoRoot 'backend/worker'
 $qualityRoot = Join-Path $repoRoot 'config'
@@ -41,7 +42,9 @@ try {
         }
         $expiryEnabled = $Action -eq 'Run' -and ($ExpireReservations -or $env:PDV_RESERVATION_EXPIRY_ENABLED -eq 'true')
         $values['PDV_RESERVATION_EXPIRY_ENABLED'] = if ($expiryEnabled) { 'true' } else { 'false' }
-        if ($Action -eq 'Verify' -or $expiryEnabled) {
+        $paymentEnabled = $Action -eq 'Run' -and ($SimulatePayments -or $env:PDV_SIMULATED_PAYMENTS_ENABLED -eq 'true')
+        $values['PDV_SIMULATED_PAYMENTS_ENABLED'] = if ($paymentEnabled) { 'true' } else { 'false' }
+        if ($Action -eq 'Verify' -or $expiryEnabled -or $paymentEnabled) {
             $postgresId = & docker @composeArgs ps -q postgres
             if ($LASTEXITCODE -ne 0 -or -not $postgresId) { throw 'Inicie PostgreSQL PDV primeiro.' }
             $postgresHealth = & docker inspect --format '{{.State.Health.Status}}' $postgresId
