@@ -14,6 +14,7 @@ const privateEnv = { ...process.env, POSTGRES_USER: 'pdv_e2e', POSTGRES_DB: 'pdv
 const toolchain = JSON.parse(readFileSync(resolve(root, 'infra/java-toolchain.json'), 'utf8'));
 const jar = resolve(root, 'backend/api/target/pdv-api-0.0.1-SNAPSHOT.jar');
 const email = `${randomUUID()}@example.test`, password = randomBytes(24).toString('hex');
+const adminEmail = `${randomUUID()}@example.test`;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function docker(args, options = {}) {
   const r = spawnSync('docker', args, { encoding: 'utf8', env: privateEnv, maxBuffer: 4_000_000, ...options });
@@ -59,13 +60,16 @@ async function main() {
   if (!ready) throw new Error('Isolated API not ready; private logs suppressed');
   // Private synthetic identity exists only in owned tmpfs database. No real credentials or persistent seeds.
   const sql = `CREATE EXTENSION pgcrypto;
-    INSERT INTO pdv.roles(code,name) VALUES ('OPERATOR','Operador');
+    INSERT INTO pdv.roles(code,name) VALUES ('OPERATOR','Operador'),('ADMIN','Administrador');
     INSERT INTO pdv.users(name,email,password_hash,active) VALUES ('Pessoa de Teste','${email}',crypt('${password}',gen_salt('bf',4)),true);
-    INSERT INTO pdv.user_roles(user_id,role_id) SELECT u.id,r.id FROM pdv.users u CROSS JOIN pdv.roles r WHERE u.email='${email}' AND r.code='OPERATOR';`;
+    INSERT INTO pdv.users(name,email,password_hash,active) VALUES ('Admin de Teste','${adminEmail}',crypt('${password}',gen_salt('bf',4)),true);
+    INSERT INTO pdv.user_roles(user_id,role_id) SELECT u.id,r.id FROM pdv.users u CROSS JOIN pdv.roles r WHERE (u.email='${email}' AND r.code='OPERATOR') OR (u.email='${adminEmail}' AND r.code='ADMIN');
+    INSERT INTO pdv.permissions(resource,action) VALUES ('customer','read'),('customer','create'),('customer','update'),('customer','status');
+    INSERT INTO pdv.role_permissions(role_id,permission_id) SELECT r.id,p.id FROM pdv.roles r CROSS JOIN pdv.permissions p;`;
   docker(['exec', '-i', postgres, 'psql', '-X', '-U', 'pdv_e2e', '-d', 'pdv_e2e', '-v', 'ON_ERROR_STOP=1'], { input: sql });
   console.log('Isolated PostgreSQL/API ready, Flyway V1–V18 rebuilt; synthetic identity seeded privately.');
   const port = await freePort();
-  const env = { ...process.env, PDV_API_TARGET: apiUrl, PDV_E2E_API: apiUrl, PDV_FRONTEND_PORT: String(port), PDV_E2E_EMAIL: email, PDV_E2E_PASSWORD: password };
+  const env = { ...process.env, PDV_API_TARGET: apiUrl, PDV_E2E_API: apiUrl, PDV_FRONTEND_PORT: String(port), PDV_E2E_EMAIL: email, PDV_E2E_ADMIN_EMAIL: adminEmail, PDV_E2E_PASSWORD: password };
   const code = await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [process.env.npm_execpath, 'exec', '--', 'playwright', 'test'], { cwd: front, env, stdio: 'inherit' });
     child.once('error', reject); child.once('exit', resolve);

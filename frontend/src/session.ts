@@ -1,4 +1,5 @@
 import { api, ApiError, type Profile, type Token } from './api';
+import { businessRequest } from './transport';
 
 export interface SessionState { profile: Profile | null; expiresAt: number; busy: boolean; message: string }
 const initial = (): SessionState => ({ profile: null, expiresAt: 0, busy: false, message: '' });
@@ -9,12 +10,25 @@ export class Session {
   private listeners = new Set<() => void>();
   private generation = 0;
   private pending: AbortController | null = null;
+  private access = new AbortController();
   constructor(private client = api) {}
   snapshot = () => this.state;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   private set(value: Partial<SessionState>) { this.state = { ...this.state, ...value }; this.listeners.forEach(fn => fn()); }
   private start() { this.pending?.abort(); this.pending = new AbortController(); return { id: ++this.generation, signal: this.pending.signal }; }
-  clear(message = '') { this.generation++; this.pending?.abort(); this.pending = null; this.token = null; this.state = { ...initial(), message }; this.listeners.forEach(fn => fn()); }
+  clear(message = '') { this.generation++; this.pending?.abort(); this.access.abort(); this.access = new AbortController(); this.pending = null; this.token = null; this.state = { ...initial(), message }; this.listeners.forEach(fn => fn()); }
+  async request(path: string, method = 'GET', body?: object, signal = new AbortController().signal, key?: string) {
+    this.expire(); if (!this.token) throw new ApiError(401, 'Entre novamente.');
+    const id = this.generation;
+    try {
+      const result = await businessRequest(path, method, this.token.accessToken, AbortSignal.any([signal, this.access.signal]), body, key);
+      if (id !== this.generation) throw new DOMException('Aborted', 'AbortError');
+      return result;
+    } catch (error) {
+      if (id === this.generation && error instanceof ApiError && error.status === 401) this.clear('Sua sessão foi encerrada. Entre novamente.');
+      throw error;
+    }
+  }
   async login(email: string, password: string) {
     const op = this.start(); this.set({ busy: true, message: '' });
     let token: Token | null = null;

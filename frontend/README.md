@@ -2,6 +2,8 @@
 
 React/TypeScript/Vite/Tailwind: `/login` e `/app` protegido, com perfil próprio, erros/loading e logout. Substitui o diretório reservado do bootstrap documental. Não implementa telas comerciais nem amplia permissões.
 
+Incremento PDV-019: [clientes](../docs/workflows/frontend-customers.md) em `/app/customers`, lista/busca/formulário/estado com permissões existentes. Proxy local inclui `/customers`; contexto não é persistido. Limites de endereço/histórico estão no contrato da tela.
+
 ## Desenvolvimento
 
 Node 22.12+ (linha 22), npm 10+, Docker e API local. Na raiz:

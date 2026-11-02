@@ -20,6 +20,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 - [Estado observado](docs/context/current-state.md) e [arquitetura alvo](docs/context/architecture.md).
 - [OpenAPI, eventos e exemplos versionados](contracts/README.md): contratos atuais, validação automatizada e documentação HTML.
 - [Contrato de catálogo](docs/workflows/catalog.md): categorias/produtos, estados, permissões, versões e histórico.
+- [Telas de clientes](docs/workflows/frontend-customers.md): lista, busca, formulário, conflitos e permissões.
 - [Contrato de fornecedores](docs/workflows/suppliers.md): CNPJ, vínculo opcional de produtos e inativação com histórico.
 - [Contrato de estoque](docs/workflows/inventory.md): saldos inteiros, abertura técnica e leituras transacionais.
 - [Índice de ADRs](docs/decisions/README.md): processos, transações, Saga, mensageria, idempotência e limites acadêmicos documentados na PDV-003.

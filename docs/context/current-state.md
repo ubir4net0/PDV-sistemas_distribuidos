@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Telas de clientes — PDV-019
+
+Lista/busca/paginação, formulário PF/PJ com validação local e erros seguros, edição com versão int64 exata e status restrito a ADMIN. Conflito conserva edição até descarte/reconsulta explícita. [Operação e fronteiras](../workflows/frontend-customers.md). Navegação/permissões refletem a API; endereço/histórico continuam sem tela própria. Sem mudança Java/DDL.
+
 ## Login e sessão frontend — PDV-015
 
 React/TypeScript/Vite/Tailwind, `/login` responsivo e `/app` protegido com perfil próprio. Login real, loading/erros seguros, token opaco em memória, expiração e logout com revogação. Recarregar exige login; somente logout confirma encerramento no servidor. [Comandos, contrato e limites](../../frontend/README.md). CI Frontend quality usa Chromium e API/PostgreSQL UUID descartáveis, sem contas padrão ou deploy. Telas comerciais seguem nas tarefas próprias. As seções abaixo preservam evidências históricas dos incrementos.

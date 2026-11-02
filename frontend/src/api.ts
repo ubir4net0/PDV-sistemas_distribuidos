@@ -1,7 +1,7 @@
 export interface Profile { id: string; name: string; email: string; roles: string[]; permissions: string[] }
 export interface Token { accessToken: string; tokenType: 'Bearer'; expiresAt: string }
 export class ApiError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  constructor(public status: number, message: string, public code?: string) { super(message); }
 }
 const object = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 const strings = (v: unknown): v is string[] => Array.isArray(v) && v.every(x => typeof x === 'string');

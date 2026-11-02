@@ -40,7 +40,7 @@ Aplicar [desenvolvimento incremental](development.md) e [gates da CI](ci.md). Ex
 | API | scripts/api.ps1 -Action Verify: lint, compilação/JAR e testes HTTP reais |
 | Worker | scripts/worker.ps1 -Action Verify: lint, unitários/JAR e integração com RabbitMQ real saudável |
 | Persistência | PostgreSQL real, migrate, restore/rebuild em banco descartável e replay; base técnica via scripts/api.ps1 -Action Migrate/Validate/Info e Verify. Migrations de domínio exigem decisões, dados/invariantes/concorrência próprios conforme database-migrations.md |
-| Frontend futuro | Definir build/lint/typecheck/testes junto ao scaffold; ainda não há comando válido neste repositório |
+| Frontend | npm --prefix frontend run typecheck / test / build / e2e; Chromium com API/PostgreSQL próprios conforme frontend/README.md |
 
 Para documentação/planejamento:
 
