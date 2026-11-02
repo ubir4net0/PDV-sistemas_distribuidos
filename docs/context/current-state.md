@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Login e sessão frontend — PDV-015
+
+React/TypeScript/Vite/Tailwind, `/login` responsivo e `/app` protegido com perfil próprio. Login real, loading/erros seguros, token opaco em memória, expiração e logout com revogação. Recarregar exige login; somente logout confirma encerramento no servidor. [Comandos, contrato e limites](../../frontend/README.md). CI Frontend quality usa Chromium e API/PostgreSQL UUID descartáveis, sem contas padrão ou deploy. Telas comerciais seguem nas tarefas próprias. As seções abaixo preservam evidências históricas dos incrementos.
+
 ## Contratos HTTP e eventos — PDV-007
 
 [OpenAPI3.1/JSON Schema e exemplos](../../contracts/README.md),59operações atuais e5tipos de negócio, geração de docs e CI dedicada. Validação confronta rotas/campos reais e exemplos válidos/inválidos. Erros HTTP conhecidos padronizados em code, incluindo parâmetro ausente e mídia incompatível. Funcionalidades futuras permanecem identificadas como pendentes.

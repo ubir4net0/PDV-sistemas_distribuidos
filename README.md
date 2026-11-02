@@ -1,6 +1,6 @@
 # PDV de Sistemas Distribuídos
 
-Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Compras, frontend e cancelamento permanecem nas tarefas próprias.
+Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Frontend já oferece login e sessão própria; telas comerciais, compras e cancelamento permanecem nas tarefas próprias.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)
 - [Roadmap e execução com 60 tarefas](https://app.notion.com/p/26fb832899514c95a4bfec0c569b07ad)
@@ -29,7 +29,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 
 Com Node 22, executar `node scripts/verify-planning.mjs`. O comando valida integridade dos 60 cards planejados, dependências, links, cobertura e fontes. O workflow Planning integrity faz a mesma verificação nos pushes de main e permite execução manual.
 
-O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/PostgreSQL/AMQP real com bancos e broker temporários. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend ainda não tem código/gates; persistência inclui base técnica e [identidade](docs/workflows/identity-security.md).
+O workflow Backend quality verifica API e worker em Java 21: Checkstyle, compilação, unitários, JAR e integração HTTP/PostgreSQL/AMQP real com bancos e broker temporários. Não faz deploy. [Gates, comandos e limites da CI](docs/workflows/ci.md). Frontend quality verifica TypeScript, unitários, build e Chromium com API/PostgreSQL próprios; [frontend e comandos locais](frontend/README.md). Persistência inclui base técnica e [identidade](docs/workflows/identity-security.md).
 
 ## Ambiente local
 

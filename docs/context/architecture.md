@@ -8,6 +8,8 @@ A [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md) detalha as escolhas 
 
 ## Componentes e fluxo alvo
 
+Frontend atual da PDV-015: React/TypeScript/Vite/Tailwind com login e área própria de sessão, consumindo somente `/auth`. Token opaco mantido em memória, API responsável pela autorização. Vite local encaminha `/auth` na mesma origem; build de distribuição exige hospedagem/proxy/fallback próprios, ainda não publicados. CI usa Chromium com API Java 21 e PostgreSQL descartáveis. [Operação e limites](../../frontend/README.md). Referências anteriores a frontend pendente descrevem telas comerciais e o histórico anterior a esse incremento.
+
 Os [15 diagramas novos](../diagrams/README.md) representam a baseline textual v1 e foram adotados como referência de desenvolvimento na ADR-007. Preservam notas de decisão anteriores à aprovação; a ADR-007 prevalece para OC, fornecedor e complementos. Não comprovam equivalência aos originais ausentes nem schema implementado.
 
 Frontend React/TypeScript/Vite/Tailwind -> API Java 21/Spring Boot -> PostgreSQL/Flyway. RabbitMQ conecta API e worker Spring Boot independente. Maven Wrapper para builds. Spring Security, Validation, JPA, Spring AMQP e Actuator serão definidos nos scaffolds.
