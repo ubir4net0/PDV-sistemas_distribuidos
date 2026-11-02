@@ -27,6 +27,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RbacHttpIT {
+    @Test void missingQueryAndUnsupportedMediaUseSafeContractErrors() throws Exception {
+        var missing=client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/suppliers/"+UUID.randomUUID()))
+            .header("Authorization","Bearer "+token("ADMIN")).DELETE().build(),HttpResponse.BodyHandlers.ofString());
+        assertThat(missing.statusCode()).isEqualTo(400); assertThat(json.readTree(missing.body()).get("code").asString()).isEqualTo("invalid_request");
+        var media=client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/auth/login"))
+            .header("Content-Type","text/plain").POST(HttpRequest.BodyPublishers.ofString("not-json")).build(),HttpResponse.BodyHandlers.ofString());
+        assertThat(media.statusCode()).isEqualTo(415); assertThat(json.readTree(media.body()).get("code").asString()).isEqualTo("unsupported_media_type");
+        assertThat(media.body()).doesNotContain("Exception","password","stackTrace");
+    }
     @Value("${local.server.port}") private int port;
     @Autowired private JdbcTemplate jdbc;
     @Autowired @Qualifier("requestMappingHandlerMapping") private RequestMappingHandlerMapping mappings;

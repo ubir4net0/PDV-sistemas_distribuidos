@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pdv.example.test/contracts/probe.v1.schema.json",
+  "title": "Diagnóstico técnico separado",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.probe.request.v1",
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "type",
+        "requestId",
+        "text"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.probe.response.v1",
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "type",
+        "requestId",
+        "text"
+      ]
+    }
+  ]
+}

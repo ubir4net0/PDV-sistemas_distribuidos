@@ -69,3 +69,5 @@ PDV-038: [transporte de negócio](../workflows/business-messaging.md) por outbox
 PDV-039: [confirmação transacional](../workflows/sale-confirmation.md) por etapa outbox/inbox própria. V17 acrescenta ledger automático unido ao histórico, comprovante imutável e avanço da Saga, preservando snapshots e a identidade do pagamento.
 
 PDV-040: [ADR-009](../decisions/ADR-009-reconciliacao-simulada.md) aprova prova administrativa local separada do TIMEOUT, sem ampliar leitura de vendas. V18 e [contrato](../workflows/payment-reconciliation.md) coordenam decisão tardia/liberação com outbox/inbox e comandos idempotentes próprios. Cancelamento/estorno seguem041.
+
+PDV-007: [OpenAPI e eventos versionados](../../contracts/README.md) descrevem o runtime implementado, com schemas/exemplos e verificação de inventário/campos. Erros seguros abrangem parâmetros obrigatórios ausentes e mídia incompatível. Evolução futura exige coordenar contratos, sem anunciar rotas ainda não implementadas.

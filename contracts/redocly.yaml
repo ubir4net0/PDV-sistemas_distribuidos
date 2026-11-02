@@ -1,0 +1,9 @@
+extends:
+  - minimal
+rules:
+  operation-operationId: error
+  operation-operationId-unique: error
+  operation-summary: error
+  security-defined: error
+  no-unresolved-refs: error
+  no-invalid-schema-examples: error

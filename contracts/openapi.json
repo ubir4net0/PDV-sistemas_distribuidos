@@ -1,0 +1,6674 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PDV API — contratos implementados",
+    "version": "1.0.0",
+    "description": "Baseline atual V18. API sem prefixo /api; pagamentos fictícios. Não anuncia compras/cancelamento/frontend futuros. Erros conhecidos somente code; usar HTTP status junto ao código. Dinheiro e int64 exigem consumidores que preservem precisão."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8081",
+      "description": "Laboratório local; não é implantação produtiva"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "post__auth_login",
+        "summary": "POST /auth/login",
+        "tags": [
+          "auth"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "security": [],
+        "x-authorization": "Público, credenciais válidas",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "get__auth_me",
+        "summary": "GET /auth/me",
+        "tags": [
+          "auth"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "Usuário autenticado; perfil próprio"
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "post__auth_logout",
+        "summary": "POST /auth/logout",
+        "tags": [
+          "auth"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "204": {
+            "description": "Resposta confirmada"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "Usuário autenticado; revoga somente seu token"
+      }
+    },
+    "/access/permissions": {
+      "get": {
+        "operationId": "get__access_permissions",
+        "summary": "GET /access/permissions",
+        "tags": [
+          "access"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Permission"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN + access.permissions.read"
+      }
+    },
+    "/actuator/health": {
+      "get": {
+        "operationId": "get__actuator_health",
+        "summary": "GET /actuator/health",
+        "tags": [
+          "actuator"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Processo/dependência indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "x-authorization": "Público, sem detalhes"
+      }
+    },
+    "/actuator/health/liveness": {
+      "get": {
+        "operationId": "get__actuator_health_liveness",
+        "summary": "GET /actuator/health/liveness",
+        "tags": [
+          "actuator"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Processo/dependência indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "x-authorization": "Público, sem detalhes"
+      }
+    },
+    "/actuator/health/readiness": {
+      "get": {
+        "operationId": "get__actuator_health_readiness",
+        "summary": "GET /actuator/health/readiness",
+        "tags": [
+          "actuator"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Processo/dependência indisponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "x-authorization": "Público, sem detalhes"
+      }
+    },
+    "/customers": {
+      "post": {
+        "operationId": "post__customers",
+        "summary": "POST /customers",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URI do recurso criado."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN/OPERATOR + customer.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerInput"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__customers",
+        "summary": "GET /customers",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "document",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.read"
+      }
+    },
+    "/customers/{id}": {
+      "get": {
+        "operationId": "get__customers_id_",
+        "summary": "GET /customers/{id}",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.read"
+      },
+      "put": {
+        "operationId": "put__customers_id_",
+        "summary": "PUT /customers/{id}",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}/status": {
+      "patch": {
+        "operationId": "patch__customers_id_status",
+        "summary": "PATCH /customers/{id}/status",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + customer.status",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerStatus"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}/history": {
+      "get": {
+        "operationId": "get__customers_id_history",
+        "summary": "GET /customers/{id}/history",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerChangePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.read"
+      }
+    },
+    "/customers/regions": {
+      "get": {
+        "operationId": "get__customers_regions",
+        "summary": "GET /customers/regions",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Region"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "city",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.read"
+      }
+    },
+    "/customers/{id}/addresses": {
+      "get": {
+        "operationId": "get__customers_id_addresses",
+        "summary": "GET /customers/{id}/addresses",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.read"
+      },
+      "post": {
+        "operationId": "post__customers_id_addresses",
+        "summary": "POST /customers/{id}/addresses",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Address"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URI do recurso criado."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.address_write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}/addresses/{addressId}": {
+      "put": {
+        "operationId": "put__customers_id_addresses_addressId_",
+        "summary": "PUT /customers/{id}/addresses/{addressId}",
+        "tags": [
+          "customers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Address"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "addressId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + customer.address_write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "post": {
+        "operationId": "post__categories",
+        "summary": "POST /categories",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URI do recurso criado."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryInput"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__categories",
+        "summary": "GET /categories",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/categories/{id}": {
+      "put": {
+        "operationId": "put__categories_id_",
+        "summary": "PUT /categories/{id}",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__categories_id_",
+        "summary": "GET /categories/{id}",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/categories/{id}/status": {
+      "patch": {
+        "operationId": "patch__categories_id_status",
+        "summary": "PATCH /categories/{id}/status",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{id}/history": {
+      "get": {
+        "operationId": "get__categories_id_history",
+        "summary": "GET /categories/{id}/history",
+        "tags": [
+          "categories"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogChangePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/products": {
+      "post": {
+        "operationId": "post__products",
+        "summary": "POST /products",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URI do recurso criado."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__products",
+        "summary": "GET /products",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/products/{id}": {
+      "put": {
+        "operationId": "put__products_id_",
+        "summary": "PUT /products/{id}",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__products_id_",
+        "summary": "GET /products/{id}",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/products/{id}/status": {
+      "patch": {
+        "operationId": "patch__products_id_status",
+        "summary": "PATCH /products/{id}/status",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + catalog.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StateUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}/history": {
+      "get": {
+        "operationId": "get__products_id_history",
+        "summary": "GET /products/{id}/history",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogChangePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + catalog.read"
+      }
+    },
+    "/suppliers": {
+      "post": {
+        "operationId": "post__suppliers",
+        "summary": "POST /suppliers",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Supplier"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "URI do recurso criado."
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN + supplier.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierInput"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__suppliers",
+        "summary": "GET /suppliers",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + supplier.read"
+      }
+    },
+    "/suppliers/{id}": {
+      "put": {
+        "operationId": "put__suppliers_id_",
+        "summary": "PUT /suppliers/{id}",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Supplier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + supplier.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierUpdate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__suppliers_id_",
+        "summary": "GET /suppliers/{id}",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Supplier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + supplier.read"
+      },
+      "delete": {
+        "operationId": "delete__suppliers_id_",
+        "summary": "DELETE /suppliers/{id}",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "204": {
+            "description": "Resposta confirmada"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+              "minimum": 0
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + supplier.write; inativação lógica, não exclusão física"
+      }
+    },
+    "/suppliers/{id}/status": {
+      "patch": {
+        "operationId": "patch__suppliers_id_status",
+        "summary": "PATCH /suppliers/{id}/status",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Supplier"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + supplier.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/suppliers/{id}/history": {
+      "get": {
+        "operationId": "get__suppliers_id_history",
+        "summary": "GET /suppliers/{id}/history",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierChangePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + supplier.read"
+      }
+    },
+    "/suppliers/{id}/products": {
+      "get": {
+        "operationId": "get__suppliers_id_products",
+        "summary": "GET /suppliers/{id}/products",
+        "tags": [
+          "suppliers"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + supplier.read"
+      }
+    },
+    "/products/{id}/supplier": {
+      "put": {
+        "operationId": "put__products_id_supplier",
+        "summary": "PUT /products/{id}/supplier",
+        "tags": [
+          "products"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + supplier.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupplierLink"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory": {
+      "get": {
+        "operationId": "get__inventory",
+        "summary": "GET /inventory",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalancePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + inventory.read"
+      }
+    },
+    "/inventory/{productId}": {
+      "get": {
+        "operationId": "get__inventory_productId_",
+        "summary": "GET /inventory/{productId}",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Balance"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Tag forte inventory-UUID-vVERSION; omitida em replay de PATCH.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "412": {
+            "$ref": "#/components/responses/Error412"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "description": "Verificação opcional da revisão",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + inventory.read"
+      },
+      "patch": {
+        "operationId": "patch__inventory_productId_",
+        "summary": "PATCH /inventory/{productId}",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Balance"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Tag forte inventory-UUID-vVERSION; omitida em replay de PATCH.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "412": {
+            "$ref": "#/components/responses/Error412"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "428": {
+            "$ref": "#/components/responses/Error428"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "description": "Tag forte ou lista. Sem versão no corpo, uma tag concreta válida é obrigatória; * isolado não fornece revisão.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + inventory.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConditionalMovement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory/{productId}/opening": {
+      "get": {
+        "operationId": "get__inventory_productId_opening",
+        "summary": "GET /inventory/{productId}/opening",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Opening"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + inventory.read"
+      }
+    },
+    "/inventory/{productId}/movements": {
+      "get": {
+        "operationId": "get__inventory_productId_movements",
+        "summary": "GET /inventory/{productId}/movements",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovementPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + inventory.read"
+      },
+      "post": {
+        "operationId": "post__inventory_productId_movements",
+        "summary": "POST /inventory/{productId}/movements",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovementOperation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + inventory.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SingleMovement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory/movements/batches": {
+      "post": {
+        "operationId": "post__inventory_movements_batches",
+        "summary": "POST /inventory/movements/batches",
+        "tags": [
+          "inventory"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovementOperation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN + inventory.write; lote tudo-ou-nada",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovementBatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reservations": {
+      "post": {
+        "operationId": "post__reservations",
+        "summary": "POST /reservations",
+        "tags": [
+          "reservations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN/OPERATOR + reservation.write; somente agregados próprios",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationCreate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__reservations",
+        "summary": "GET /reservations",
+        "tags": [
+          "reservations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + reservation.read; somente próprios"
+      }
+    },
+    "/reservations/{id}": {
+      "get": {
+        "operationId": "get__reservations_id_",
+        "summary": "GET /reservations/{id}",
+        "tags": [
+          "reservations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + reservation.read; somente próprio; alheio404"
+      }
+    },
+    "/carts": {
+      "post": {
+        "operationId": "post__carts",
+        "summary": "POST /carts",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cart"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "x-authorization": "ADMIN/OPERATOR + cart.write; somente agregados próprios",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartCreate"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "get__carts",
+        "summary": "GET /carts",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + cart.read; somente próprios"
+      }
+    },
+    "/carts/{id}": {
+      "get": {
+        "operationId": "get__carts_id_",
+        "summary": "GET /carts/{id}",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + cart.read; somente próprio; alheio404"
+      }
+    },
+    "/reservations/{id}/renew": {
+      "post": {
+        "operationId": "post__reservations_id_renew",
+        "summary": "POST /reservations/{id}/renew",
+        "tags": [
+          "reservations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + reservation.write; somente própria, antes do prazo e sem proteção de pagamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationRenew"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/{id}/items/{productId}": {
+      "put": {
+        "operationId": "put__carts_id_items_productId_",
+        "summary": "PUT /carts/{id}/items/{productId}",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + cart.write; carrinho próprio editável",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartSetItem"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete__carts_id_items_productId_",
+        "summary": "DELETE /carts/{id}/items/{productId}",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+              "minimum": 0
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + cart.write; carrinho próprio editável"
+      }
+    },
+    "/carts/{id}/checkout": {
+      "post": {
+        "operationId": "post__carts_id_checkout",
+        "summary": "POST /carts/{id}/checkout",
+        "tags": [
+          "carts"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "201": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "description": "ASCII1–128; mesma chave/conteúdo devolve resposta original; conflito409.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.:-]{1,128}$"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + sale.checkout; próprio; preço/ativo/estoque revalidados",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Checkout"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales/{id}": {
+      "get": {
+        "operationId": "get__sales_id_",
+        "summary": "GET /sales/{id}",
+        "tags": [
+          "sales"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + sale.read; somente própria; alheia404"
+      }
+    },
+    "/sales/{id}/receipt": {
+      "get": {
+        "operationId": "get__sales_id_receipt",
+        "summary": "GET /sales/{id}/receipt",
+        "tags": [
+          "sales"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + sale.read; própria e CONCLUIDA; não disponível/alheia404"
+      }
+    },
+    "/sales/{id}/reconcile": {
+      "post": {
+        "operationId": "post__sales_id_reconcile",
+        "summary": "POST /sales/{id}/reconcile",
+        "tags": [
+          "sales"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reconciliation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Sem decisão durável; mantém reserva protegida. Replay conserva202 original.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reconciliation"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + sale.reconcile; somente própria; alheia404",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reconcile"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulator/payments/{id}/resolution": {
+      "post": {
+        "operationId": "post__simulator_payments_id_resolution",
+        "summary": "POST /simulator/payments/{id}/resolution",
+        "tags": [
+          "simulator"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resolution"
+                }
+              }
+            },
+            "headers": {
+              "Idempotent-Replay": {
+                "description": "true quando retorna snapshot original.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "415": {
+            "$ref": "#/components/responses/Error415"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN + simulation.resolve; TIMEOUT indeterminado, inclusive alheio; não concede leitura da venda",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resolve"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "opaque"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "format": "email",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 72,
+            "minLength": 1,
+            "writeOnly": true,
+            "description": "Máximo72 bytes UTF-8; não registrar nem persistir no cliente."
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/access/http/LoginRequest.java",
+          "record": "LoginRequest"
+        }
+      },
+      "IssuedToken": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Token Bearer opaco; não é JWT."
+          },
+          "tokenType": {
+            "const": "Bearer",
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/access/application/AuthService.java",
+          "record": "IssuedToken"
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "roles",
+          "permissions"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/access/http/AuthController.java",
+          "record": "ProfileResponse"
+        }
+      },
+      "Permission": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "resource",
+          "action"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/access/domain/Permission.java",
+          "record": "Permission"
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/access/http/SafeErrors.java",
+          "record": "ErrorBody"
+        }
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "UP",
+              "DOWN",
+              "OUT_OF_SERVICE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CustomerInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "personType": {
+            "type": "string",
+            "enum": [
+              "PF",
+              "PJ"
+            ]
+          },
+          "document": {
+            "type": "string",
+            "maxLength": 18
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "personType",
+          "document",
+          "name"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/CustomerInput.java",
+          "record": "CustomerInput"
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "personType": {
+            "type": "string",
+            "enum": [
+              "PF",
+              "PJ"
+            ]
+          },
+          "document": {
+            "type": "string",
+            "maxLength": 18
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "personType",
+          "document",
+          "name",
+          "phone",
+          "email",
+          "locality",
+          "active"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/CustomerView.java",
+          "record": "CustomerView"
+        }
+      },
+      "CustomerUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "customer": {
+            "$ref": "#/components/schemas/CustomerInput"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "customer",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/CustomerUpdate.java",
+          "record": "CustomerUpdate"
+        }
+      },
+      "CustomerStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "active",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/CustomerStatus.java",
+          "record": "CustomerStatus"
+        }
+      },
+      "AddressInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "street": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "number": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "complement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neighborhood": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AC",
+              "AL",
+              "AP",
+              "AM",
+              "BA",
+              "CE",
+              "DF",
+              "ES",
+              "GO",
+              "MA",
+              "MT",
+              "MS",
+              "MG",
+              "PA",
+              "PB",
+              "PR",
+              "PE",
+              "PI",
+              "RJ",
+              "RN",
+              "RS",
+              "RO",
+              "RR",
+              "SC",
+              "SP",
+              "SE",
+              "TO"
+            ]
+          },
+          "postalCode": {
+            "type": "string",
+            "pattern": "^[0-9]{5}-?[0-9]{3}$"
+          },
+          "primary": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "street",
+          "number",
+          "neighborhood",
+          "city",
+          "state",
+          "postalCode",
+          "primary"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/AddressInput.java",
+          "record": "AddressInput"
+        }
+      },
+      "Address": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "street": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "number": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "complement": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neighborhood": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AC",
+              "AL",
+              "AP",
+              "AM",
+              "BA",
+              "CE",
+              "DF",
+              "ES",
+              "GO",
+              "MA",
+              "MT",
+              "MS",
+              "MG",
+              "PA",
+              "PB",
+              "PR",
+              "PE",
+              "PI",
+              "RJ",
+              "RN",
+              "RS",
+              "RO",
+              "RR",
+              "SC",
+              "SP",
+              "SE",
+              "TO"
+            ]
+          },
+          "postalCode": {
+            "type": "string",
+            "pattern": "^[0-9]{5}-?[0-9]{3}$"
+          },
+          "primary": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "customerId",
+          "type",
+          "street",
+          "number",
+          "complement",
+          "neighborhood",
+          "city",
+          "state",
+          "postalCode",
+          "primary"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/AddressView.java",
+          "record": "AddressView"
+        }
+      },
+      "AddressUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AddressInput"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "address",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/application/AddressUpdate.java",
+          "record": "AddressUpdate"
+        }
+      },
+      "Region": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "customers": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "city",
+          "state",
+          "customers"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/infrastructure/AddressStore.java",
+          "record": "Region"
+        }
+      },
+      "CategoryInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "CategoryInput"
+        }
+      },
+      "CategoryUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/CategoryInput"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "category",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "CategoryUpdate"
+        }
+      },
+      "ActiveUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "active",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "ActiveUpdate"
+        }
+      },
+      "StateUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "CADASTRADO",
+              "EM_REVISAO",
+              "ATIVO",
+              "INATIVO"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "StateUpdate"
+        }
+      },
+      "Category": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "name",
+          "description",
+          "active"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "CategoryView"
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sku": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "salePrice": {
+            "oneOf": [
+              {
+                "type": "number",
+                "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático.",
+                "minimum": 0,
+                "multipleOf": 0.01
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9]{1,17}(\\.[0-9]{1,2})?$"
+              }
+            ]
+          },
+          "cost": {
+            "oneOf": [
+              {
+                "type": "number",
+                "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático.",
+                "minimum": 0,
+                "multipleOf": 0.01
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9]{1,17}(\\.[0-9]{1,2})?$"
+              }
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "minimumStock": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "categoryId",
+          "sku",
+          "name",
+          "salePrice",
+          "cost",
+          "unit",
+          "minimumStock"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "ProductInput"
+        }
+      },
+      "ProductUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductInput"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "product",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "ProductUpdate"
+        }
+      },
+      "Product": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sku": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "salePrice": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "cost": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "minimumStock": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CADASTRADO",
+              "EM_REVISAO",
+              "ATIVO",
+              "INATIVO"
+            ]
+          },
+          "supplierId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "categoryId",
+          "sku",
+          "name",
+          "description",
+          "salePrice",
+          "cost",
+          "unit",
+          "minimumStock",
+          "status",
+          "supplierId"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/application/CatalogModels.java",
+          "record": "ProductView"
+        }
+      },
+      "SupplierInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cnpj": {
+            "type": "string",
+            "maxLength": 18
+          },
+          "legalName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "tradeName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "cnpj",
+          "legalName"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/purchasing/application/SupplierModels.java",
+          "record": "Input"
+        }
+      },
+      "Supplier": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cnpj": {
+            "type": "string",
+            "maxLength": 18
+          },
+          "legalName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "tradeName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "cnpj",
+          "legalName",
+          "tradeName",
+          "contact",
+          "phone",
+          "email",
+          "address",
+          "active"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/purchasing/application/SupplierModels.java",
+          "record": "View"
+        }
+      },
+      "SupplierUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "supplier": {
+            "$ref": "#/components/schemas/SupplierInput"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "supplier",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/purchasing/application/SupplierModels.java",
+          "record": "Update"
+        }
+      },
+      "SupplierLink": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "supplierId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/purchasing/application/SupplierModels.java",
+          "record": "Link"
+        }
+      },
+      "CustomerChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "before": {
+            "description": "Snapshot JSON histórico, inclusive null; formato SQL da versão registrada."
+          },
+          "after": {
+            "description": "Snapshot JSON histórico, formato SQL da versão registrada."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "before",
+          "after",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/customers/infrastructure/CustomerAudit.java",
+          "record": "Change"
+        }
+      },
+      "CatalogChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "before": {
+            "description": "Snapshot JSON histórico, inclusive null; formato SQL da versão registrada."
+          },
+          "after": {
+            "description": "Snapshot JSON histórico, formato SQL da versão registrada."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "before",
+          "after",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/catalog/infrastructure/CatalogAudit.java",
+          "record": "Change"
+        }
+      },
+      "SupplierChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "before": {
+            "description": "Snapshot JSON histórico, inclusive null; formato SQL da versão registrada."
+          },
+          "after": {
+            "description": "Snapshot JSON histórico, formato SQL da versão registrada."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "before",
+          "after",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/purchasing/infrastructure/SupplierAudit.java",
+          "record": "Change"
+        }
+      },
+      "Balance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "physical": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reserved": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "available": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "productId",
+          "physical",
+          "reserved",
+          "available",
+          "version",
+          "createdAt",
+          "updatedAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/InventoryModels.java",
+          "record": "Balance"
+        }
+      },
+      "Opening": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string"
+          },
+          "physical": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reserved": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "productId",
+          "source",
+          "physical",
+          "reserved",
+          "version",
+          "recordedAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/InventoryModels.java",
+          "record": "Opening"
+        }
+      },
+      "MovementItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ENTRY",
+              "EXIT",
+              "ADJUST"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "productId",
+          "type",
+          "quantity",
+          "reason",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Item"
+        }
+      },
+      "SingleMovement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ENTRY",
+              "EXIT",
+              "ADJUST"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "requestId",
+          "type",
+          "quantity",
+          "reason",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Single"
+        }
+      },
+      "ConditionalMovement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ENTRY",
+              "EXIT",
+              "ADJUST"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "requestId",
+          "type",
+          "quantity",
+          "reason"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Conditional"
+        }
+      },
+      "MovementBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovementItem"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "requestId",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Batch"
+        }
+      },
+      "Movement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ENTRY",
+              "EXIT",
+              "ADJUST",
+              "SALE"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "delta": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER."
+          },
+          "reason": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "physicalBefore": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "reservedBefore": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "versionBefore": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "balance": {
+            "$ref": "#/components/schemas/Balance"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "operationId",
+          "productId",
+          "type",
+          "quantity",
+          "delta",
+          "reason",
+          "actorId",
+          "physicalBefore",
+          "reservedBefore",
+          "versionBefore",
+          "balance",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Movement"
+        }
+      },
+      "MovementOperation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Movement"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "requestId",
+          "items",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/MovementModels.java",
+          "record": "Operation"
+        }
+      },
+      "ReservationItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "productId",
+          "quantity",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/ReservationModels.java",
+          "record": "Item"
+        }
+      },
+      "ReservationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReservationItem"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "requestId",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/ReservationModels.java",
+          "record": "Create"
+        }
+      },
+      "ReservationRenew": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "requestId",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/ReservationModels.java",
+          "record": "Renew"
+        }
+      },
+      "ReservedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "productId",
+          "quantity"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/ReservationModels.java",
+          "record": "ReservedItem"
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "RELEASED",
+              "CONFIRMED"
+            ]
+          },
+          "paymentProtected": {
+            "type": "boolean"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReservedItem"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "status",
+          "paymentProtected",
+          "expiresAt",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/inventory/application/ReservationModels.java",
+          "record": "Reservation"
+        }
+      },
+      "CartCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "requestId",
+          "customerId"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CartModels.java",
+          "record": "Create"
+        }
+      },
+      "CartSetItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "quantity",
+          "version"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CartModels.java",
+          "record": "SetItem"
+        }
+      },
+      "Line": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          },
+          "unitPrice": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "subtotal": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          }
+        },
+        "required": [
+          "productId",
+          "quantity",
+          "unitPrice",
+          "subtotal"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CartModels.java",
+          "record": "Line"
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "total": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "customerId",
+          "total",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CartModels.java",
+          "record": "Cart"
+        }
+      },
+      "Checkout": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CARTAO_CREDITO",
+              "CARTAO_DEBITO",
+              "PIX",
+              "BOLETO",
+              "DINHEIRO"
+            ]
+          },
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "APROVADO",
+              "RECUSADO",
+              "TIMEOUT"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "method",
+          "scenario"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CheckoutModels.java",
+          "record": "Checkout"
+        }
+      },
+      "Sale": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          },
+          "cartId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AGUARDANDO_PAGAMENTO",
+              "PAGAMENTO_APROVADO",
+              "PAGAMENTO_RECUSADO",
+              "CONCLUIDA",
+              "CANCELAMENTO_PENDENTE",
+              "CANCELADA"
+            ]
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "CRIADO",
+              "EM_PROCESSAMENTO",
+              "APROVADO",
+              "RECUSADO",
+              "INDETERMINADO"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CARTAO_CREDITO",
+              "CARTAO_DEBITO",
+              "PIX",
+              "BOLETO",
+              "DINHEIRO"
+            ]
+          },
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "APROVADO",
+              "RECUSADO",
+              "TIMEOUT"
+            ]
+          },
+          "total": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "createdAt",
+          "updatedAt",
+          "number",
+          "cartId",
+          "customerId",
+          "reservationId",
+          "paymentId",
+          "status",
+          "paymentStatus",
+          "method",
+          "scenario",
+          "total",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/CheckoutModels.java",
+          "record": "Sale"
+        }
+      },
+      "Receipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "saleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 1
+          },
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CARTAO_CREDITO",
+              "CARTAO_DEBITO",
+              "PIX",
+              "BOLETO",
+              "DINHEIRO"
+            ]
+          },
+          "total": {
+            "type": "number",
+            "description": "Decimal exato BigDecimal; usar parser decimal em valores monetários, sem arredondamento automático."
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "saleId",
+          "number",
+          "customerId",
+          "paymentId",
+          "method",
+          "total",
+          "issuedAt",
+          "items"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/Receipt.java",
+          "record": "Receipt"
+        }
+      },
+      "Resolve": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "APROVADO",
+              "RECUSADO"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "requestId",
+          "outcome",
+          "reason"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/ReconciliationModels.java",
+          "record": "Resolve"
+        }
+      },
+      "Reconcile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "requestId"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/ReconciliationModels.java",
+          "record": "Reconcile"
+        }
+      },
+      "Resolution": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "paymentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "APROVADO",
+              "RECUSADO"
+            ]
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "paymentId",
+          "outcome",
+          "recordedAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/ReconciliationModels.java",
+          "record": "Resolution"
+        }
+      },
+      "Reconciliation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "saleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "CRIADO",
+              "EM_PROCESSAMENTO",
+              "APROVADO",
+              "RECUSADO",
+              "INDETERMINADO"
+            ]
+          },
+          "saleStatus": {
+            "type": "string",
+            "enum": [
+              "AGUARDANDO_PAGAMENTO",
+              "PAGAMENTO_APROVADO",
+              "PAGAMENTO_RECUSADO",
+              "CONCLUIDA",
+              "CANCELAMENTO_PENDENTE",
+              "CANCELADA"
+            ]
+          },
+          "reservationStatus": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "RELEASED",
+              "CONFIRMED"
+            ]
+          },
+          "pending": {
+            "type": "boolean"
+          },
+          "receiptId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "saleId",
+          "paymentStatus",
+          "saleStatus",
+          "reservationStatus",
+          "pending",
+          "receiptId"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/ReconciliationModels.java",
+          "record": "Reconciliation"
+        }
+      },
+      "CustomerPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Customer"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "AddressPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "CategoryPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "ProductPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "SupplierPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Supplier"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "CustomerChangePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerChange"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "CatalogChangePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogChange"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "SupplierChangePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplierChange"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "BalancePage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Balance"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "MovementPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Movement"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "ReservationPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reservation"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "CartPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cart"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      }
+    },
+    "responses": {
+      "Error400": {
+        "description": "Erro seguro HTTP400; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error401": {
+        "description": "Erro seguro HTTP401; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "type": "string",
+              "const": "Bearer"
+            }
+          }
+        }
+      },
+      "Error403": {
+        "description": "Erro seguro HTTP403; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error404": {
+        "description": "Erro seguro HTTP404; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error409": {
+        "description": "Erro seguro HTTP409; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error412": {
+        "description": "Erro seguro HTTP412; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error415": {
+        "description": "Erro seguro HTTP415; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error428": {
+        "description": "Erro seguro HTTP428; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error503": {
+        "description": "Erro seguro HTTP503; corpo somente code, sem detalhes internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

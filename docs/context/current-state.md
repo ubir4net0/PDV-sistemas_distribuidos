@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## Contratos HTTP e eventos — PDV-007
+
+[OpenAPI3.1/JSON Schema e exemplos](../../contracts/README.md),59operações atuais e5tipos de negócio, geração de docs e CI dedicada. Validação confronta rotas/campos reais e exemplos válidos/inválidos. Erros HTTP conhecidos padronizados em code, incluindo parâmetro ausente e mídia incompatível. Funcionalidades futuras permanecem identificadas como pendentes.
+
 ## Recusa e reconciliação — PDV-040
 
 [ADR-009 aprovada](../decisions/ADR-009-reconciliacao-simulada.md), V18 e etapas de outbox/inbox tratam recusa e decisão tardia. Sem prova, TIMEOUT mantém reserva protegida; prova administrativa fictícia separada não amplia leitura. Reconciliação própria com idempotência/202, confirmação039 ou liberação única de reservado. [Contrato](../workflows/payment-reconciliation.md). Cancelamento/estorno continuam041.

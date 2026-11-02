@@ -105,3 +105,7 @@ V17 coordena baixa física/reservada única, reserva CONFIRMED, venda CONCLUIDA 
 ## Recusa/reconciliação — PDV-040
 
 POST /simulator/payments/{id}/resolution exige ADMIN/simulation.resolve e prova de TIMEOUT; POST /sales/{id}/reconcile exige sale.reconcile/proprietário. Decisão adicional e operações idempotentes imutáveis,202 pendente, aprovação conclui039 e recusa libera só reservado. [Contrato](../../docs/workflows/payment-reconciliation.md), V18.
+
+## OpenAPI e eventos — PDV-007
+
+[Contratos versionados e exemplos](../../contracts/README.md):59operações HTTP atuais,52DTOs,65schemas e5tipos de negócio. npm run contracts:verify verifica lint/inventário/campos/exemplos; npm run contracts:docs gera HTML navegável. Erros de parâmetros ausentes e mídia incompatível agora também usam corpo seguro code.

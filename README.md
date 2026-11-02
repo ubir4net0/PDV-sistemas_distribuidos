@@ -18,6 +18,7 @@ O projeto é mantido individualmente pelo proprietário. O fluxo vigente usa com
 - [Guia para agentes](AGENTS.md) e [workflow Notion](docs/workflows/notion-task.md).
 - [Roteiro de execução de uma tarefa](docs/workflows/task-execution.md): DoR/DoD, comandos, autorevisão, evidências e limites de escrita no fluxo individual.
 - [Estado observado](docs/context/current-state.md) e [arquitetura alvo](docs/context/architecture.md).
+- [OpenAPI, eventos e exemplos versionados](contracts/README.md): contratos atuais, validação automatizada e documentação HTML.
 - [Contrato de catálogo](docs/workflows/catalog.md): categorias/produtos, estados, permissões, versões e histórico.
 - [Contrato de fornecedores](docs/workflows/suppliers.md): CNPJ, vínculo opcional de produtos e inativação com histórico.
 - [Contrato de estoque](docs/workflows/inventory.md): saldos inteiros, abertura técnica e leituras transacionais.

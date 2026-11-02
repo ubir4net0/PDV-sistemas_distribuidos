@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pdv.example.test/contracts/business-events.v1.schema.json",
+  "title": "Envelope de negócio v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.payment.requested.v1",
+          "type": "string"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "type",
+        "eventId",
+        "paymentId",
+        "outcome"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.payment.result.v1",
+          "type": "string"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "APROVADO",
+            "RECUSADO",
+            "INDETERMINADO"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "eventId",
+        "paymentId",
+        "outcome"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.sale.confirm.v1",
+          "type": "string"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "APROVADO"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "eventId",
+        "paymentId",
+        "outcome"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.payment.reconciled.v1",
+          "type": "string"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "APROVADO",
+            "RECUSADO"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "eventId",
+        "paymentId",
+        "outcome"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pdv.sale.release.v1",
+          "type": "string"
+        },
+        "eventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "RECUSADO"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "eventId",
+        "paymentId",
+        "outcome"
+      ]
+    }
+  ]
+}

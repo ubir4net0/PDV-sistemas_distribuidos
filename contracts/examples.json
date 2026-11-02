@@ -1,0 +1,112 @@
+{
+  "http": [
+    {
+      "schema": "LoginRequest",
+      "value": {
+        "email": "operator@example.test",
+        "password": "EXEMPLO_NAO_UTILIZAVEL"
+      }
+    },
+    {
+      "schema": "Profile",
+      "value": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "name": "Operador sintético",
+        "email": "operator@example.test",
+        "roles": [
+          "OPERATOR"
+        ],
+        "permissions": [
+          "sale.read"
+        ]
+      }
+    },
+    {
+      "schema": "Error",
+      "value": {
+        "code": "unauthorized"
+      }
+    },
+    {
+      "schema": "Checkout",
+      "value": {
+        "version": 1,
+        "method": "PIX",
+        "scenario": "TIMEOUT"
+      }
+    },
+    {
+      "schema": "Reconciliation",
+      "value": {
+        "saleId": "11111111-1111-4111-8111-111111111111",
+        "paymentStatus": "INDETERMINADO",
+        "saleStatus": "AGUARDANDO_PAGAMENTO",
+        "reservationStatus": "ACTIVE",
+        "pending": true,
+        "receiptId": null
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "pdv.payment.requested.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": null
+    },
+    {
+      "type": "pdv.payment.result.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "APROVADO"
+    },
+    {
+      "type": "pdv.payment.result.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "RECUSADO"
+    },
+    {
+      "type": "pdv.payment.result.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "INDETERMINADO"
+    },
+    {
+      "type": "pdv.sale.confirm.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "APROVADO"
+    },
+    {
+      "type": "pdv.payment.reconciled.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "APROVADO"
+    },
+    {
+      "type": "pdv.payment.reconciled.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "RECUSADO"
+    },
+    {
+      "type": "pdv.sale.release.v1",
+      "eventId": "11111111-1111-4111-8111-111111111111",
+      "paymentId": "11111111-1111-4111-8111-111111111111",
+      "outcome": "RECUSADO"
+    }
+  ],
+  "probes": [
+    {
+      "type": "pdv.probe.request.v1",
+      "requestId": "11111111-1111-4111-8111-111111111111",
+      "text": "diagnóstico sintético"
+    },
+    {
+      "type": "pdv.probe.response.v1",
+      "requestId": "11111111-1111-4111-8111-111111111111",
+      "text": "diagnóstico sintético"
+    }
+  ]
+}

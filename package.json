@@ -1,0 +1,15 @@
+{
+  "name": "pdv-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": ">=22.12.0 <23", "npm": ">=10" },
+  "scripts": {
+    "contracts:verify": "redocly lint contracts/openapi.json --config contracts/redocly.yaml && node scripts/verify-contracts.mjs",
+    "contracts:docs": "redocly build-docs contracts/openapi.json --output contracts/dist/index.html"
+  },
+  "devDependencies": {
+    "@redocly/cli": "2.72.1",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

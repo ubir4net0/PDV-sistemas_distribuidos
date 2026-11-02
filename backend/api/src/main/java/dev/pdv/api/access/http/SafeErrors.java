@@ -26,9 +26,16 @@ public class SafeErrors {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class,
+            org.springframework.web.bind.MissingServletRequestParameterException.class,
+            org.springframework.web.bind.MissingRequestHeaderException.class,
             org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErrorBody> invalidInput(Exception exception) {
         return ResponseEntity.badRequest().body(new ErrorBody("invalid_request"));
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorBody> unsupportedMediaType(Exception exception) {
+        return ResponseEntity.status(415).body(new ErrorBody("unsupported_media_type"));
     }
 
     @ExceptionHandler(AuthenticationException.class)

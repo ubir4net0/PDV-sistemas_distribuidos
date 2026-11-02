@@ -31,3 +31,7 @@ O job API e Verify definem TTL de 900 segundos apenas para testes; Run exige con
 RbacHttpIT testa matriz anônimo/operador/admin, guardas, métodos não liberados, revogação de autoridades e cobertura de mappings dos controllers existentes.
 
 PDV-030: job worker também inicia PostgreSQL isolado e executa testes reais de expiração/concorrência, além de RabbitMQ. Migrations API entram só no classpath de teste do worker; não há aplicação de DDL em runtime. Runner local usa banco Verify próprio e restaura ambiente/limpa somente seu banco.
+
+## Contratos — PDV-007
+
+Workflow API and event contracts instala dependências do lockfile com npm ci --ignore-scripts, valida OpenAPI3.1/JSON Schema/inventário e gera docs HTML. Não faz deploy. [Comandos e limites da validação](../../contracts/README.md). Backend quality continua exercitando o runtime PostgreSQL/HTTP/AMQP.
