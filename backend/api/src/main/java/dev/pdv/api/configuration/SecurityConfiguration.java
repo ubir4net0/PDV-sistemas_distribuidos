@@ -91,7 +91,7 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/carts", "/carts/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/carts").authenticated()
                         .requestMatchers(HttpMethod.POST, "/carts/{id}/checkout").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/sales/{id}", "/sales/{id}/receipt").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/sales/{id}", "/sales/{id}/receipt", "/sales/{id}/timeline").authenticated()
                         .requestMatchers(HttpMethod.POST, "/sales/{id}/reconcile", "/simulator/payments/{id}/resolution").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/carts/{id}/items/{productId}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/carts/{id}/items/{productId}").authenticated()

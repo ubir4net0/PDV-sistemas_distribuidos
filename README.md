@@ -1,5 +1,7 @@
 # PDV de Sistemas Distribuídos
 
+PDV-045 acrescenta [rastreamento da venda](docs/workflows/sale-timeline.md): eventos persistidos, horários, correlação e falhas seguras, somente para o dono da venda. Sem novas transições ou DDL.
+
 Projeto acadêmico para portfólio com API Java 21, PostgreSQL e worker independente com RabbitMQ. Autenticação, cadastros, estoque, reservas, carrinho, checkout idempotente e coordenação persistida estão disponíveis. O worker tem modos explícitos de expiração e pagamento simulado. Outbox/Inbox e transporte RabbitMQ de negócio estão disponíveis em modo explícito; conclusão com baixa única e comprovante digital estão implementados. Recusa libera reservado e reconciliação própria resolve TIMEOUT somente com prova durável do simulador local. Frontend oferece login, clientes, PDV/carrinho/checkout e acompanhamento de pagamento simulado; demais telas, compras e cancelamento permanecem nas tarefas próprias.
 
 - [Página mestre](https://app.notion.com/p/4032c9a9991780cb9c18eb22cd7ca2a2)

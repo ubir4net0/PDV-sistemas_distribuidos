@@ -3,6 +3,7 @@ package dev.pdv.api.sales.infrastructure;
 import dev.pdv.api.configuration.ApiFailure;
 import dev.pdv.api.sales.application.CartModels;
 import dev.pdv.api.sales.application.Receipt;
+import dev.pdv.api.sales.application.SaleTimeline;
 import dev.pdv.api.sales.application.CheckoutModels.Checkout;
 import dev.pdv.api.sales.application.CheckoutModels.Method;
 import dev.pdv.api.sales.application.CheckoutModels.Sale;
@@ -61,5 +62,21 @@ public class CheckoutStore {
     public Receipt receipt(UUID id, UUID actor) {
         return jdbc.query("SELECT r.snapshot::text FROM receipts r JOIN sales s ON s.id=r.sale_id WHERE s.id=? AND s.actor_id=? AND s.status='CONCLUIDA'",
                 (r, i) -> json.readValue(r.getString(1), Receipt.class), id, actor).stream().findFirst().orElseThrow(() -> new ApiFailure(404, "receipt_not_found"));
+    }
+    public SaleTimeline timeline(UUID id, UUID actor) {
+        var sale = own(id, actor);
+        var events = jdbc.query("""
+                SELECT id,version,kind,created_at,
+                CASE WHEN kind='CHECKOUT' THEN snapshot->>'status' ELSE snapshot->'sale'->>'status' END AS sale_status,
+                CASE WHEN kind='CHECKOUT' THEN snapshot->>'paymentStatus' ELSE snapshot->'payment'->>'status' END AS payment_status
+                FROM sale_events WHERE sale_id=? ORDER BY version
+                """, (r, i) -> new SaleTimeline.Event(r.getObject("id", UUID.class), r.getLong("version"), r.getString("kind"),
+                    r.getString("sale_status"), r.getString("payment_status"), r.getTimestamp("created_at").toInstant()), id);
+        var deliveries = jdbc.query("""
+                SELECT e.id,e.event_type,d.status,d.attempts,d.last_error,d.updated_at
+                FROM outbox_events e JOIN outbox_deliveries d ON d.event_id=e.id WHERE e.payment_id=? ORDER BY e.created_at,e.id
+                """, (r, i) -> new SaleTimeline.Delivery(r.getObject(1, UUID.class), r.getString(2), r.getString(3), r.getInt(4), r.getString(5),
+                    r.getTimestamp(6).toInstant()), sale.paymentId());
+        return new SaleTimeline(id, sale.paymentId().toString().replace("-", ""), events, deliveries);
     }
 }

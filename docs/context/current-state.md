@@ -1,5 +1,7 @@
 # Estado observado em 2 de novembro de 2026
 
+PDV-045 acrescenta [rastreamento da venda](../workflows/sale-timeline.md): eventos persistidos, horários, correlação e falhas seguras, somente para o dono da venda. Sem novas transições ou DDL.
+
 ## Pagamento simulado frontend — PDV-044
 
 Consulta própria por código/link do checkout, loading e estados persistidos distintos, polling limitado/reconsulta e reconciliação própria com requestId conservado após resultado desconhecido. TIMEOUT permanece pendente e protegido sem prova, sem nova tentativa financeira. Erro/404 não conserva dados antigos. [Operação e limites](../workflows/frontend-payments.md). E2E usa API/PG/Rabbit/worker UUID reais com BusinessMessaging; sem novo Java/DDL ou integração financeira.

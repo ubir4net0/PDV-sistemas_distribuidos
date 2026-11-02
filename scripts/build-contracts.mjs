@@ -74,6 +74,9 @@ const paymentStatus=enumeration('CRIADO','EM_PROCESSAMENTO','APROVADO','RECUSADO
 dto('Checkout',checkout,'Checkout',{version:nonnegative,method,scenario});
 dto('Sale',checkout,'Sale',{...common,number:positive,cartId:uuid,customerId:uuid,reservationId:uuid,paymentId:uuid,status:saleStatus,paymentStatus,method,scenario,total:money,items:list('Line')});
 dto('Receipt','sales/application/Receipt','Receipt',{id:uuid,saleId:uuid,number:positive,customerId:uuid,paymentId:uuid,method,total:money,issuedAt:instant,items:list('Line')});
+dto('TimelineEvent','sales/application/SaleTimeline','Event',{id:uuid,version:nonnegative,kind:str(),saleStatus:optional(str()),paymentStatus:optional(str()),occurredAt:instant});
+dto('TimelineDelivery','sales/application/SaleTimeline','Delivery',{eventId:uuid,type:str(),status:enumeration('PENDING','PUBLISHED','DEAD'),attempts:{type:'integer',minimum:0,maximum:5},error:optional(enumeration('UNCONFIRMED','BROKER_UNAVAILABLE')),updatedAt:instant});
+dto('SaleTimeline','sales/application/SaleTimeline','SaleTimeline',{saleId:uuid,traceId:{type:'string',pattern:'^[a-f0-9]{32}$'},events:list('TimelineEvent'),deliveries:list('TimelineDelivery')});
 const rec='sales/application/ReconciliationModels';
 dto('Resolve',rec,'Resolve',{requestId:uuid,outcome:enumeration('APROVADO','RECUSADO'),reason:{...str(500),minLength:1}});
 dto('Reconcile',rec,'Reconcile',{requestId:uuid});
@@ -141,6 +144,7 @@ route('delete','/carts/{id}/items/{productId}','Cart',{params:[query('version',n
 route('post','/carts/{id}/checkout','Sale',{body:'Checkout',params:[{...header('Idempotency-Key','ASCII1–128; mesma chave/conteúdo devolve resposta original; conflito409.',true),schema:{type:'string',pattern:'^[A-Za-z0-9_.:-]{1,128}$'}}],headers:replay,authorization:'ADMIN/OPERATOR + sale.checkout; próprio; preço/ativo/estoque revalidados'});
 route('get','/sales/{id}','Sale',{authorization:'ADMIN/OPERATOR + sale.read; somente própria; alheia404'});
 route('get','/sales/{id}/receipt','Receipt',{authorization:'ADMIN/OPERATOR + sale.read; própria e CONCLUIDA; não disponível/alheia404'});
+route('get','/sales/{id}/timeline','SaleTimeline',{authorization:'ADMIN/OPERATOR + sale.read; somente própria; alheia404; sem snapshots internos'});
 route('post','/sales/{id}/reconcile','Reconciliation',{body:'Reconcile',code:200,headers:replay,extra:{202:{...response('Reconciliation','Sem decisão durável; mantém reserva protegida. Replay conserva202 original.'),headers:replay}},authorization:'ADMIN/OPERATOR + sale.reconcile; somente própria; alheia404'});
 route('post','/simulator/payments/{id}/resolution','Resolution',{body:'Resolve',code:200,headers:replay,authorization:'ADMIN + simulation.resolve; TIMEOUT indeterminado, inclusive alheio; não concede leitura da venda'});
 const responses={};for(const status of [400,401,403,404,409,412,415,428,503])responses['Error'+status]={...response('Error',`Erro seguro HTTP${status}; corpo somente code, sem detalhes internos.`),...(status===401?{headers:{'WWW-Authenticate':{schema:{type:'string',const:'Bearer'}}}}:{})};

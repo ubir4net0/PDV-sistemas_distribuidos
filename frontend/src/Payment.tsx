@@ -6,6 +6,7 @@ import { can, message } from './Customers';
 import { record } from './transport';
 import { brl, readSale, type Sale } from './sales-model';
 import { paymentState, uuid } from './payment-model';
+import { Timeline } from './Timeline';
 
 export function PaymentLookup(){
   const [code,setCode]=useState('');const [error,setError]=useState('');const navigate=useNavigate();
@@ -46,5 +47,6 @@ export function Payment({id,reconcileKeys}:{id:string;reconcileKeys:Record<strin
       <dl className="payment-details"><div><dt>Venda</dt><dd>#{sale.number}</dd></div><div><dt>Total da venda</dt><dd>{brl(sale.total)}</dd></div><div><dt>Método fictício</dt><dd>{sale.method.replaceAll('_',' ')}</dd></div><div><dt>Cenário escolhido</dt><dd>{sale.scenario}</dd></div><div><dt>Estado da venda</dt><dd>{sale.status}</dd></div><div><dt>Estado do pagamento</dt><dd>{sale.paymentStatus}</dd></div></dl><p className="helper">Código da venda: {sale.id}</p><p className="helper">Última consulta: {data.updated}</p>
     </section>}
     {notice&&<p className="notice" role="status">{notice}</p>}<div className="payment-actions"><button className="action" disabled={data.loading||reconciling} onClick={()=>setRetry(n=>n+1)}>Reconsultar venda</button>{sale&&can('sale.reconcile')&&sale.paymentStatus==='INDETERMINADO'&&<button className="light-button" disabled={reconciling} onClick={()=>void reconcile()}>{reconciling?'Reconciliando…':'Reconciliar resultado'}</button>}<Link className="text-button" to="/app/payments">Consultar outro código</Link></div>
+    {sale&&<Timeline key={id} id={id}/>}
   </main>;
 }

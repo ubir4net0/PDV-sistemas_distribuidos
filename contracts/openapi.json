@@ -3571,6 +3571,58 @@
         "x-authorization": "ADMIN/OPERATOR + sale.read; própria e CONCLUIDA; não disponível/alheia404"
       }
     },
+    "/sales/{id}/timeline": {
+      "get": {
+        "operationId": "get__sales_id_timeline",
+        "summary": "GET /sales/{id}/timeline",
+        "tags": [
+          "sales"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleTimeline"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN/OPERATOR + sale.read; somente própria; alheia404; sem snapshots internos"
+      }
+    },
     "/sales/{id}/reconcile": {
       "post": {
         "operationId": "post__sales_id_reconcile",
@@ -6027,6 +6079,153 @@
         "x-java-record": {
           "file": "backend/api/src/main/java/dev/pdv/api/sales/application/Receipt.java",
           "record": "Receipt"
+        }
+      },
+      "TimelineEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "kind": {
+            "type": "string"
+          },
+          "saleStatus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paymentStatus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "kind",
+          "saleStatus",
+          "paymentStatus",
+          "occurredAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/SaleTimeline.java",
+          "record": "Event"
+        }
+      },
+      "TimelineDelivery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PUBLISHED",
+              "DEAD"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "UNCONFIRMED",
+                  "BROKER_UNAVAILABLE"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "eventId",
+          "type",
+          "status",
+          "attempts",
+          "error",
+          "updatedAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/SaleTimeline.java",
+          "record": "Delivery"
+        }
+      },
+      "SaleTimeline": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "saleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "traceId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEvent"
+            }
+          },
+          "deliveries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineDelivery"
+            }
+          }
+        },
+        "required": [
+          "saleId",
+          "traceId",
+          "events",
+          "deliveries"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/sales/application/SaleTimeline.java",
+          "record": "SaleTimeline"
         }
       },
       "Resolve": {

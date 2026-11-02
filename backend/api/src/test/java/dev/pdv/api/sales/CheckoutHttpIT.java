@@ -92,6 +92,37 @@ class CheckoutHttpIT extends CartHttpSupport {
     private String resolutionPath(tools.jackson.databind.JsonNode sale) { return "/simulator/payments/"+sale.get("paymentId").asString()+"/resolution"; }
     private String reconcilePath(tools.jackson.databind.JsonNode sale) { return "/sales/"+sale.get("id").asString()+"/reconcile"; }
     private Map<String,Object> resolveInput(UUID request, String outcome) { return Map.of("requestId",request,"outcome",outcome,"reason","Synthetic decision"); }
+    @Test void timelineProjectsOrderedDurableStatesWithoutInternalSnapshots() throws Exception {
+        var owner=token("OPERATOR"); var administrator=token("ADMIN"); var sale=uncertain(owner,administrator);
+        String path="/sales/"+sale.get("id").asString()+"/timeline"; UUID payment=UUID.fromString(sale.get("paymentId").asString());
+        jdbc.update("UPDATE outbox_deliveries SET attempts=5,status='DEAD',last_error='UNCONFIRMED' WHERE event_id IN (SELECT id FROM outbox_events WHERE payment_id=?)",payment);
+        var response=send("GET",path,owner,null); assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("Cache-Control")).contains("no-store"); var body=json.readTree(response.body());
+        assertThat(body.get("traceId").asString()).isEqualTo(payment.toString().replace("-",""));
+        assertThat(body.get("events").size()).isEqualTo(3);
+        assertThat(body.get("events").get(0).get("kind").asString()).isEqualTo("CHECKOUT");
+        assertThat(body.get("events").get(1).get("paymentStatus").asString()).isEqualTo("EM_PROCESSAMENTO");
+        assertThat(body.get("events").get(2).get("paymentStatus").asString()).isEqualTo("INDETERMINADO");
+        assertThat(body.get("events").get(2).get("version").asLong()).isEqualTo(2);
+        assertThat(body.get("deliveries").get(0).get("error").asString()).isEqualTo("UNCONFIRMED");
+        assertThat(response.body()).doesNotContain("snapshot","fingerprint","actor_id","expires_at","payload","password","Synthetic decision");
+        assertThat(send("GET",path,administrator,null).statusCode()).isEqualTo(404);
+        assertThat(send("GET",path,null,null).statusCode()).isEqualTo(401);
+        jdbc.update("DELETE FROM role_permissions WHERE permission_id IN (SELECT id FROM permissions WHERE resource='sale' AND action='read')");
+        assertThat(send("GET",path,owner,null).statusCode()).isEqualTo(403);
+    }
+    @Test void approvedTimelineIncludesConfirmationRatherThanInventingFutureEvents() throws Exception {
+        var owner=token("ADMIN"); var product=stocked(owner,category(owner),10); var cart=filled(owner,product,1);
+        var created=checkout(cart,owner,UUID.randomUUID().toString(),command(1)); var sale=json.readTree(created.body());
+        String path="/sales/"+sale.get("id").asString()+"/timeline"; UUID payment=UUID.fromString(sale.get("paymentId").asString());
+        assertThat(json.readTree(send("GET",path,owner,null).body()).get("events").size()).isEqualTo(1);
+        jdbc.queryForObject("SELECT prepare_business_payment(?)",String.class,payment);
+        jdbc.queryForObject("SELECT apply_business_payment_result(?,'APROVADO')",String.class,payment);
+        jdbc.queryForObject("SELECT confirm_business_sale(?)",String.class,payment);
+        var events=json.readTree(send("GET",path,owner,null).body()).get("events"); assertThat(events.size()).isEqualTo(4);
+        assertThat(events.get(3).get("saleStatus").asString()).isEqualTo("CONCLUIDA");
+        assertThat(events.get(3).get("occurredAt").asString()).isNotBlank();
+    }
     @Test void createsOneAtomicSnapshotAndFreezesCartWithoutDebitingPhysicalOrStartingPayment() throws Exception {
         var token = token("OPERATOR"); var adminToken = token("ADMIN"); var product = stocked(adminToken, category(adminToken), 10); var cart = filled(token, product, 3);
         var response = checkout(cart, token, UUID.randomUUID().toString(), command(1)); assertThat(response.statusCode()).isEqualTo(201); var sale = json.readTree(response.body());

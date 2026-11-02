@@ -5,6 +5,7 @@ import dev.pdv.api.sales.application.CheckoutModels.Checkout;
 import dev.pdv.api.sales.application.CheckoutModels.Sale;
 import dev.pdv.api.sales.application.CheckoutService;
 import dev.pdv.api.sales.application.Receipt;
+import dev.pdv.api.sales.application.SaleTimeline;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -33,5 +34,9 @@ public class CheckoutController {
     @GetMapping("/sales/{id}/receipt")
     public ResponseEntity<Receipt> receipt(@PathVariable UUID id, @AuthenticationPrincipal AuthPrincipal actor) {
         return ResponseEntity.ok().header("Cache-Control", "no-store").body(service.receipt(id, actor.id()));
+    }
+    @GetMapping("/sales/{id}/timeline")
+    public ResponseEntity<SaleTimeline> timeline(@PathVariable UUID id, @AuthenticationPrincipal AuthPrincipal actor) {
+        return ResponseEntity.ok().header("Cache-Control", "no-store").body(service.timeline(id, actor.id()));
     }
 }

@@ -54,6 +54,9 @@ public class CheckoutService {
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     @PreAuthorize("hasAnyRole('ADMIN','OPERATOR') and hasAuthority('sale.read')")
     public Receipt receipt(UUID id, UUID actor) { return store.receipt(id, actor); }
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    @PreAuthorize("hasAnyRole('ADMIN','OPERATOR') and hasAuthority('sale.read')")
+    public SaleTimeline timeline(UUID id, UUID actor) { return store.timeline(id, actor); }
     private static String digest(String input) {
         try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(input.getBytes(StandardCharsets.UTF_8))); }
         catch (NoSuchAlgorithmException exception) { throw new IllegalStateException("SHA-256 unavailable", exception); }
