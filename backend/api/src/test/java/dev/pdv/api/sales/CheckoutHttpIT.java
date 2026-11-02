@@ -92,6 +92,28 @@ class CheckoutHttpIT extends CartHttpSupport {
     private String resolutionPath(tools.jackson.databind.JsonNode sale) { return "/simulator/payments/"+sale.get("paymentId").asString()+"/resolution"; }
     private String reconcilePath(tools.jackson.databind.JsonNode sale) { return "/sales/"+sale.get("id").asString()+"/reconcile"; }
     private Map<String,Object> resolveInput(UUID request, String outcome) { return Map.of("requestId",request,"outcome",outcome,"reason","Synthetic decision"); }
+    @Test void telemetryConnectsCheckoutToItsOperationAndOnlyAdminCanReadIt() throws Exception {
+        var owner=token("ADMIN"); var cart=filled(owner,stocked(owner,category(owner),10),1); String key=UUID.randomUUID().toString();
+        var created=checkout(cart,owner,key,command(1)); assertThat(created.statusCode()).isEqualTo(201); var sale=json.readTree(created.body());
+        String trace=sale.get("paymentId").asString().replace("-",""); String header=created.headers().firstValue("traceparent").orElseThrow();
+        assertThat(header).isEqualTo("00-"+trace+"-"+trace.substring(0,16)+"-01");
+        assertThat(checkout(cart,owner,key,command(1)).statusCode()).isEqualTo(201);
+        var response=send("GET","/operations/telemetry?traceId="+trace,owner,null); assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("Cache-Control")).contains("no-store"); var body=json.readTree(response.body());
+        assertThat(body.get("logs").size()).isEqualTo(2); assertThat(body.get("logs").get(0).get("parentSpanId").asString()).isEqualTo(trace.substring(0,16));
+        assertThat(body.get("metrics").size()).isEqualTo(2); assertThat(response.body()).doesNotContain("password","email","payload","customerId","Authorization");
+        assertThat(send("GET","/operations/telemetry",token("OPERATOR"),null).statusCode()).isEqualTo(403);
+        assertThat(send("GET","/operations/telemetry",null,null).statusCode()).isEqualTo(401);
+        assertThat(send("GET","/operations/telemetry?traceId=invalid",owner,null).statusCode()).isEqualTo(400);
+        assertThat(json.readTree(send("GET","/operations/telemetry?traceId="+"f".repeat(32),owner,null).body()).get("logs").size()).isZero();
+    }
+    @Test void unavailableTelemetryCannotUndoAnAlreadyCommittedCheckout() throws Exception {
+        var owner=token("ADMIN"); var cart=filled(owner,stocked(owner,category(owner),10),1);
+        jdbc.execute("ALTER TABLE operation_telemetry ADD CONSTRAINT fixture_telemetry_failure CHECK(FALSE) NOT VALID");
+        try { var created=checkout(cart,owner,UUID.randomUUID().toString(),command(1)); assertThat(created.statusCode()).isEqualTo(201);
+            assertThat(send("GET","/sales/"+json.readTree(created.body()).get("id").asString(),owner,null).statusCode()).isEqualTo(200);
+        } finally { jdbc.execute("ALTER TABLE operation_telemetry DROP CONSTRAINT fixture_telemetry_failure"); }
+    }
     @Test void timelineProjectsOrderedDurableStatesWithoutInternalSnapshots() throws Exception {
         var owner=token("OPERATOR"); var administrator=token("ADMIN"); var sale=uncertain(owner,administrator);
         String path="/sales/"+sale.get("id").asString()+"/timeline"; UUID payment=UUID.fromString(sale.get("paymentId").asString());

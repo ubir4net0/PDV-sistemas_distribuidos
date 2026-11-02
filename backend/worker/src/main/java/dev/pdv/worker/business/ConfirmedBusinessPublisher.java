@@ -21,6 +21,7 @@ public class ConfirmedBusinessPublisher implements BusinessOutbox.Sender {
     @Override public void send(BusinessEnvelope envelope) {
         var p = new MessageProperties(); p.setContentType(MessageProperties.CONTENT_TYPE_JSON); p.setContentEncoding("UTF-8"); p.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
         p.setMessageId(envelope.eventId().toString()); p.setCorrelationId(envelope.paymentId().toString()); var correlation = new CorrelationData(envelope.eventId().toString());
+        p.setHeader("traceparent",OperationTrace.current(envelope.paymentId()).header());
         template.send(names.exchange(), BusinessEnvelope.REQUEST.equals(envelope.type()) ? "payment.request" : "payment.result", new Message(json.writeValueAsBytes(envelope), p), correlation);
         try {
             var result = correlation.getFuture().get(timeout, TimeUnit.MILLISECONDS);

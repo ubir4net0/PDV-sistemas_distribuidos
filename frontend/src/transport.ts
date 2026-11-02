@@ -20,7 +20,7 @@ const errors: Record<string, string> = {
   invalid_request: 'Confira os dados informados.', customer_not_found: 'Cliente não encontrado.',
 };
 export async function businessRequest(path: string, method: string, token: string, signal: AbortSignal, body?: object, key?: string): Promise<unknown> {
-  if (!/^\/(customers|products|carts|sales)(\/|\?|$)/.test(path) || path.includes('://') || path.split('?')[0].includes('..')) throw new ApiError(400, 'Caminho inválido.');
+  if (!/^\/(customers|products|carts|sales|operations)(\/|\?|$)/.test(path) || path.includes('://') || path.split('?')[0].includes('..')) throw new ApiError(400, 'Caminho inválido.');
   let response: Response;
   try {
     response = await fetch(path, { method, signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]), credentials: 'omit', cache: 'no-store', redirect: 'error',

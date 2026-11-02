@@ -1,5 +1,7 @@
 # Estado observado em 2 de novembro de 2026
 
+PDV-049 adiciona [observabilidade local](../workflows/observability.md): spans seguros de checkout/AMQP, logs JSON centralizados V19 e painel ADMIN. Cobertura e limitações no contrato.
+
 PDV-045 acrescenta [rastreamento da venda](../workflows/sale-timeline.md): eventos persistidos, horários, correlação e falhas seguras, somente para o dono da venda. Sem novas transições ou DDL.
 
 ## Pagamento simulado frontend — PDV-044

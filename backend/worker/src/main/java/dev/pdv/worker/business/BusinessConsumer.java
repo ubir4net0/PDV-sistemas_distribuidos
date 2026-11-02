@@ -28,8 +28,9 @@ public class BusinessConsumer {
             if (envelope==null || !(expected.equals(envelope.type()) || (BusinessEnvelope.RESULT.equals(expected) && BusinessEnvelope.coordinator(envelope.type())))
                     || !envelope.eventId().toString().equals(message.getMessageProperties().getMessageId())) { throw new BusinessEnvelope.Rejected("Invalid envelope identity"); }
         } catch (RuntimeException invalid) { LOG.warn("Invalid business message sent to DLQ"); channel.basicReject(tag, false); return; }
+        var span=OperationTrace.child(envelope.paymentId(),message.getMessageProperties().getHeaders().get("traceparent")); long started=System.nanoTime();
         for (int attempt = 1; attempt<=3; attempt++) {
-            try { inbox.process(consumer, envelope); channel.basicAck(tag, false); return; }
+            try { var receipt=inbox.process(consumer, envelope); inbox.observe(span,receipt.replayed() ? "REPLAY" : "OK",started); channel.basicAck(tag, false); return; }
             catch (BusinessEnvelope.Rejected | DataIntegrityViolationException permanent) { break; }
             catch (DataAccessException transientFailure) {
                 if (attempt<3) {
@@ -37,6 +38,6 @@ public class BusinessConsumer {
                 }
             }
         }
-        LOG.warn("Business message failed; inspect its DLQ before replay"); channel.basicReject(tag, false);
+        inbox.observe(span,"REJECTED",started); LOG.warn("Business message failed; inspect its DLQ before replay"); channel.basicReject(tag, false);
     }
 }

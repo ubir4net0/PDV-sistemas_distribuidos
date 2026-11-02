@@ -84,7 +84,7 @@ async function main() {
       SELECT c.id,'SYNTH-ZETA-'||n,'Zeta sintético '||lpad(n::text,2,'0'),1,0,'UN',0,'ATIVO' FROM pdv.categories c CROSS JOIN generate_series(1,21) n;
     UPDATE pdv.inventory_balances SET physical=1000;`;
   docker(['exec', '-i', postgres, 'psql', '-X', '-U', 'pdv_e2e', '-d', 'pdv_e2e', '-v', 'ON_ERROR_STOP=1'], { input: sql });
-  console.log('Isolated PostgreSQL/API ready, Flyway V1–V18 rebuilt; synthetic identity seeded privately.');
+  console.log('Isolated PostgreSQL/API ready, Flyway migrations rebuilt; synthetic identity seeded privately.');
   ready=false;
   for(let i=0;i<60;i++){const r=spawnSync('docker',['exec',broker,'rabbitmq-diagnostics','-q','ping'],{stdio:'ignore',timeout:10_000});if(r.status===0){ready=true;break;}await sleep(1000);}
   if(!ready)throw new Error('Isolated RabbitMQ not ready');

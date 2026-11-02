@@ -111,6 +111,17 @@ class BusinessMessagingIT {
         UUID event = jdbc.queryForObject("SELECT id FROM outbox_events WHERE payment_id=?", UUID.class, payment); return new Operation(sale, payment, reservation, product, event);
     }
     private long count(String table) { return jdbc.queryForObject("SELECT count(*) FROM "+table, Long.class); }
+    @Test void tracesCrossRealBrokerAndCentralizeParentChildSpansWithoutPayload() {
+        var operation=operation("APROVADO"); outbox.runRound(); var message=rabbit.receive(names.requests(),5000); assertThat(message).isNotNull();
+        String trace=operation.payment().toString().replace("-",""); String header=(String)message.getMessageProperties().getHeaders().get("traceparent");
+        assertThat(header).matches("00-"+trace+"-[a-f0-9]{16}-01"); String publisher=header.substring(36,52);
+        assertThat(jdbc.queryForObject("SELECT span_id FROM operation_telemetry WHERE trace_id=? AND event='business_publish'",String.class,trace)).isEqualTo(publisher);
+        startRequests(); rabbit.send(names.exchange(),"payment.request",message); awaitCount("inbox_messages",1);
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(()->assertThat(jdbc.queryForObject("SELECT parent_span_id FROM operation_telemetry WHERE trace_id=? AND event='business_consume'",String.class,trace)).isEqualTo(publisher));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM operation_telemetry WHERE trace_id=? AND service='worker'",Long.class,trace)).isEqualTo(2);
+        var invalid=dev.pdv.worker.business.OperationTrace.child(operation.payment(),"00-"+"0".repeat(32)+"-"+"0".repeat(16)+"-01\ninjected");
+        assertThat(invalid.traceId()).isEqualTo(trace); assertThat(invalid.parentSpanId()).isEqualTo(trace.substring(0,16));
+    }
     private TransactionTemplate transaction() { return new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())); }
     private BusinessOutbox publisher(BusinessOutbox.Sender send) { return new BusinessOutbox(jdbc, transaction(), send, json, 10); }
     private BusinessEnvelope request(Operation o) { return new BusinessEnvelope(BusinessEnvelope.REQUEST, o.event(), o.payment(), null); }

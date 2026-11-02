@@ -3623,6 +3623,58 @@
         "x-authorization": "ADMIN/OPERATOR + sale.read; somente própria; alheia404; sem snapshots internos"
       }
     },
+    "/operations/telemetry": {
+      "get": {
+        "operationId": "get__operations_telemetry",
+        "summary": "GET /operations/telemetry",
+        "tags": [
+          "operations"
+        ],
+        "description": "Contrato do código implementado; permissões de negócio e propriedade são verificadas pelo servidor.",
+        "responses": {
+          "200": {
+            "description": "Resposta confirmada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelemetryDashboard"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "traceId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "x-authorization": "ADMIN; logs seguros limitados100 e métricas24h"
+      }
+    },
     "/sales/{id}/reconcile": {
       "post": {
         "operationId": "post__sales_id_reconcile",
@@ -6226,6 +6278,158 @@
         "x-java-record": {
           "file": "backend/api/src/main/java/dev/pdv/api/sales/application/SaleTimeline.java",
           "record": "SaleTimeline"
+        }
+      },
+      "TelemetryEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "api",
+              "worker"
+            ]
+          },
+          "event": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "spanId": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "parentSpanId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "REPLAY",
+              "UNCONFIRMED",
+              "REJECTED"
+            ]
+          },
+          "durationMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "service",
+          "event",
+          "traceId",
+          "spanId",
+          "parentSpanId",
+          "outcome",
+          "durationMs",
+          "createdAt"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/configuration/OperationTelemetry.java",
+          "record": "Entry"
+        }
+      },
+      "TelemetryMetric": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "service": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "failures": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "averageMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          },
+          "p95Ms": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Inteiro Java Long; preservar precisão fora de Number.MAX_SAFE_INTEGER.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "service",
+          "event",
+          "count",
+          "failures",
+          "averageMs",
+          "p95Ms"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/configuration/OperationTelemetry.java",
+          "record": "Metric"
+        }
+      },
+      "TelemetryDashboard": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelemetryMetric"
+            }
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelemetryEntry"
+            }
+          }
+        },
+        "required": [
+          "generatedAt",
+          "metrics",
+          "logs"
+        ],
+        "x-java-record": {
+          "file": "backend/api/src/main/java/dev/pdv/api/configuration/OperationTelemetry.java",
+          "record": "Dashboard"
         }
       },
       "Resolve": {

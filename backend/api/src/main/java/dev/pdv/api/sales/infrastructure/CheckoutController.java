@@ -6,6 +6,7 @@ import dev.pdv.api.sales.application.CheckoutModels.Sale;
 import dev.pdv.api.sales.application.CheckoutService;
 import dev.pdv.api.sales.application.Receipt;
 import dev.pdv.api.sales.application.SaleTimeline;
+import dev.pdv.api.configuration.OperationTelemetry;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -21,13 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CheckoutController {
     private final CheckoutService service;
-    public CheckoutController(CheckoutService service) { this.service = service; }
+    private final OperationTelemetry telemetry;
+    public CheckoutController(CheckoutService service, OperationTelemetry telemetry) { this.service = service; this.telemetry=telemetry; }
     @PostMapping("/carts/{id}/checkout")
     public ResponseEntity<Sale> checkout(@PathVariable UUID id, @Valid @RequestBody Checkout input,
             @RequestHeader(name = "Idempotency-Key", required = false) List<String> keys, @AuthenticationPrincipal AuthPrincipal actor) {
         String key = keys != null && keys.size()==1 ? keys.getFirst() : null;
-        var result = service.checkout(id, input, key, actor.id());
-        return ResponseEntity.status(201).header("Cache-Control", "no-store").header("Idempotent-Replay", Boolean.toString(result.replayed())).body(result.sale());
+        long started=System.nanoTime(); var result = service.checkout(id, input, key, actor.id());
+        String trace=telemetry.checkout(result.sale().paymentId(),result.replayed(),started);
+        return ResponseEntity.status(201).header("Cache-Control", "no-store").header("traceparent",trace).header("Idempotent-Replay", Boolean.toString(result.replayed())).body(result.sale());
     }
     @GetMapping("/sales/{id}")
     public Sale get(@PathVariable UUID id, @AuthenticationPrincipal AuthPrincipal actor) { return service.get(id, actor.id()); }

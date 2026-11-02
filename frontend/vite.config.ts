@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: '127.0.0.1', port: Number(process.env.PDV_FRONTEND_PORT ?? 5173), strictPort: true,
-    proxy: Object.fromEntries(['/auth', '/customers', '/products', '/carts', '/sales'].map(path => [path, { target, changeOrigin: false }])),
+    proxy: Object.fromEntries(['/auth', '/customers', '/products', '/carts', '/sales', '/operations'].map(path => [path, { target, changeOrigin: false }])),
   },
   build: { sourcemap: false },
 });

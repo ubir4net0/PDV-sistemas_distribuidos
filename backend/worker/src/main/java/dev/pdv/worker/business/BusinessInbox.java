@@ -37,4 +37,5 @@ public class BusinessInbox {
         });
     }
     public record Receipt(boolean replayed, String disposition) { }
+    public void observe(OperationTrace.Span span, String outcome, long started) { OperationTrace.record(jdbc,span,"business_consume",outcome,started); }
 }

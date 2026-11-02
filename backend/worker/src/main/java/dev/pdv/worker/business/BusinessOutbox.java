@@ -30,6 +30,7 @@ public class BusinessOutbox {
         var ids = jdbc.queryForList("SELECT event_id FROM outbox_deliveries WHERE status='PENDING' AND attempts<5 AND next_attempt_at<=clock_timestamp() AND version<9223372036854775807 ORDER BY next_attempt_at,event_id LIMIT ?", UUID.class, batchSize);
         int published = 0; int failed = 0;
         for (var id : ids) {
+            var observed=new OperationTrace.Span[1]; long started=System.nanoTime();
             try {
                 var outcome = transaction.execute(status -> {
                     jdbc.execute("SET LOCAL lock_timeout='2s'"); jdbc.execute("SET LOCAL statement_timeout='4s'");
@@ -38,16 +39,18 @@ public class BusinessOutbox {
                             WHERE d.event_id=? AND d.status='PENDING' AND d.attempts<5 AND d.next_attempt_at<=clock_timestamp() AND d.version<9223372036854775807 FOR UPDATE OF d SKIP LOCKED
                             """, (r, i) -> json.readValue(r.getString(1), BusinessEnvelope.class), id);
                     if (rows.isEmpty()) { return "SKIPPED"; }
-                    try { sender.send(rows.getFirst()); }
+                    observed[0]=OperationTrace.child(rows.getFirst().paymentId(),null);
+                    try { OperationTrace.use(observed[0]); sender.send(rows.getFirst()); }
                     catch (AmqpException failure) {
                         jdbc.update("""
                                 UPDATE outbox_deliveries SET attempts=attempts+1,status=CASE WHEN attempts+1>=5 THEN 'DEAD' ELSE 'PENDING' END,
                                 next_attempt_at=clock_timestamp()+(LEAST(60,power(2,attempts)::integer)*interval '1 second'),last_error='UNCONFIRMED',version=version+1,updated_at=clock_timestamp() WHERE event_id=?
                                 """, id); return "FAILED";
-                    }
+                    } finally { OperationTrace.clear(); }
                     jdbc.update("UPDATE outbox_deliveries SET status='PUBLISHED',attempts=attempts+1,last_error=NULL,version=version+1,updated_at=clock_timestamp() WHERE event_id=?", id); return "PUBLISHED";
                 });
                 if ("PUBLISHED".equals(outcome)) { published++; } else if ("FAILED".equals(outcome)) { failed++; }
+                if(observed[0]!=null) { OperationTrace.record(jdbc,observed[0],"business_publish","PUBLISHED".equals(outcome) ? "OK" : "UNCONFIRMED",started); }
             } catch (DataAccessException failure) { failed++; LOG.warn("Business outbox transaction failed; publication may be repeated"); }
         }
         return new Round(ids.size(), published, failed);
