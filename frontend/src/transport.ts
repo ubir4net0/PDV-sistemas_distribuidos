@@ -14,11 +14,13 @@ export function integer(v: unknown): string {
 }
 export const revision = (v: string) => { if (!/^\d+$/.test(v)) throw new Error('Invalid revision'); return new LosslessNumber(v); };
 const errors: Record<string, string> = {
-  document_conflict: 'Este documento já está cadastrado.', version_conflict: 'Este registro mudou. Descarte a edição e recarregue antes de tentar novamente.',
+  price_changed: 'O preço do catálogo mudou. Reconsulte e remova/reinclua o item para revisar o preço antes de finalizar.',
+  cart_checked_out: 'Este carrinho já foi convertido e não pode ser editado.',
+  document_conflict: 'Este documento já está cadastrado.', version_conflict: 'Este registro mudou. Reconsulte antes de tentar novamente.',
   invalid_request: 'Confira os dados informados.', customer_not_found: 'Cliente não encontrado.',
 };
 export async function businessRequest(path: string, method: string, token: string, signal: AbortSignal, body?: object, key?: string): Promise<unknown> {
-  if (!/^\/(customers|products|carts|sales)(\/|\?|$)/.test(path) || path.includes('://') || path.includes('..')) throw new ApiError(400, 'Caminho inválido.');
+  if (!/^\/(customers|products|carts|sales)(\/|\?|$)/.test(path) || path.includes('://') || path.split('?')[0].includes('..')) throw new ApiError(400, 'Caminho inválido.');
   let response: Response;
   try {
     response = await fetch(path, { method, signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]), credentials: 'omit', cache: 'no-store', redirect: 'error',

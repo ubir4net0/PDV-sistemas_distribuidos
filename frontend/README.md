@@ -1,8 +1,10 @@
 # Frontend — PDV-015
 
-React/TypeScript/Vite/Tailwind: `/login` e `/app` protegido, com perfil próprio, erros/loading e logout. Substitui o diretório reservado do bootstrap documental. Não implementa telas comerciais nem amplia permissões.
+React/TypeScript/Vite/Tailwind: `/login` e `/app` protegido, com perfil próprio, erros/loading e logout, evoluído com os incrementos abaixo. Substitui o diretório reservado do bootstrap documental. Permissões seguem a API existente.
 
 Incremento PDV-019: [clientes](../docs/workflows/frontend-customers.md) em `/app/customers`, lista/busca/formulário/estado com permissões existentes. Proxy local inclui `/customers`; contexto não é persistido. Limites de endereço/histórico estão no contrato da tela.
+
+Incremento PDV-043: [PDV/carrinho/checkout](../docs/workflows/frontend-pos.md) em `/app/pos`, com proxy local também para `/products`, `/carts` e `/sales`. Totais exatos do servidor, cliente ativo, teclas e checkout com retry da mesma operação. Sem rede financeira ou telas de gestão de catálogo/estoque.
 
 ## Desenvolvimento
 

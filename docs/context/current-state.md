@@ -1,5 +1,9 @@
 # Estado observado em 2 de novembro de 2026
 
+## PDV e checkout frontend — PDV-043
+
+Busca cliente/produto ativo, carrinho próprio com quantidades/versão e totais exatos do servidor, teclado e responsividade. Checkout com método/cenário fictícios explícitos e chave/corpo conservados após resposta perdida, inclusive ao navegar dentro da sessão. Conflito exige revisão/reconsulta, sem duplicar intenção ou reprecificar automaticamente. [Contrato e limites de recuperação](../workflows/frontend-pos.md). Progresso de pagamento é044; sem Java/DDL neste incremento.
+
 ## Telas de clientes — PDV-019
 
 Lista/busca/paginação, formulário PF/PJ com validação local e erros seguros, edição com versão int64 exata e status restrito a ADMIN. Conflito conserva edição até descarte/reconsulta explícita. [Operação e fronteiras](../workflows/frontend-customers.md). Navegação/permissões refletem a API; endereço/histórico continuam sem tela própria. Sem mudança Java/DDL.

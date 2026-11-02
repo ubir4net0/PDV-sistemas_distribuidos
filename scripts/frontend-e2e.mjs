@@ -31,10 +31,12 @@ async function main() {
   if (!process.env.npm_execpath || !existsSync(process.env.npm_execpath)) throw new Error('Run using npm --prefix frontend run e2e.');
   {
     console.log('Building API JAR using pinned Java21/Maven toolchain (no test skip claim).');
-    docker(['run', '--rm', '--init', '--mount', `type=bind,source=${resolve(root, 'backend/api')},target=/workspace`,
+    const build = ['run', '--rm', '--init', '--mount', `type=bind,source=${resolve(root, 'backend/api')},target=/workspace`,
       '--mount', `type=bind,source=${resolve(root, 'config')},target=/config,readonly`,
       '--mount', 'type=volume,source=pdv-api-maven-cache,target=/root/.m2', '--workdir', '/workspace', toolchain.image,
-      'sh', './mvnw', '-B', '-ntp', '-DskipTests', 'package']);
+      'sh', './mvnw', '-B', '-ntp'];
+    try { docker([...build, '-o', '-DskipTests', 'package']); }
+    catch { console.log('Maven cache unavailable; building with pinned online dependencies.'); docker([...build, '-DskipTests', 'package']); }
   }
   docker(['network', 'create', network]); created.add(network);
   docker(['run', '--detach', '--rm', '--name', postgres, '--network', network, '--network-alias', 'database',
@@ -64,8 +66,16 @@ async function main() {
     INSERT INTO pdv.users(name,email,password_hash,active) VALUES ('Pessoa de Teste','${email}',crypt('${password}',gen_salt('bf',4)),true);
     INSERT INTO pdv.users(name,email,password_hash,active) VALUES ('Admin de Teste','${adminEmail}',crypt('${password}',gen_salt('bf',4)),true);
     INSERT INTO pdv.user_roles(user_id,role_id) SELECT u.id,r.id FROM pdv.users u CROSS JOIN pdv.roles r WHERE (u.email='${email}' AND r.code='OPERATOR') OR (u.email='${adminEmail}' AND r.code='ADMIN');
-    INSERT INTO pdv.permissions(resource,action) VALUES ('customer','read'),('customer','create'),('customer','update'),('customer','status');
-    INSERT INTO pdv.role_permissions(role_id,permission_id) SELECT r.id,p.id FROM pdv.roles r CROSS JOIN pdv.permissions p;`;
+    INSERT INTO pdv.permissions(resource,action) VALUES ('customer','read'),('customer','create'),('customer','update'),('customer','status'),('catalog','read'),('catalog','write'),('cart','read'),('cart','write'),('sale','checkout'),('sale','read');
+    INSERT INTO pdv.role_permissions(role_id,permission_id) SELECT r.id,p.id FROM pdv.roles r CROSS JOIN pdv.permissions p;
+    INSERT INTO pdv.categories(name) VALUES ('Categoria sintética');
+    INSERT INTO pdv.products(category_id,sku,name,sale_price,cost,unit,minimum_stock,status)
+      SELECT id,'SYNTH-ALPHA','Produto Alpha',0.10,0,'UN',0,'ATIVO' FROM pdv.categories;
+    INSERT INTO pdv.products(category_id,sku,name,sale_price,cost,unit,minimum_stock,status)
+      SELECT id,'SYNTH-BETA','Produto Beta',0.20,0,'UN',0,'ATIVO' FROM pdv.categories;
+    INSERT INTO pdv.products(category_id,sku,name,sale_price,cost,unit,minimum_stock,status)
+      SELECT c.id,'SYNTH-ZETA-'||n,'Zeta sintético '||lpad(n::text,2,'0'),1,0,'UN',0,'ATIVO' FROM pdv.categories c CROSS JOIN generate_series(1,21) n;
+    UPDATE pdv.inventory_balances SET physical=1000;`;
   docker(['exec', '-i', postgres, 'psql', '-X', '-U', 'pdv_e2e', '-d', 'pdv_e2e', '-v', 'ON_ERROR_STOP=1'], { input: sql });
   console.log('Isolated PostgreSQL/API ready, Flyway V1–V18 rebuilt; synthetic identity seeded privately.');
   const port = await freePort();

@@ -18,7 +18,7 @@ test('empty, validation, create, duplicate, edit and operator restrictions', asy
   await page.screenshot({path:info.outputPath('customers-desktop.png')}); await page.setViewportSize({width:390,height:844}); expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true); await page.screenshot({path:info.outputPath('customers-mobile.png')});
 });
 test('admin status and stale version preserve edits until explicit reload',async({page,request})=>{
-  let bearer=''; page.on('request',r=>{if(r.url().includes('/customers'))bearer=r.headers()['authorization']??bearer;}); await login(page,true);
+  let bearer=''; page.on('request',r=>{if(r.url().endsWith('/auth/me'))bearer=r.headers()['authorization']??bearer;}); await login(page,true);
   const row=page.getByRole('button',{name:/^Abrir /}).first(); await row.click(); await expect(page.getByRole('button',{name:'Inativar cliente'})).toBeVisible(); await page.getByRole('button',{name:'Inativar cliente'}).click(); await expect(page.getByRole('heading',{name:'Detalhes do cliente'})).toHaveCount(0);
   await page.getByRole('button',{name:/^Abrir /}).first().click(); const field=page.getByLabel('Nome',{exact:true}).last(); await field.fill('Edição preservada');
   const list=await request.get(`${process.env.PDV_E2E_API}/customers`,{headers:{Authorization:bearer}}); const data=await list.json(); const c=data.items[0];
@@ -27,7 +27,7 @@ test('admin status and stale version preserve edits until explicit reload',async
   await page.getByRole('button',{name:'Descartar edição e recarregar'}).click(); await expect(field).toHaveValue('Concorrente sintético');
 });
 test('search, pagination and controlled read failure with retry',async({page,request})=>{
-  let bearer=''; page.on('request',r=>{if(r.url().includes('/customers'))bearer=r.headers()['authorization']??bearer;}); await login(page);
+  let bearer=''; page.on('request',r=>{if(r.url().endsWith('/auth/me'))bearer=r.headers()['authorization']??bearer;}); await login(page);
   for(let i=0;i<21;i++){const r=await request.post(`${process.env.PDV_E2E_API}/customers`,{headers:{Authorization:bearer},data:{personType:'PF',document:cpf(),name:`Lote sintético ${String(i).padStart(2,'0')}`}});expect(r.status()).toBe(201);}
   await page.getByLabel('Nome',{exact:true}).fill('Lote sintético'); await page.getByRole('button',{name:'Buscar',exact:true}).click(); await expect(page.getByText('21 cliente(s)')).toBeVisible(); await page.getByRole('button',{name:'Próxima'}).click(); await expect(page.getByText(/Página 2/)).toBeVisible();
   await page.route('**/customers?*',r=>r.abort('failed')); await page.getByRole('button',{name:'Buscar',exact:true}).click(); await expect(page.getByRole('alert')).toContainText('conexão'); await page.unroute('**/customers?*'); await page.getByRole('button',{name:'Tentar novamente'}).click(); await expect(page.getByText('21 cliente(s)')).toBeVisible();
