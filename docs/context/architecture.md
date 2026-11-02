@@ -1,6 +1,6 @@
 # Arquitetura alvo do PDV
 
-Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Worker tem modos explícitos de expiração e simulação de pagamento sobre checkout/Saga persistidos; compras, frontend, transporte confiável e efeitos finais de venda permanecem nas tarefas próprias.
+Estado: arquitetura alvo do pacote v1.0, adotada como referência pela ADR-007. Infraestrutura, API, worker técnico, identidade, clientes, catálogo, fornecedores e saldos/movimentos e reservas com TTL disponíveis nos incrementos documentados. Worker tem modos explícitos de expiração e simulação de pagamento sobre checkout/Saga persistidos; mensageria de negócio Outbox/Inbox foi adicionada na038; compras, frontend e efeitos finais de venda permanecem nas tarefas próprias.
 
 ## Registros de decisão
 
@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V15, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Checkout idempotente sales/V14, coordenação V15 e processador local opt-in estão implementados; compras e mensageria de negócio pela API permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V16, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Checkout idempotente sales/V14, coordenação V15 e processador local opt-in estão implementados; compras e mensageria de negócio pela API permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
 
@@ -63,3 +63,5 @@ PDV-035: [checkout](../workflows/checkout.md) usa transação JPA/JDBC compartil
 PDV-036: funções transacionais compartilhadas e guardas V15 coordenam estados conforme ADR-008; [contrato](../workflows/sale-saga.md). Pagamento/Saga têm progresso durável, resultado e eventos, sem implementar transporte confiável ou efeitos finais.
 
 PDV-037: [processador local](../workflows/simulated-payments.md) no worker, desligado por padrão, retoma etapas iniciadas e grava decisão determinística. Poll de laboratório não substitui o transporte Outbox/Inbox da038.
+
+PDV-038: [transporte de negócio](../workflows/business-messaging.md) por outbox/inbox V16, publisher confirms/returns, ack após commit, retry limitado e DLQ. API grava intenção; worker publica/consome solicitação e aplica resposta pelo coordenador SQL compartilhado. Simulação local e modo AMQP são exclusivos; stock/comprovante/liberação seguem próprios.

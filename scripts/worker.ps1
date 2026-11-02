@@ -5,12 +5,14 @@ param(
     [string]$Action = 'Verify',
     [string]$ProbePrefix = 'pdv.scaffold.probe',
     [switch]$ExpireReservations,
-    [switch]$SimulatePayments
+    [switch]$SimulatePayments,
+    [switch]$BusinessMessaging,
+    [string]$BusinessPrefix = 'pdv.business.payments'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-if (($ExpireReservations -or $SimulatePayments) -and $Action -ne 'Run') { throw 'Modos de estoque/pagamento requerem -Action Run.' }
+if (($ExpireReservations -or $SimulatePayments -or $BusinessMessaging) -and $Action -ne 'Run') { throw 'Modos de estoque/pagamento requerem -Action Run.' }
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $workerRoot = Join-Path $repoRoot 'backend/worker'
 $qualityRoot = Join-Path $repoRoot 'config'
@@ -44,7 +46,11 @@ try {
         $values['PDV_RESERVATION_EXPIRY_ENABLED'] = if ($expiryEnabled) { 'true' } else { 'false' }
         $paymentEnabled = $Action -eq 'Run' -and ($SimulatePayments -or $env:PDV_SIMULATED_PAYMENTS_ENABLED -eq 'true')
         $values['PDV_SIMULATED_PAYMENTS_ENABLED'] = if ($paymentEnabled) { 'true' } else { 'false' }
-        if ($Action -eq 'Verify' -or $expiryEnabled -or $paymentEnabled) {
+        $businessEnabled = $Action -eq 'Run' -and ($BusinessMessaging -or $env:PDV_BUSINESS_MESSAGING_ENABLED -eq 'true')
+        if ($businessEnabled -and $paymentEnabled) { throw 'Escolha -BusinessMessaging ou -SimulatePayments, sem combinar os dois.' }
+        $values['PDV_BUSINESS_MESSAGING_ENABLED'] = if ($businessEnabled) { 'true' } else { 'false' }
+        $values['PDV_BUSINESS_PREFIX'] = $BusinessPrefix
+        if ($Action -eq 'Verify' -or $expiryEnabled -or $paymentEnabled -or $businessEnabled) {
             $postgresId = & docker @composeArgs ps -q postgres
             if ($LASTEXITCODE -ne 0 -or -not $postgresId) { throw 'Inicie PostgreSQL PDV primeiro.' }
             $postgresHealth = & docker inspect --format '{{.State.Health.Status}}' $postgresId

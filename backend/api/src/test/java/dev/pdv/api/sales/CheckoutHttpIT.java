@@ -39,7 +39,11 @@ class CheckoutHttpIT extends CartHttpSupport {
             try {
                 connection.setAutoCommit(false);
                 try (var s = connection.createStatement()) { s.execute("SET LOCAL session_replication_role=replica"); }
-                for (var sql : List.of("DELETE FROM sale_sagas WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                for (var sql : List.of("DELETE FROM outbox_deliveries WHERE event_id IN (SELECT e.id FROM outbox_events e JOIN payments p ON p.id=e.payment_id JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM outbox_events WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM inbox_messages WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM simulation_decisions WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM sale_sagas WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM payment_results WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM payment_intents WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM payments WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))", "DELETE FROM sale_events WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
@@ -128,7 +132,7 @@ class CheckoutHttpIT extends CartHttpSupport {
         jdbc.execute("ALTER TABLE sale_events ADD CONSTRAINT " + constraint + " CHECK (kind<>'CHECKOUT') NOT VALID");
         try {
             assertThat(checkout(cart, token, "retry", command(1)).statusCode()).isEqualTo(503);
-            for (var table : List.of("sales", "payments", "payment_intents", "sale_items", "checkout_operations")) { assertThat(jdbc.queryForObject("SELECT count(*) FROM " + table, Integer.class)).isZero(); }
+            for (var table : List.of("sales", "payments", "payment_intents", "sale_items", "checkout_operations", "outbox_events", "outbox_deliveries")) { assertThat(jdbc.queryForObject("SELECT count(*) FROM " + table, Integer.class)).isZero(); }
             assertThat(jdbc.queryForObject("SELECT count(*) FROM inventory_reservations WHERE actor_id=?", Integer.class, admin)).isZero();
             assertThat(jdbc.queryForObject("SELECT reserved FROM inventory_balances WHERE product_id=?", Long.class, product)).isZero();
             assertThat(jdbc.queryForObject("SELECT version FROM carts WHERE id=?", Long.class, cart)).isEqualTo(1);

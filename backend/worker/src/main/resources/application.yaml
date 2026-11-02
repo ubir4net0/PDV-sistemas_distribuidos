@@ -14,6 +14,12 @@ spring:
     connection-timeout: 5s
 
 pdv:
+  business:
+    enabled: ${PDV_BUSINESS_MESSAGING_ENABLED:false}
+    prefix: ${PDV_BUSINESS_PREFIX:pdv.business.payments}
+    interval-ms: 1000
+    batch-size: 10
+    publish-timeout-ms: 5000
   simulated-payments:
     enabled: ${PDV_SIMULATED_PAYMENTS_ENABLED:false}
     interval-ms: 5000

@@ -69,3 +69,7 @@ Rodada a cada5s/até100 reservas, seleção indexada por prazo/id, transação p
 ## Processador de pagamento — PDV-037
 
 Com migrations V15 aplicadas, `./scripts/worker.ps1 -Action Run -SimulatePayments -ExpireReservations` habilita os modos locais combinados. [Contrato e operação](../../docs/workflows/simulated-payments.md). Sem flags, simulação/expiração ficam desligadas. Poll5s/até100 prioriza retomada; três cenários determinísticos e resultado persistido, sem sorteio/rede financeira. Início e resultado são transações separadas protegidas pela Saga; nenhuma baixa/liberação/conclusão automática. Outbox/Inbox de negócio permanece na038.
+
+## Transporte de negócio — PDV-038
+
+`./scripts/worker.ps1 -Action Run -BusinessMessaging -ExpireReservations` usa outbox/inbox V16 e RabbitMQ real para solicitações/resultados. [Contrato, retry/DLQ/replay e limites](../../docs/workflows/business-messaging.md). Não combinar com SimulatePayments; diagnóstico permanece separado. Worker não migra banco e não publica diretamente como parte do commit SQL.
