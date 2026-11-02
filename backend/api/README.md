@@ -1,6 +1,6 @@
 # API PDV — Java 21 / Spring Boot
 
-API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. Catálogo de permissões exige ADMIN e concessão explícita (PDV-013); POST /customers usa JPA e documento validado/único; catálogo, fornecedores, estoque, reservas e carrinho estão disponíveis nos incrementos abaixo; checkout/vendas e comunicação AMQP de negócio permanecem pendentes.
+API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. Catálogo de permissões exige ADMIN e concessão explícita (PDV-013); POST /customers usa JPA e documento validado/único; catálogo, fornecedores, estoque, reservas e carrinho estão disponíveis nos incrementos abaixo; checkout idempotente e leitura própria de venda disponíveis; processamento de pagamento e comunicação AMQP de negócio permanecem pendentes.
 
 ## Build e execução no Windows
 
@@ -93,3 +93,5 @@ PDV-028 acrescenta ETag forte em GET /inventory/{productId}, PATCH condicional n
 PDV-029: [reservas](../../docs/workflows/reservations.md) atômicas/TTL/barreira de pagamento. Run agora exige -ReservationTtlSeconds 900 (demo) ou PDV_RESERVATION_TTL_SECONDS positivo privado; Verify usa900s. Isso é separado do TTL de autenticação. V12, sem checkout/Saga ou worker de expiração presumidos.
 
 PDV-034: [carrinho/itens](../../docs/workflows/carts.md) próprios com JPA, @Version, dinheiro BigDecimal e preço copiado do catálogo, sem descontos/reserva/checkout. V13 mantém trilha imutável e criação idempotente.
+
+[Checkout PDV-035](../../docs/workflows/checkout.md), V14: POST /carts/{id}/checkout e GET /sales/{id}, permissões sale.checkout/read.

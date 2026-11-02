@@ -90,6 +90,8 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/reservations", "/reservations/{id}/renew").authenticated()
                         .requestMatchers(HttpMethod.GET, "/carts", "/carts/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/carts").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/carts/{id}/checkout").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/sales/{id}").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/carts/{id}/items/{productId}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/carts/{id}/items/{productId}").authenticated()
                         .anyRequest().denyAll())

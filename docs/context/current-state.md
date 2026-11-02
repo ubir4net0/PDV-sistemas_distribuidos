@@ -1,5 +1,9 @@
 # Estado observado em 1 de novembro de 2026
 
+## Checkout idempotente — PDV-035
+
+Refinamento aprovado pelo proprietário. V14 grava venda/itens/reserva/intenção/resposta juntos, com propriedade, preço/ativo/versão/disponibilidade revalidados. Chave por ator sem expiração e UNIQUE por carrinho protegem retries; agregado convertido fica congelado. [Contrato](../workflows/checkout.md). Ainda sem processamento de pagamento, baixa ou transporte Outbox/Inbox.
+
 ## Carrinho e itens — PDV-034
 
 Carrinhos próprios ADMIN/OPERATOR, cliente/produto ativo, quantidades inteiras e preços do catálogo capturados/preservados. JPA/V13/@Version protege alterações; BigDecimal calcula totais e trilha reverte com os dados. [Contrato](../workflows/carts.md). Sem reserva/checkout/desconto/frontend ou venda/Saga inferidos.

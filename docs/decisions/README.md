@@ -14,6 +14,10 @@ Este índice faz parte da [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.
 
 As ADRs 002–006 preservam o registro anterior à aprovação da ADR-007. “Declarado no pacote” indica origem rastreável. O proprietário aprovou a baseline textual e os novos diagramas como referência de desenvolvimento; a equivalência aos originais acadêmicos ausentes não foi comprovada.
 
+## Estados de venda/pagamento
+
+[ADR-008](ADR-008-estados-venda-pagamento.md) aprovada pelo proprietário: DEC-01 resolvida para checkout/Saga/simulador; TIMEOUT corresponde a INDETERMINADO e conserva reserva protegida. Efeitos de baixa/comprovante, reconciliação/liberação e cancelamento permanecem nas tarefas próprias. As indicações antigas abaixo são históricas quanto a esse recorte.
+
 ## Decisões aprovadas na ADR-007
 
 | Referência | Decisão vigente |

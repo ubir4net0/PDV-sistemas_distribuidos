@@ -34,7 +34,7 @@ public class CartService {
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN','OPERATOR') and hasAuthority('cart.write')")
     public Cart setItem(UUID id, UUID product, SetItem input, UUID actor) {
-        var entity = store.own(id, actor, true); check(entity, input.version()); var before = store.view(entity);
+        var entity = store.own(id, actor, true); store.editable(id); check(entity, input.version()); var before = store.view(entity);
         store.activeCustomer(entity.customerId()); var price = store.activePrice(product); var existing = store.item(id, product);
         if (existing.isPresent()) { existing.get().quantity(input.quantity()); } else { store.add(new CartItemEntity(id, product, input.quantity(), price)); }
         entity.touch(store.now()); store.flush(); var after = store.view(entity); store.audit(actor, "SET_ITEM", before, after); return after;
@@ -43,7 +43,7 @@ public class CartService {
     @PreAuthorize("hasAnyRole('ADMIN','OPERATOR') and hasAuthority('cart.write')")
     public Cart remove(UUID id, UUID product, Long version, UUID actor) {
         if (version == null || version < 0) { throw new ApiFailure(400, "invalid_request"); }
-        var entity = store.own(id, actor, true); check(entity, version); var before = store.view(entity);
+        var entity = store.own(id, actor, true); store.editable(id); check(entity, version); var before = store.view(entity);
         store.remove(store.item(id, product).orElseThrow(() -> new ApiFailure(404, "cart_item_not_found")));
         entity.touch(store.now()); store.flush(); var after = store.view(entity); store.audit(actor, "REMOVE_ITEM", before, after); return after;
     }

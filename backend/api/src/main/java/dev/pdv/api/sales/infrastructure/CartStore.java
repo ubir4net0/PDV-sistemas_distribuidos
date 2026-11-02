@@ -36,6 +36,9 @@ public class CartStore {
         if (rows.isEmpty()) { throw new ApiFailure(404, "customer_not_found"); }
         if (!rows.getFirst()) { throw new ApiFailure(409, "customer_inactive"); }
     }
+    public void editable(UUID id) {
+        if (Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM sales WHERE cart_id=?)", Boolean.class, id))) { throw new ApiFailure(409, "cart_checked_out"); }
+    }
     public BigDecimal activePrice(UUID id) {
         return jdbc.query("SELECT sale_price,status FROM products WHERE id=? FOR SHARE", (r, i) -> {
             if (!"ATIVO".equals(r.getString("status"))) { throw new ApiFailure(409, "product_inactive"); }
