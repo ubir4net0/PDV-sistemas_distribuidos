@@ -1,6 +1,6 @@
 # API PDV — Java 21 / Spring Boot
 
-API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. Catálogo de permissões exige ADMIN e concessão explícita (PDV-013); POST /customers usa JPA e documento validado/único; estoque, vendas e comunicação com o worker seguem pendentes.
+API iniciada na [PDV-005](../../sdd/features/PDV-005-api-scaffold.md), com Spring Boot 4.1.2, Maven 3.10.0 e Wrapper oficial 3.3.4. Flyway/PostgreSQL incluem V1 de namespace, V2 de identidade e V3 de tokens. [Modelo e seed de desenvolvimento](../../docs/workflows/identity-security.md). Health/probes, login, perfil próprio e logout estão disponíveis. Catálogo de permissões exige ADMIN e concessão explícita (PDV-013); POST /customers usa JPA e documento validado/único; catálogo, fornecedores, estoque, reservas e carrinho estão disponíveis nos incrementos abaixo; checkout/vendas e comunicação AMQP de negócio permanecem pendentes.
 
 ## Build e execução no Windows
 
@@ -64,7 +64,7 @@ Namespace `dev.pdv.api`, com entrada `PdvApiApplication` e configuração transv
 | inventory | Saldo, reservas e movimentações |
 | sales | Carrinho, venda e Saga |
 
-Cada módulo separa `domain` (regras), `application` (casos de uso) e `infrastructure` (adaptadores), com fronteiras descritas em package-info.java. access.http expõe identidade; customers, catalog e purchasing.infrastructure expõem cadastros HTTP/JPA reais. inventory implementa saldos/aberturas por SQL crítico; sales continua reservado. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e complementos; detalhes aprovados estão nas specs próprias. Movimentações/reservas, compras, eventos e Saga continuam nas tarefas seguintes.
+Cada módulo separa `domain` (regras), `application` (casos de uso) e `infrastructure` (adaptadores), com fronteiras descritas em package-info.java. access.http expõe identidade; customers, catalog e purchasing.infrastructure expõem cadastros HTTP/JPA reais. inventory implementa saldos/aberturas por SQL crítico; sales implementa carrinho/itens, sem checkout/venda/Saga. A [ADR-007 aprovada](../../docs/decisions/ADR-007-proposta-base-dominio.md) define referência textual, estados de OC, fornecedor N:1 e complementos; detalhes aprovados estão nas specs próprias. Movimentações/reservas, compras, eventos e Saga continuam nas tarefas seguintes.
 
 ## Verificações e fontes
 
@@ -91,3 +91,5 @@ PDV-027 acrescenta V11, entradas/saídas/ajustes inteiros via SQL condicional, l
 PDV-028 acrescenta ETag forte em GET /inventory/{productId}, PATCH condicional na mesma URI, If-Match/version e conflitos412/409 sem perda de atualização. Revisão ausente428; replay preserva resultado sem inventar estado atual. Sem novo schema; V11 e contratos legados mantidos. [Spec/RFC e verificações](../../sdd/features/PDV-028-concorrencia-etags.md).
 
 PDV-029: [reservas](../../docs/workflows/reservations.md) atômicas/TTL/barreira de pagamento. Run agora exige -ReservationTtlSeconds 900 (demo) ou PDV_RESERVATION_TTL_SECONDS positivo privado; Verify usa900s. Isso é separado do TTL de autenticação. V12, sem checkout/Saga ou worker de expiração presumidos.
+
+PDV-034: [carrinho/itens](../../docs/workflows/carts.md) próprios com JPA, @Version, dinheiro BigDecimal e preço copiado do catálogo, sem descontos/reserva/checkout. V13 mantém trilha imutável e criação idempotente.

@@ -1,5 +1,9 @@
 # Estado observado em 1 de novembro de 2026
 
+## Carrinho e itens — PDV-034
+
+Carrinhos próprios ADMIN/OPERATOR, cliente/produto ativo, quantidades inteiras e preços do catálogo capturados/preservados. JPA/V13/@Version protege alterações; BigDecimal calcula totais e trilha reverte com os dados. [Contrato](../workflows/carts.md). Sem reserva/checkout/desconto/frontend ou venda/Saga inferidos.
+
 ## Expiração pelo worker — PDV-030
 
 Modo explícito expira reservas vencidas/desprotegidas a cada5s/até100, com função V12/transação por agregado, SKIP LOCKED e status/evento únicos. Pagamento protegido/renovação impedem liberação indevida; falhas revertem e permitem retry. [Operação](../../backend/worker/README.md), sem checkout/Saga/reconciliação inferidos.

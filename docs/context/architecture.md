@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V9, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, estoque, compras e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V13, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, compras, checkout e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
 
@@ -55,3 +55,5 @@ A PDV-013 implementa a matriz inicial explicitamente aprovada pelo proprietário
 PDV-029: reserva técnica com itens, proprietário, TTL obrigatório e trilha imutável V12. UPDATE condicional protege disponível; funções PostgreSQL comuns serializam renovação/proteção/expiração, sem baixar físico ou liberar resultado incerto. [Contrato](../workflows/reservations.md). Vínculo com venda/checkout e reconciliação permanecem nas tarefas próprias.
 
 PDV-030: worker independente usa PostgreSQL compartilhado para expiração via função transacional V12, sem DDL em runtime, opt-in5s/100. Isso não adiciona mensagens de negócio, outbox/inbox ou integração de pagamento. [Spec](../../sdd/features/PDV-030-expiracao-worker.md).
+
+PDV-034: carrinho usa CRUD JPA/@Version com lock do agregado, leitura REPEATABLE_READ e auditoria JDBC na mesma transação. Dinheiro BigDecimal/preço capturado sem descontos; itens não reservam estoque. V13, [contrato](../workflows/carts.md). Checkout futuro vincula/congela carrinho/venda/reserva/intenção de evento em unidade transacional própria.
