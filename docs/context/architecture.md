@@ -16,7 +16,7 @@ Banco compartilhado entre dois processos é simplificação acadêmica. Transaç
 
 Pagamento simulado local tem aprovação, recusa, timeout, estorno e reprocessamento determinísticos. Métodos como PIX/cartão são rótulos fictícios; nenhuma API financeira/fiscal externa.
 
-Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V14, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, checkout idempotente disponível em sales/V14; compras, processamento de pagamento e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
+Estrutura alvo: backend/api, backend/worker, frontend, infra, docs, sdd/features e .github/workflows. O Compose da raiz inicia PostgreSQL/RabbitMQ; consultar [operação local](../../infra/README.md). API Spring Boot 4.1.2/Java 21, [Flyway](../workflows/database-migrations.md) V1–V15, [identidade/tokens](../workflows/identity-security.md) por JDBC e cadastros JPA de clientes/endereços/categorias/produtos/fornecedores. Health/readiness consultam PostgreSQL, liveness mede o processo. [API](../../backend/api/README.md) documenta módulos/camadas e contratos implementados. Mensageria de negócio pela API, checkout idempotente disponível em sales/V14; compras, processamento de pagamento e Saga permanecem pendentes. O bootstrap não aprovou domínio; decisões posteriores têm o alcance explícito de cada ADR/spec.
 
 ## Fronteiras de consistência
 
@@ -59,3 +59,5 @@ PDV-030: worker independente usa PostgreSQL compartilhado para expiração via f
 PDV-034: carrinho usa CRUD JPA/@Version com lock do agregado, leitura REPEATABLE_READ e auditoria JDBC na mesma transação. Dinheiro BigDecimal/preço capturado sem descontos; itens não reservam estoque. V13, [contrato](../workflows/carts.md). Checkout futuro vincula/congela carrinho/venda/reserva/intenção de evento em unidade transacional própria.
 
 PDV-035: [checkout](../workflows/checkout.md) usa transação JPA/JDBC compartilhada, locks ordenados e resposta imutável. [ADR-008 aprovada](../decisions/ADR-008-estados-venda-pagamento.md) resolve DEC-01 no recorte explícito, sem antecipar as implementações 036–041.
+
+PDV-036: funções transacionais compartilhadas e guardas V15 coordenam estados conforme ADR-008; [contrato](../workflows/sale-saga.md). Pagamento/Saga têm progresso durável, resultado e eventos, sem implementar transporte confiável ou efeitos finais.

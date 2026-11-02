@@ -39,7 +39,9 @@ class CheckoutHttpIT extends CartHttpSupport {
             try {
                 connection.setAutoCommit(false);
                 try (var s = connection.createStatement()) { s.execute("SET LOCAL session_replication_role=replica"); }
-                for (var sql : List.of("DELETE FROM payment_intents WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                for (var sql : List.of("DELETE FROM sale_sagas WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
+                        "DELETE FROM payment_results WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
+                        "DELETE FROM payment_intents WHERE payment_id IN (SELECT p.id FROM payments p JOIN sales s ON s.id=p.sale_id WHERE s.actor_id IN (?,?))",
                         "DELETE FROM payments WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))", "DELETE FROM sale_events WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))",
                         "DELETE FROM sale_items WHERE sale_id IN (SELECT id FROM sales WHERE actor_id IN (?,?))", "DELETE FROM checkout_operations WHERE actor_id IN (?,?)", "DELETE FROM sales WHERE actor_id IN (?,?)")) {
                     try (var s = connection.prepareStatement(sql)) { s.setObject(1, admin); s.setObject(2, operator); s.executeUpdate(); }

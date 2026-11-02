@@ -1,5 +1,7 @@
 # ADR-004 Saga, compensação e reconciliação
 
+Nota de vigência: [ADR-008](ADR-008-estados-venda-pagamento.md) foi aprovada pelo proprietário e resolve DEC-01 no recorte descrito. [PDV-036](../../sdd/features/PDV-036-saga-estados-venda.md) implementa coordenação persistida; referências abaixo a estados ainda pendentes preservam o registro original. Baixa/comprovante, reconciliação/liberação e cancelamento permanecem nas tarefas próprias.
+
 Data: 30/10/2026. Tarefa: [PDV-003](../../sdd/features/PDV-003-arquitetura-adrs.md). Estado: invariantes e padrão Saga declarados no pacote; coordenação e estados finais pendentes de PDV-007/036.
 
 ## Contexto e fontes

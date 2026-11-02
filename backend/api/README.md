@@ -95,3 +95,5 @@ PDV-029: [reservas](../../docs/workflows/reservations.md) atômicas/TTL/barreira
 PDV-034: [carrinho/itens](../../docs/workflows/carts.md) próprios com JPA, @Version, dinheiro BigDecimal e preço copiado do catálogo, sem descontos/reserva/checkout. V13 mantém trilha imutável e criação idempotente.
 
 [Checkout PDV-035](../../docs/workflows/checkout.md), V14: POST /carts/{id}/checkout e GET /sales/{id}, permissões sale.checkout/read.
+
+[Coordenação PDV-036](../../docs/workflows/sale-saga.md), V15: funções internas transacionais; nenhuma rota pública para impor estado/resultado.

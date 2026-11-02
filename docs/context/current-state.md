@@ -1,5 +1,9 @@
 # Estado observado em 1 de novembro de 2026
 
+## Coordenação persistida — PDV-036
+
+V15 adiciona progresso da Saga e resultado por operação. Início protege reserva antes de EM_PROCESSAMENTO; resultado determinístico e auditoria confirmam juntos e repetição recupera efeito conhecido. TIMEOUT→INDETERMINADO conserva proteção. [Contrato](../workflows/sale-saga.md). Sem worker de pagamento, transporte confiável ou efeitos finais neste incremento.
+
 ## Checkout idempotente — PDV-035
 
 Refinamento aprovado pelo proprietário. V14 grava venda/itens/reserva/intenção/resposta juntos, com propriedade, preço/ativo/versão/disponibilidade revalidados. Chave por ator sem expiração e UNIQUE por carrinho protegem retries; agregado convertido fica congelado. [Contrato](../workflows/checkout.md). Ainda sem processamento de pagamento, baixa ou transporte Outbox/Inbox.
